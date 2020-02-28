@@ -1,0 +1,152 @@
+##DESCRIPTION
+##  Algebra problem: true or false for inequality 
+##ENDDESCRIPTION
+########################################################################
+DOCUMENT();      
+
+loadMacros(
+   "PGstandard.pl",     # Standard macros for PG language
+   "MathObjects.pl",
+   #"source.pl",        # allows code to be displayed on certain sites.
+   #"PGcourse.pl",      # Customization file for the course
+"QuantBio.pl",
+"Coalescent.pl",
+);
+
+# Print problem number and point value (weight) for the problem
+TEXT(beginproblem());
+
+# Show which answers are correct and which ones are incorrect
+$showPartialCorrectAnswers = 1;
+
+##############################################################
+#
+#  Setup
+#
+#
+Context("Numeric");
+$i=random(0,4,1); ## We have 4 stored aligned sequences 
+$I=random(0,8,1); ## We have 9 stored population 
+
+@Sub=(); @Keys;
+## We choose two sequences from that population
+($name,%SubPop)=&pick_population($I,2); 
+foreach $key (keys %SubPop){
+        $Keys[$k]=$key;
+        $Sub[$k]=$SubPop{$key};
+        $k++;}
+
+$start=random(1,80,1);
+$end=random($start+500,1081);
+
+@array1=split("",$Sub[0]);
+@array2=split("",$Sub[1]);
+
+
+## Now lets color bold if two aminoacids are different
+## Need to see how to pass here for reference
+#$seq1,$seq2,$show1,$show2=show_diferences($start,$end,\@array1,\@array2);
+#$seq1,$seq2,$show1,$show2=show_diferences($start,$end,@array1,@array2);
+
+my $display=0;
+for ($k=$start;$k<$end;$k++){
+      $display++;
+      $amino1= $array1[$k]; ## Here we retrieve the sequences from start to end
+      $amino2= $array2[$k];
+
+       $seq1.=$amino1; ## we concatenate
+       $seq2.=$amino2;
+  
+      if($amino1 ne $amino2){
+           $amino1= "$BBOLD".$amino1."$EBOLD";
+           $amino2= "$BBOLD".$amino2."$EBOLD";  ## we colored them
+           }
+
+          if($display%50==0){
+           $amino1= $amino1."$BR";
+           $amino2= $amino2."$BR";  ## we colored them
+           }
+
+
+       $show1.=$amino1; ## we concatenate
+       $show2.=$amino2;
+     }
+
+$len=&seq_length($seq1);
+$proportion=&proportion($seq1,$seq2);
+
+####################################################################
+## Answers
+
+$ham=&Hamming($seq1,$seq2);
+$hamming = Compute("$ham");
+
+$juk=&jukesNucleo($seq1,$seq2);
+$jukes = Compute("$juk");
+
+#Jukes-Cantor (default)	
+
+
+##############################################################
+#
+#  Text
+#
+#
+Context()->texStrings;
+BEGIN_TEXT
+La distancia entre alelos o variantes genicas es usada para estimar la tasa de mutacion de un gen particular.
+Existen diversas definciones de distancia entre scuencias de DNA. 
+Aqui se te piden calcular las distancias de Hamming y la de Jukes-Cantor 
+entre secuencias de la region hipervariable del loop mitocondrial de muestras de la poblacion mexicana $name.  $BR
+
+$PAR
+Considere las coordenadas [$start-$end] de un alineamiento del gen $BR 
+
+>$Keys[0]$BR 
+$show1 $BR
+>$Keys[1]$BR 
+$show2 $BR
+
+$PAR
+Calcula la distancia de Hamming $BR
+Hamming = \{$hamming->ans_rule\} $PAR
+
+Mientras la distancia de Hamming cuenta las diferencias entre dos secuencias, 
+puede no estimar correctamente la divergencia de un ancestro comun.
+Esto debido a que algunas posiciones pueden haber sufrido multiples cambios. 
+Para resolver esta situacion, Jukes Cantor propusieron el siguiente modelo probabilistico de distancia de DNA. 
+\(d = -\frac{3}{4} log(1-p \frac{4}{3})\) donde \(p\) es la proporcion de diferencias entre dos secuencias. $PAR
+2)Calcula la distancia de Jukes-Cantor $PAR
+Jukes-Cantor = \{$jukes->ans_rule\} $BR
+$BR
+
+$PIMA{Pima099} pima
+END_TEXT
+Context()->normalStrings;
+
+##############################################################
+#
+#  Answers
+#
+#
+
+ANS($hamming->with(tolerance=>.0001)->cmp);
+ANS($jukes->with(tolerance=>.0001)->cmp);
+
+Context()->texStrings;
+SOLUTION(EV3(<<'END_SOLUTION'));
+$PAR SOLUTION $PAR
+
+La respuesta correcta para la distancia de Hamming es $hamming porque es el numero de diferencias entre dos secuencias $PAR
+
+El modelo de Jukes-Cantor para aminoacidos esta dado por :$BR
+\(d = -\frac{3}{4} log(1-p \frac{4}{3})\) $BR
+Si la longitud de la secuencia es longitud = $len, entonces la proporcion $BR
+\(p=\frac{ Hamming}{Sequencia \hspace{1 mm} longitud}\)=$proportion $BR 
+Asi que finalmente, 
+$BR Distancia de Jukes Cantor: $jukes $BR
+
+END_SOLUTION
+Context()->normalStrings;
+
+ENDDOCUMENT();        

@@ -1,0 +1,120 @@
+##DESCRIPTION
+##  Algebra problem: true or false for inequality 
+##ENDDESCRIPTION
+
+##KEYWORDS('algebra', 'inequality', 'fraction')
+
+## DBsubject('Algebra')
+## DBchapter('Fundamentals')
+## DBsection('Real Numbers')
+## Date('6/3/2002')
+## Author('')
+## Institution('')
+## TitleText1('Precalculus')
+## EditionText1('3')
+## AuthorText1('Stewart, Redlin, Watson')
+## Section1('1.1')
+## Problem1('22')
+
+########################################################################
+
+DOCUMENT();      
+
+loadMacros(
+   "PGstandard.pl",     # Standard macros for PG language
+   "MathObjects.pl",
+   #"source.pl",        # allows code to be displayed on certain sites.
+   #"PGcourse.pl",      # Customization file for the course
+    "Coalescent.pl",
+);
+
+# Print problem number and point value (weight) for the problem
+TEXT(beginproblem());
+
+# Show which answers are correct and which ones are incorrect
+$showPartialCorrectAnswers = 1;
+
+##############################################################
+#
+#  Setup
+#
+#
+Context("Numeric");
+
+$population=random(1,20,1);
+($An,$Bn, $E1, $E2)=&CalculateConstants($population); 
+$an=Compute("$An");
+$bn=Compute("$Bn");
+$e1=Compute("$E1");
+$e2=Compute("$E2");
+
+#Answers
+$answer="";
+for ($i=1;$i<$population-1;$i++){
+$answer.="\frac{1}{$i}+";
+}
+$answer.="\frac{1}{$population-1}";
+##############################################################
+#
+#  Text
+#
+#
+
+Context()->texStrings;
+BEGIN_TEXT
+Considere una poblacion de $population genes, para los cuales se tienen secuencias de DNA. Si quieres estimar
+\(\theta\), la tasa de mutación de la poblacion, puedes usar los estimadores de Waterson o de Tajima \(\theta\): $BR
+Estos estimadores estan dados por:$PAR
+Tajima: $BR
+\(\hat\pi=\frac{2}{n(n-1)}\sum_{i,j}\pi_{ij}\) , Waterson  \(  \hatθ_W=\frac{S_n}{a_n}\) 
+donde \(a_n =\sum_{i=1}^{n−1}\frac{1}{i}\) $PAR
+
+Entonces, si \(\hat\pi\) y \(\hat\theta_W\) son comparados, se espera que su diferencia sea cercana a cero 
+por lo que entonces, las desviaciones del cero
+son significativas. Por este hecho el modelo básico de coalescencia no captura la variación en los datos. Tajima (1989) 
+normaliza la diferencia en lo que ahora se conoce como Tajima’s D $PAR
+
+\(D=\frac{\hat\pi-\hat\theta_W}{\sqrt{e_1S_n+e_2S_n(S_n-1)}}\) $BR
+with $BR
+\(e_1=\frac{n+1}{3a_n(n-1)}-\frac{1}{a_n^2}\) $BR
+\(e_2=\frac{1}{a_n^2+b_n}(\frac{2(n^2+n+3)}{9n(n-1)}-\frac{n+2}{na_n}+\frac{b_n}{a_n^2})\) $BR
+\(b_n=\sum_{i=1}^{n-1}\frac{1}{i^2}\) $PAR
+
+Usando tu conocimiento de sumatorias, calcula las constantes necesarias para
+obtener el estimador de Waterson y el estimador D-Tajima de la prueba de Tajima. $PAR 
+\(a_n=\) \{$an->ans_rule\} $BR
+\(b_n=\) \{$bn->ans_rule\} $BR
+\(e_1=\) \{$e1->ans_rule\} $BR
+\(e_2=\) \{$e2->ans_rule\}  $BR
+END_TEXT
+Context()->normalStrings;
+
+##############################################################
+#
+#  Answers
+#
+#
+
+ANS($an->with(tolerance=>.0001)->cmp);
+ANS($bn->with(tolerance=>.0001)->cmp);
+ANS($e1->with(tolerance=>.0001)->cmp);
+ANS($e2->with(tolerance=>.0001)->cmp);
+
+# relative tolerance --3.1412 is incorrect but 3.1413 is correct
+# default tolerance is .01 or one percent.
+Context()->texStrings;
+SOLUTION(EV3(<<'END_SOLUTION'));
+$PAR SOLUTION $PAR
+Usando el numero de elementos en la poblacion n=$population $BR
+Entonces solo sustituimos n en las formulas de abajo, por ejemplo $BR
+ \(a_n =\sum_{i=1}^{n−1}\frac{1}{i}\) $BR
+\(a_n=$answer\) $BR
+Asi que haciendo esto obtendras: $BR
+\(a_n=$an\)$BR
+\(b_n=$bn\) $BR 
+\(e_1=$e1\) $BR 
+\(e_2=$e2\) $BR 
+
+END_SOLUTION
+Context()->normalStrings;
+ENDDOCUMENT();        

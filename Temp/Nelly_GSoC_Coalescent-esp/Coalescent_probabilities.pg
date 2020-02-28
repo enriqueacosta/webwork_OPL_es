@@ -1,0 +1,198 @@
+########################################################################
+
+DOCUMENT();      
+
+loadMacros(
+   "PGstandard.pl",     # Standard macros for PG language
+   "MathObjects.pl",
+   #"source.pl",        # allows code to be displayed on certain sites.
+   #"PGcourse.pl",      # Customization file for the course
+    "Coalescent.pl",
+);
+
+# Print problem number and point value (weight) for the problem
+TEXT(beginproblem());
+
+# Show which answers are correct and which ones are incorrect
+$showPartialCorrectAnswers = 1;
+
+##############################################################
+#
+#  Setup
+#
+#
+Context("Numeric");
+$I=random(0,8,1); ## We have 9 stored population 
+$population=4;
+
+@Sub=(); @Keys;
+## We choose two sequences from that population
+($name,%SubPop)=&pick_population($I,4); 
+
+$simulation=0;$real=1;
+%Counts;
+($len,$Population,@SEQ)=&Data($simulation,$real,%SubPop);
+($An,$Bn, $E1, $E2)=&CalculateConstants($Population);
+&Count_perSite($len,@SEQ); 
+#$Sites=&Segregation($len,$Population);
+ 
+$an=Compute("$An");
+
+foreach $key (keys %SubPop){
+        $Keys[$k]=$key;
+        $Sub[$k]=$SubPop{$key};
+        $k++;}
+
+$start=random(1,80,1);
+$end=random($start+500,1081);
+
+@array1=split("",$Sub[0]);
+@array2=split("",$Sub[1]);
+@array3=split("",$Sub[2]);
+@array4=split("",$Sub[3]);
+
+
+## Now lets color bold if two aminoacids are different
+## Need to see how to pass here for reference
+#$seq1,$seq2,$show1,$show2=show_diferences($start,$end,\@array1,\@array2);
+#$seq1,$seq2,$show1,$show2=show_diferences($start,$end,@array1,@array2);
+
+my $display=0;
+for ($k=$start;$k<$end;$k++){
+      $display++;
+      $amino1= $array1[$k]; ## Here we retrieve the sequences from start to end
+      $amino2= $array2[$k];
+      $amino3= $array3[$k]; ## Here we retrieve the sequences from start to end
+      $amino4= $array4[$k];
+
+       $seq1.=$amino1; ## we concatenate
+       $seq2.=$amino2;
+       $seq3.=$amino3; ## we concatenate
+       $seq4.=$amino4;
+  
+      if(($amino1 ne $amino2)or ($amino1 ne $amino3)or ($amino1 ne $amino4)or
+        ($amino2 ne $amino3)or ($amino2 ne $amino4)or ($amino3 ne $amino4)){
+           $amino1= "$BBOLD".$amino1."$EBOLD";
+           $amino2= "$BBOLD".$amino2."$EBOLD";  ## we colored them
+           $amino3= "$BBOLD".$amino3."$EBOLD";
+           $amino4= "$BBOLD".$amino4."$EBOLD";  ## we colored them
+
+           }
+
+          if($display%50==0){
+           $amino1= $amino1."$BR";
+           $amino2= $amino2."$BR";  ## we colored them
+           $amino3= $amino3."$BR";
+           $amino4= $amino4."$BR";  ## we colored them
+           }
+
+
+       $show1.=$amino1; ## we concatenate
+       $show2.=$amino2;
+       $show3.=$amino3; ## we concatenate
+       $show4.=$amino4;
+     }
+
+## Following quatities needs to be here, after $seq1, $seq2 are calculated
+$len=&seq_length($seq1);
+$proportion=&proportion($seq1,$seq2);
+
+####################################################################
+## Answers
+
+$ham=&Hamming($seq1,$seq2);
+$hamming = Compute("$ham");
+
+#Answers ## text for explain the solution
+$answer="";
+for ($i=1;$i<$population-1;$i++){
+$answer.="\frac{1}{$i}+";
+}
+$answer.="\frac{1}{$population-1}";
+
+##############################################################
+##############################################################
+#
+#  Text
+#
+#
+
+Context()->texStrings;
+BEGIN_TEXT
+Len $len $BR
+Consider a population of $population gene, for which you have DNA sequences. If you want to estimate 
+\(\theta\), the population mutation rate, you can use Waterson-estimator given by:$PAR
+Waterson  \(  \hatθ_W=\frac{S_n}{a_n}\) 
+where \(a_n =\sum_{i=1}^{n−1}\frac{1}{i}\) $PAR
+
+Using your knowledge of sumatories, calculate the constant \(a_n\) needed for the calculus of Waterson estimator. $PAR 
+\(a_n=\) \{$an->ans_rule\} $BR
+END_TEXT
+Context()->normalStrings;
+
+##############################################################
+#
+#  Answers
+#
+#
+
+ANS($an->with(tolerance=>.0001)->cmp);
+# relative tolerance --3.1412 is incorrect but 3.1413 is correct
+# default tolerance is .01 or one percent.
+Context()->texStrings;
+SOLUTION(EV3(<<'END_SOLUTION'));
+$PAR SOLUTION $PAR
+Usando el numero n=$population  de individuos en la poblacion $BR
+solo tienes que sustituir n en las formulas de abajo, por ejemplo $BR
+ \(a_n =\sum_{i=1}^{n−1}\frac{1}{i}\) $BR
+\(a_n=$answer\) $BR
+Al hacer esto obtienes: $BR
+\(a_n=$an\)$BR
+
+END_SOLUTION
+#
+#  Text
+#
+#
+Context()->texStrings;
+BEGIN_TEXT
+$PAR
+Tu poblacion consiste en secuencias de la region hipervariable mitocondrial de mexicanos. $name.  
+Encuentra sitios de segregacion \(S_n\), el numero total de sitios en los cuales la mutacion ha ocurrido
+en al menos un individuo de la poblacion. Los datos son mostrados abajo
+$PAR
+Coordenadas [$start-$end] del alineamiento de la ragion mitocondrial $BR 
+>$Keys[0]$BR 
+$show1 $BR
+>$Keys[1]$BR 
+$show2 $BR
+>$Keys[2]$BR 
+$show2 $BR
+>$Keys[3]$BR 
+$show3 $BR
+
+$PAR
+Calcula la distancia de Hamming $BR
+Hamming = \{$hamming->ans_rule\} $PAR
+
+END_TEXT
+Context()->normalStrings;
+
+##############################################################
+#
+#  Answers
+#
+#
+
+ANS($hamming->with(tolerance=>.0001)->cmp);
+
+Context()->texStrings;
+SOLUTION(EV3(<<'END_SOLUTION'));
+$PAR SOLUTION $PAR
+
+La respuesta correcta para la distancia de Hamming es $hamming porque es el número de diferencias entre las dos secuencias $PAR
+
+END_SOLUTION
+Context()->normalStrings;
+Context()->normalStrings;
+ENDDOCUMENT();        
