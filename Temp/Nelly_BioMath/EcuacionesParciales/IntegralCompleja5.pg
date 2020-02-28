@@ -1,0 +1,114 @@
+##DESCRIPTION
+##  Complex integral
+##ENDDESCRIPTION
+
+## GSoC nselem84@gmail.com
+
+########################################################################
+DOCUMENT() ;
+loadMacros(
+	"PG.pl",
+	"PGbasicmacros.pl",
+	"PGchoicemacros.pl",
+	"PGanswermacros.pl",
+	"PGauxiliaryFunctions.pl",
+	"PGgraphmacros.pl",
+        "unionTables.pl",
+        "MathObjects.pl",
+) ;
+#sub i ();  #make i act like the imaginary unit.
+
+# Print problem number and point value (weight) for the problem
+TEXT(beginproblem());
+
+# Show which answers are correct and which ones are incorrect
+$showPartialCorrectAnswers = 1;
+
+##############################################################
+#
+#  Setup
+#
+#
+
+Context()->variables->add( i=>'Real',t=>'Real');
+$f="cos(z)";
+
+
+
+$a1=non_zero_random(-7,-1,1);
+$b1=non_zero_random(-7,-1,1);
+$a2=non_zero_random(1,6,1);
+$b2=non_zero_random(1,6,1);
+
+$p1=Compute(" $a1 + $b1*i");
+$p2=Compute(" $a2 + $b2*i");
+
+$trayectoria="el vector que va del punto \(A=$p1\) al punto \(B=$p2\)";
+
+$graph = init_graph(-8, -8, 8, 8,grid=>[16,16],axes=>[0,0]);
+$point1 = closed_circle($a1, $b1, 'red');
+$point2 = closed_circle($a2, $b2, 'blue');
+$graph->stamps($point1,$point2);
+
+
+$x3 = Formula("$a1+t*($a2-$a1)");
+$y3 = Formula("$b1+t*($b2-$b1)");
+$k = new Fun( $x3->perlFunction, $y3->perlFunction, $graph );
+$k->domain(0,1); $k->steps(90); $k->color('green'); $k->weight('2');
+
+
+$graph->lb( new Label($a1+.5,$b1,$a1,'orange','center','middle'));
+$graph->lb( new Label($a1+1,$b1,'+','orange','center','middle'));
+$graph->lb( new Label($a1+1.5,$b1,$b1,'orange','center','middle'));
+$graph->lb( new Label($a1+2,$b1,'i','orange','center','middle'));
+
+
+$graph->lb( new Label($a2+.5,$b2,$a2,'orange','center','middle'));
+$graph->lb( new Label($a2+1,$b2,'+','orange','center','middle'));
+$graph->lb( new Label($a2+1.5,$b2,$b2,'orange','center','middle'));
+$graph->lb( new Label($a2+2,$b2,'i','orange','center','middle'));
+
+$sol=Compute("sin($a2+$b2*i)-sin($a1+$b1*i)");
+##############################################################
+#
+#  Text
+#
+#
+
+BEGIN_TEXT
+\{
+ColumnTable(
+"
+$normae $BR
+
+\(\int_{\gamma} $f dz\) =".ans_rule." $BR
+donde \(\gamma\) es $trayectoria.
+$PAR
+
+"
+
+,
+$BCENTER.
+
+
+image( insertGraph($graph), width=>200, height=>200 ).
+$PAR.
+"Gráfica de un disco".
+$ECENTER
+,
+indent => 0, separation => 30, valign => "TOP"
+); 
+\}
+
+
+END_TEXT
+
+##############################################################
+#
+#  Answers
+#
+#
+
+ANS($sol->cmp());
+
+ENDDOCUMENT();        

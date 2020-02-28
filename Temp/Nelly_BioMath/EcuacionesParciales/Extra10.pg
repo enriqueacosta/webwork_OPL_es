@@ -1,0 +1,106 @@
+## DESCRIPTION
+## Partial differential equations. This problem is about the 
+## wave equation. Autor  Nelly Sélem  <nselem84@gmail.com>
+## ENDDESCRIPTION
+
+## GSoC nselem84@gmail.com
+################################################################################
+  
+  DOCUMENT();        # This should be the first executable line in the problem.
+
+    loadMacros(
+      "PGstandard.pl",
+      "parserPopUp.pl",
+      "PGchoicemacros.pl",
+      "parametrosEcuaciones.pl" # Libreria necesaria
+    );
+    TEXT(beginproblem);
+
+#############################################################
+#                    COMENTARIOS
+# Intencionalmente sin acentos porque no salen en el pdf
+
+
+$mc = new_checkbox_multiple_choice();
+
+$mc -> qa ("Primero selecciona la ecuación que modela el problema", 
+          "\( \displaystyle a^2\frac{\partial^2 u }{\partial x^2}
+             =\frac{\partial^2 u }{\partial t^2} \) $BR");
+
+$mc -> extra(
+       "\(\displaystyle k\frac{\partial^2 u }{\partial x^2}=
+        \frac{\partial u }  {\partial t}\) $BR",
+
+       "\( \displaystyle \frac{\partial^2 u }{\partial x^2} +
+        \frac{\partial^2 u }{\partial y^2} = 0\) $BR",);
+#__________________________________________________________________________
+
+  $fun_u = PopUp(  ["?","u","u_t","u_x"],"u",);
+  $par_x= PopUp(  ["?","u","u_t","u_x"],"u_x",);
+  $par_t= PopUp(  ["?","u","u_t","u_x"],"u_t",);
+ 
+#_______________________________________________________________________   
+
+    $u0 = random(3,7,2); $u1 = random(2,6,1);
+    $L = random(2,6,1);
+
+    $ele=Formula("L");    $te=Formula("t");
+    $equis=Formula("x");    $efe=Formula("x*($L-x)");
+#_______________________________________________________________________
+
+
+Context()->texStrings();    
+BEGIN_TEXT
+
+$PAR
+ Una cuerda de longitud $L coincide con el intervalo \([0,$L]\) sobre
+el eje \(x\). Establece el problema de valores en la frontera para
+el desplazamiento \(u\left(x,t\right)\). 
+
+$PAR
+\{ $mc -> print_q() \}$BR\{ $mc -> print_a() \}  
+
+Ahora escribe las condiciones de frontera para la funcion desplazamiento u(x,t), si ambos extremos estan fijos al eje x. $BR
+
+Extremo derecho:   \{$fun_u->menu() \}(\{ ans_rule(1) \} ,
+                   \{ ans_rule(1) \} )=(\{ ans_rule(3) \} ). $PAR
+Extremo izquierdo: \{$fun_u->menu() \}(\{ ans_rule(1) \} ,
+                   \{ ans_rule(1) \} )=(\{ ans_rule(3) \} ).
+$PAR
+
+
+Finalmente, escribe en orden las condiciones iniciales de \(u\).
+La cuerda se libera desde el reposo del desplazamiento
+inicial \(f(x)=$efe\).
+$PAR
+
+$PAR
+Velocidad Inicial:                  \{$par_t->menu() \}(\{ ans_rule(1) \} ,
+                  \{ ans_rule(1) \} )=\{ ans_rule(6) \}.
+$PAR
+Vibracion inicial:\{$fun_u->menu() \}(\{ ans_rule(1) \} ,
+                  \{ ans_rule(1) \} )=(\{ ans_rule(3) \} ).
+END_TEXT
+####################################################################
+
+ANS( checkbox_cmp( $mc->correct_ans() ) );
+
+ANS( $fun_u->cmp() ); ##Extremo derecho
+ANS(num_cmp($L));ANS($te->cmp()) ; ANS(num_cmp(0));
+
+ANS( $fun_u->cmp() ); ##Extremo izquierdo
+ANS(num_cmp(0)); ANS($te->cmp()) ; ANS(num_cmp(0));
+
+ANS( $fun_u->cmp() ); #Desplazamiento inicial
+ANS($equis->cmp()) ; ANS(num_cmp(0));ANS($efe->cmp());
+
+ANS( $par_t->cmp() ); ##Velocidad inicial
+ANS($equis->cmp()) ; ANS(num_cmp(0));ANS(num_cmp(0)) ; 
+
+##############################################
+
+ENDDOCUMENT();        # This should be the last executable line in the problem.
+
+
+      
+

@@ -1,0 +1,54 @@
+#DESCRIPTION
+# Formulas de drivadas. Differentiation Formulas. Autor nselem84@gmail.com
+#
+##ENDDESCRIPTION
+# Author: Nelly Sélem GSoC<nselem84@gmail.com>
+
+DOCUMENT();        # This should be the first executable line in the problem.
+                
+loadMacros(
+
+"PGstandard.pl",
+"MathObjects.pl",    
+"PGbasicmacros.pl",
+"PGanswermacros.pl",
+"PGauxiliaryFunctions.pl",
+"Parser.pl",
+"problemRandomize.pl", #ESTA ES PARA QUE EL PROBLEMA SE RECARGUE UNA VEZ CORRECT
+);
+
+ProblemRandomize(when=>"always",onlyAfterDue=>0);
+
+
+
+TEXT(beginproblem());
+$showPartialCorrectAnswers = 0;
+
+$a3 = non_zero_random(2,15,1);
+$a4 = non_zero_random(2,15,1);
+$I4 = random(0,4,1);
+
+# MENU FUNCIONES
+@Logaritmicas= (Formula("ln (e^{$a4 x}+cos($a3*x)+ pi)"),
+                Formula("$a4^{ln($a4*x)}"),
+                Formula("log10(x^2/$a4)"),
+                Formula("log10(cos($a4*x))"),
+                Formula("log10((x^$a4)/$a4)"));
+
+$f4=$Logaritmicas[$I4]; $Df4 = $f4->D;
+Context()->texStrings;
+
+BEGIN_TEXT
+INSTRUCCIONES: Escribe la derivada de la función que se te muestra. Para practicar, puedes obtener una nueva versión del problema pulsando el botón "get a new version".  
+
+$PAR Si \(f(x) = $f4\) entonces \(f'(x) =\)  \{ ans_rule(10)\}
+
+
+END_TEXT
+
+Context()->normalStrings;
+ANS($Df4->cmp());
+
+ENDDOCUMENT();        # This should be the last executable line in the problem.
+
+

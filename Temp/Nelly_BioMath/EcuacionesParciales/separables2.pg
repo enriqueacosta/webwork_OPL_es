@@ -1,0 +1,181 @@
+##DESCRIPTION
+##  This problem is about to classify partial Differential Equations. Author 
+# GSoC nselem84@gmail.com
+##ENDDESCRIPTION
+
+##KEYWORDS('classification', 'homogeneous')
+
+## DBsubject('Partial Differential Equations')
+## DBchapter('Partial Differential Equations')
+## DBsection('Variable separation ')
+
+##DESCRIPTION
+##  Introduccion Ecuaciones Parciales
+##ENDDESCRIPTION
+
+##KEYWORDS('clasificacion', 'homogeneas')
+
+## DBsubject('Ecuaciones Diferenciales')
+## DBchapter('Ecuaciones Parciales')
+## DBsection('Introduccion')
+
+
+DOCUMENT();
+
+loadMacros(
+"PGstandard.pl",
+"MathObjects.pl",
+"answerHints.pl",
+);
+
+TEXT(beginproblem());
+$showPartialCorrectAnswers = 1;
+################################################################################
+#  Extra variables
+#
+  Context()->variables->add(A=>'Real',B=>'Real',W=>'Real',n=>'Real', C=>'Real',D=>'Real',E=>'Real',F=>'Real', y=>"Real",z=>"Real",X=>'Real',Y=>"Real",T=>'Real',
+dX=>'Real',dY=>"Real",dT=>'Real',dx=>'Real',dy=>"Real",dt=>'Real',
+t=>'Real',h=>'Real',l=>'Real',a=>'Real',L=>'Real',k=>'Real',u=>'Real',f=>'Real',g=>'Real',df=>'Real',dg=>'Real',du=>'Real');
+
+##############################################################################
+#   Notation help window. Ventana emergente de notacion
+#
+HEADER_TEXT(<<END_HEADER_TEXT);
+<script type="text/javascript">
+<!--
+function openhelpCustom1() {
+OpenWindow=window.open("","answer_format_help","width=550,height=550,status=0,toolbar=0,location=0,menubar=0,directories=0,resizeable=1,scrollbars=1");
+OpenWindow.document.write("<title>Notación conocida por WebWork para Ecuaciones diferenciales Parciales</title>")
+OpenWindow.document.write("<body bgcolor='#ffffff'>")
+OpenWindow.document.write("<center><h2>Ayuda con la notacion</h2></center>")
+
+OpenWindow.document.write("<center><h3>Constantes:</h3></center>")
+OpenWindow.document.write("<ul>")
+OpenWindow.document.write("<li><font color='#222255'>h</font><blockquote>Escribe h si necesitas una constante de proporcionalidad   </blockquote></li>")
+
+OpenWindow.document.write("<li><font color='#222255'>λ</font><blockquote>Escribe l cuando necesites introducir  λ</blockquote></li>")
+
+OpenWindow.document.write("<li><font color='#222255'>α</font><blockquote>Escribe a cuando necesites introducir α</blockquote></li>")
+
+OpenWindow.document.write("<li><font color='#22225'>L</font><blockquote>Utiliza L cuando quieras escribir la longitud de una varilla o el largo de una cuerda. </blockquote></li>")
+
+OpenWindow.document.write("<li><font color='#222255'>Parametros constantes:</font><blockquote>Utiliza las constantes A, B, C, D en ese orden cuando las funciones solución aparezcan multiplicadas por una constante. </blockquote></li>")
+OpenWindow.document.write("</ul>")
+
+OpenWindow.document.write("<center><h3>Variables:</h3></center>")
+OpenWindow.document.write("<ul>")
+OpenWindow.document.write("<li><font color='#22225'>Funciones X, Y, T:</font><blockquote>Utiliza las variables X, Y, T cuando nececesites escribir las funciones X(x), Y(y), T(t). </blockquote></li>")
+
+OpenWindow.document.write("<li><font color='#22225'>Variables independientes x, y, t:</font><blockquote>Utiliza las variables x, y, t cuando nececesites escribir las variables independientes x, y, t. <BR> Recuerda que en este contexto x, X tienen significados distintos. x es una variable independiente, X es la función que depende de x. </blockquote></li>")
+
+OpenWindow.document.write("<li><font color='#222255'>Función u</font><blockquote>u es una abreviatura de u(x,t). Puedes utilizarla para la función temperatura de una varilla o desplazamiento de una cuerda</blockquote></li>")
+
+
+OpenWindow.document.write("<li><font color='#22225'>Función derivada X', Y', T':</font><blockquote>Utiliza dY cuando quieras escribir Y'. <BR>Utiliza dX para escribir X' <BR> Utiliza dT para escribir T'. </blockquote></li>")
+
+OpenWindow.document.write("<li><font color='#22225'>Derivadas parciales u_x, u_t, u_y:</font><blockquote>u_t es la función derivada parcial de u respecto a t<BR> u_x es la función derivada parcial de u respecto a x. <BR> u_y es la función derivada parcial respecto a y . </blockquote></li>")
+
+
+OpenWindow.document.write("</ul>")
+
+
+OpenWindow.document.write("</body>")
+OpenWindow.document.write("</html>")
+OpenWindow.document.close()
+self.name="main"
+if (window.focus) {OpenWindow.focus()}
+return false;
+}
+-->
+</script>
+END_HEADER_TEXT
+
+# Show which answers are correct and which ones are incorrect
+$showPartialCorrectAnswers = 1;
+
+##############################################################
+#
+#  Setup
+#
+#
+ $a = random(3,6,1); $b = random(2,6,1);
+#
+##############################################################
+#
+#  Text
+#
+#
+
+Context()->texStrings;
+BEGIN_TEXT
+Queremos resolver la ecuación diferencial parcial:  
+\( u_x + $b u_y = $a u  \) $PAR
+
+Después de aplicar el método de separacion de variables utilizando la constante \(-\lambda\), obtenemos dos ecuaciones ordinarias. $BR Si la primera ecuación resulta ser: \( -\frac{\frac{dY}{dy}}{Y}= -\lambda \). .....Ecuación (1) $PAR
+
+
+Entonces la ecuacion diferencial ordinaria dependiente de x es: $BR
+..... Ecuación (2): \{ ans_rule(7) \}= \(-\lambda \) .           $PAR
+
+La solucion general de la ecuacion (1) es: \(Y(y)=\)\{ ans_rule(7) \}. $BR
+La solucion general de la ecuacion (2) es: \(X(x)=\)\{ ans_rule(7) \}. $PAR 
+Y finalmente la familia de soluciones producto es: \( u(x,y) = \)  \{ ans_rule(35) \}
+
+
+
+
+$PAR \{ htmlLink("#","Help (Ayuda)","onClick='openhelpCustom1()';") \}
+
+
+
+END_TEXT
+Context()->normalStrings;
+
+$showHint = 1;
+
+$ec_x=Formula("(dX-$a*(X))/($b*X)");
+$sol_y=Formula("A*e^{l*y}");
+$sol_x=Formula("B*e^{($a-l*$b)*x}");
+$ans=Formula("C*e^{l*y}*e^{($a-l*$b)*x}"); 
+$ans2=Formula("A*B*e^{l*y}*e^{($a-l*$b)*x}"); 
+
+ANS( $ec_x->cmp() ->withPostFilter(AnswerHints( 
+
+Formula("-(dx-$a*(x))/($b*x)") => "Esta ecuación no depende de la variable correcta", 
+))
+);
+
+ANS( $sol_y->cmp() ->withPostFilter(AnswerHints( 
+Formula("e^{l*y}") => "Esta es sólo una solución, se te pide una familia de soluciones", 
+Formula("B*e^{l*y}") => "Utiliza el parámetro A en lugar del B", 
+Formula("A*e^{l*x}") => "Esta función no depende de la variable correcta", Formula("A*e^{l*Y}") => "Esta función no depende de la variable correcta", 
+
+))
+);
+
+
+ANS( $sol_x->cmp() ->withPostFilter(AnswerHints( 
+Formula("e^{($a-l*$b)*x}") => "Esta es sólo una solución, se te pide una familia de soluciones", 
+Formula("A*e^{($a-l*$b)*x}") => "Ya utilizaste el parámetro A, necesitas uno diferente", 
+Formula("B*e^{($a-l*$b)*y}") => "Esta función no depende de la variable correcta", 
+Formula("B*e^{($a-l*$b)*X}") => "Esta función no depende de la variable correcta", 
+))
+);
+
+
+ANS($ans->cmp(checker=>sub {
+my ( $correct, $student, $ansHash ) = @_;
+return ($ans2== $student||$correct == $student);
+})
+->withPostFilter(AnswerHints( 
+Formula("e^{l*y}*e^{($a-l*$b)*x}") => "Esta es sólo una solución, se te pide una familia de soluciones",
+Formula("AB*e^{l*y}*e^{($a-l*$b)*x}") => "Por convención en esta librería AB=C", 
+Formula("A*e^{l*y}*e^{($a-l*$b)*x}") => "Ya utilizaste el parámetro A, necesitas uno diferente", 
+Formula("B*e^{l*y}*e^{($a-l*$b)*x}") => "Ya utilizaste el parámetro B, necesitas uno diferente", 
+Formula("C*e^{l*x}*e^{($a-l*$b)*x}") => "Esta función no depende de dos variables", 
+
+))
+);
+
+
+ENDDOCUMENT();        

@@ -1,0 +1,52 @@
+#DESCRIPTION
+# Formulas de drivadas. Differentiation Formulas. Autor nselem84@gmail.com
+#
+##ENDDESCRIPTION
+
+# Author: Nelly Sélem GSoC<nselem84@gmail.com>
+
+DOCUMENT();        # This should be the first executable line in the problem.
+                
+loadMacros(
+
+"PGstandard.pl",
+"MathObjects.pl",    
+"PGbasicmacros.pl",
+"PGanswermacros.pl",
+"PGauxiliaryFunctions.pl",
+"Parser.pl",
+"problemRandomize.pl", #ESTA ES PARA QUE EL PROBLEMA SE RECARGUE UNA VEZ CORRECT
+);
+
+ProblemRandomize(when=>"always",onlyAfterDue=>0);
+
+
+
+TEXT(beginproblem());
+$showPartialCorrectAnswers = 0;
+$a5 = non_zero_random(2,15,1);
+$I5 = random(0,4,1);
+
+# MENU FUNCIONES
+@Productos= (Formula("($a5/x)(sin(x))"),
+             Formula("sec(2x)*ln(x^2)"),
+             Formula("(x^2)*csc(x^$a5)"),
+             Formula("x^3*(sin(x))^$a5"),
+             Formula("e^{-x}*(sin($a5*x^2-1))"));
+
+$f5=$Productos[$I5]; $Df5 = $f5->D;
+Context()->texStrings;
+
+BEGIN_TEXT
+INSTRUCCIONES: Escribe la derivada de la función que se te muestra. Para practicar, puedes obtener una nueva versión del problema pulsando el botón "get a new version".  
+
+$PAR Si \(f(x) = $f5\) entonces \(f'(x) =\)  \{ ans_rule(10)\}
+END_TEXT
+
+Context()->normalStrings;
+ANS($Df5->cmp());
+
+
+ENDDOCUMENT();        # This should be the last executable line in the problem.
+
+

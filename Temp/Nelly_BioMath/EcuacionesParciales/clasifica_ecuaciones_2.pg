@@ -1,0 +1,93 @@
+##DESCRIPTION
+##  This problem is about to classify partial Differential Equations. Author 
+# nselem84@gmail.com
+##ENDDESCRIPTION
+
+# Author: Nelly Sélem GSoC<nselem84@gmail.com>
+DOCUMENT();
+
+loadMacros(
+"PGstandard.pl",
+"MathObjects.pl",
+"parserPopUp.pl",
+"unionTables.pl",
+);
+
+TEXT(beginproblem());
+
+###########################
+#  Setup
+#############################################################
+$a=random(2,4,1);
+$b=$a-1;
+$c=$a-$b;
+$d=random(5,8,1);
+
+$no_lineal = PopUp(  ["?","Lineal","No lineal"],  "No lineal",);
+$lineal = PopUp(  ["?","Lineal","No lineal"],  "Lineal",);
+$parcial = PopUp(  ["?","Parcial","Ordinaria"],  "Parcial",);
+$orden_a = PopUp(  ["?","Orden $a","Orden $b","Orden $d"],  "Orden $a",);
+
+$Ecuacion_lpa="\(\frac{\partial^$a u}{\partial t^$b \partial^$c s} + u +s^$d= t\)";
+$Ecuacion_nlpa="\(\frac{\partial^$a u}{\partial t^$b \partial^$c s} + u^$d +s= t\)";
+####################################################################
+#  Main text
+#
+Context()->texStrings;
+#######################################################################
+BEGIN_TEXT
+Clasifica las siguientes ecuaciones:
+$BCENTER
+\{
+BeginTable().
+ AlignedRow(["Ecuacion","Tipo","Linealidad","Orden"]).
+  TableSpace(5,0).  AlignedRow(["$Ecuacion_lpa",$parcial->menu(),$lineal->menu(),$orden_a->menu()]).
+  TableSpace(5,0).
+  AlignedRow(["
+$Ecuacion_nlpa",$parcial->menu(),$no_lineal->menu(),$orden_a->menu()]).
+  TableSpace(5,0).
+EndTable();
+\}
+$BR
+$ECENTER
+END_TEXT
+Context()->normalStrings;
+########################################################################
+#  Answer evaluation
+
+install_problem_grader(~~&std_problem_grader);
+
+$showPartialCorrectAnswers = 0;
+
+ANS( $parcial->cmp() ); ANS( $lineal->cmp() ); ANS( $orden_a->cmp() );
+ANS( $parcial->cmp() ); ANS( $no_lineal->cmp() ); ANS( $orden_a->cmp() );
+##############################################################################
+#  Solution
+
+Context()->texStrings;
+BEGIN_SOLUTION
+${PAR}SOLUTION:$PAR
+En la ecuacion $Ecuacion_lpa la variable dependiente es u y las independientes s y t.
+
+Es lineal porque u y todas sus derivadas solo aparecen elevadas a la potencia uno.$BR
+
+Es parcial porque tiene dos variables independientes. $BR
+
+Es de orden $a porque es el máximo número de veces que se deriva u. $BR
+
+$PAR
+
+En la ecuacion $Ecuacion_nlpa la variable dependiente es u y las independientes s y t.
+
+Es no lineal porque la variable dependiente u aparece elevada a la potencia $d .$BR
+
+Es parcial porque tiene dos variables independientes. $BR
+
+Es de orden $a porque es el máximo número de veces que se deriva u. $BR
+
+
+END_SOLUTION
+COMMENT('MathObject version.');
+
+ENDDOCUMENT();
+    

@@ -1,0 +1,62 @@
+#DESCRIPTION
+# Simple integrals used in partial differential equations. Integrales comunes para la solución de ecuaciones parciales. Autor nselem84@gmail.com 
+# GSoC
+##ENDDESCRIPTION
+
+#KEYWORDS('integrals')
+## DBsubject ('Calculus')
+## DBchapter ('Integrals')
+## DBsection ('Indefinite Integrals')
+
+DOCUMENT();        # This should be the first executable line in the problem.
+                
+loadMacros(
+"PGstandard.pl",
+"MathObjects.pl",    
+"problemRandomize.pl", #ESTA ES PARA QUE EL PROBLEMA SE RECARGUE UNA VEZ CORRECT
+
+
+);
+
+ProblemRandomize(when=>"always",onlyAfterDue=>0);
+
+
+TEXT(beginproblem());
+$showPartialCorrectAnswers = 0;
+
+$a2 = non_zero_random(2,10,1);
+
+$I2 = random(0,2,1);
+
+# MENU FUNCIONES
+
+@Trigo= ("\cos($a2 x)",
+          "\sin($a2 x)","\sin($a2)",
+            );
+@ITrigo= (Formula("sin($a2*x)/$a2"),
+            Formula("-cos($a2*x)/$a2"),Formula("sin($a2)*x"),
+            );
+
+
+
+
+$f2=$Trigo[$I2]; 
+$If2=$ITrigo[$I2];
+
+
+Context()->texStrings;
+BEGIN_TEXT
+
+Calcula la integral que se te pide. Para practicar, puedes obtener una nueva versión del problema pulsando el botón "get a new version".  
+
+$PAR \(\int $f2 dx =\)  \{ ans_rule(10)\}
+
+
+END_TEXT
+Context()->normalStrings;
+
+ANS($If2->cmp());
+
+ENDDOCUMENT();        # This should be the last executable line in the problem.
+
+

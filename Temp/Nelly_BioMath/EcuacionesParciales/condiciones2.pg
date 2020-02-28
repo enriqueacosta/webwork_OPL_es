@@ -1,0 +1,151 @@
+## DESCRIPTION
+## Partial differential equations. This problem is about the 
+## heat equation. Autor  Nelly Sélem UPIIG <nselem84@gmail.com>
+## ENDDESCRIPTION
+
+# Author: Nelly Sélem GSoC<nselem84@gmail.com>
+
+
+
+################################################################################
+  DOCUMENT();        # This should be the first executable line in the problem.
+
+    loadMacros(
+      "PGstandard.pl",
+      "Parser.pl",
+      "parserPopUp.pl",
+      "PGunion.pl",
+      "PGchoicemacros.pl",
+    );
+###############################################################################
+    TEXT(beginproblem);
+  $showPartialCorrectAnswers = 1;
+
+##############################################################################
+#      Window help
+##############################################################################
+
+HEADER_TEXT(<<END_HEADER_TEXT);
+<script type="text/javascript">
+<!--
+function openhelpCustom1() {
+OpenWindow=window.open("","answer_format_help","width=550,height=550,status=0,toolbar=0,location=0,menubar=0,directories=0,resizeable=1,scrollbars=1");
+OpenWindow.document.write("<title>Notación conocida por WebWork para Ecuaciones diferenciales Parciales</title>")
+OpenWindow.document.write("<body bgcolor='#ffffff'>")
+OpenWindow.document.write("<center><h2>Ayuda con la notacion</h2></center>")
+
+OpenWindow.document.write("<center><h3>Constantes:</h3></center>")
+OpenWindow.document.write("<ul>")
+OpenWindow.document.write("<li><font color='#222255'>h</font><blockquote>Escribe h si necesitas una constante de proporcionalidad   </blockquote></li>")
+
+OpenWindow.document.write("<li><font color='#222255'>λ</font><blockquote>Escribe l cuando necesites introducir  λ</blockquote></li>")
+
+OpenWindow.document.write("<li><font color='#222255'>α</font><blockquote>Escribe a cuando necesites introducir α</blockquote></li>")
+
+OpenWindow.document.write("<li><font color='#22225'>L</font><blockquote>Utiliza L cuando quieras escribir la longitud de una varilla o el largo de una cuerda. </blockquote></li>")
+
+OpenWindow.document.write("<li><font color='#222255'>Parametros constantes:</font><blockquote>Utiliza las constantes A, B, C, D en ese orden cuando las funciones solución aparezcan multiplicadas por una constante. </blockquote></li>")
+OpenWindow.document.write("</ul>")
+
+OpenWindow.document.write("<center><h3>Variables:</h3></center>")
+OpenWindow.document.write("<ul>")
+OpenWindow.document.write("<li><font color='#22225'>Funciones X, Y, T:</font><blockquote>Utiliza las variables X, Y, T cuando nececesites escribir las funciones X(x), Y(y), T(t). </blockquote></li>")
+
+OpenWindow.document.write("<li><font color='#22225'>Variables independientes x, y, t:</font><blockquote>Utiliza las variables x, y, t cuando nececesites escribir las variables independientes x, y, t. <BR> Recuerda que en este contexto x, X tienen significados distintos. x es una variable independiente, X es la función que depende de x. </blockquote></li>")
+
+OpenWindow.document.write("<li><font color='#222255'>Función u</font><blockquote>u es una abreviatura de u(x,t). Puedes utilizarla para la función temperatura de una varilla o desplazamiento de una cuerda</blockquote></li>")
+
+
+OpenWindow.document.write("<li><font color='#22225'>Función derivada X', Y', T':</font><blockquote>Utiliza dY cuando quieras escribir Y'. <BR>Utiliza dX para escribir X' <BR> Utiliza dT para escribir T'. </blockquote></li>")
+
+OpenWindow.document.write("<li><font color='#22225'>Derivadas parciales u_x, u_t, u_y:</font><blockquote>u_t es la función derivada parcial de u respecto a t<BR> u_x es la función derivada parcial de u respecto a x. <BR> u_y es la función derivada parcial respecto a y . </blockquote></li>")
+
+
+OpenWindow.document.write("</ul>")
+
+
+OpenWindow.document.write("</body>")
+OpenWindow.document.write("</html>")
+OpenWindow.document.close()
+self.name="main"
+if (window.focus) {OpenWindow.focus()}
+return false;
+}
+-->
+</script>
+END_HEADER_TEXT
+
+
+##############################################################################
+Context()->variables->add(t=>'Real',h=>'Real',L=>'Real',k=>'Real',u=>'Real');
+
+################################################################################
+#                  Setup
+##############################################################################
+
+$mc = new_checkbox_multiple_choice();
+$mc -> qa (
+"Selecciona la ecuacion que modela el problema", 
+"\(\displaystyle k\frac{\partial^2 u }{\partial x^2}=\frac{\partial u }  {\partial t}\) $BR");
+$mc -> extra(
+"\( \displaystyle a^2\frac{\partial^2 u }{\partial x^2}=\frac{\partial^2 u }{\partial t^2} \) $BR",
+"\( \displaystyle \frac{\partial^2 u }{\partial x^2} + \frac{\partial^2 u }{\partial y^2} = 0\) $BR",);
+#__________________________________________________________________________
+
+  $fun_u = PopUp(  ["?","u","u_t","u_x"],"u",);
+  $par_t = PopUp(  ["?","u","u_t","u_x"],"u_t",);
+  $par_x = PopUp(  ["?","u","u_t","u_x"],"u_x",);
+ 
+#_______________________________________________________________________   
+
+    $u0 = random(6,10,2);
+    $u1 = random(2,5,1);
+    $L = random(2,6,1);
+    $ambiente = random(40,50,1);
+
+    $ele=Formula("L");
+    $te=Formula("t");
+    $equis=Formula("x");
+    $efe=Formula("(($u1-$u0)/L)*x+$u0");
+    $transfer=Formula("h*(u-$ambiente)");
+#_______________________________________________________________________
+
+
+   
+Context()->texStrings();    
+BEGIN_TEXT
+  Describe las condiciones iniciales y de frontera resultantes de modelar la temperatura de una varilla de longitud \(L\) si sus extremos estan aislados:
+$PAR
+
+Extremo izquierdo: \{$fun_u->menu() \}(\{ ans_rule(1) \} ,\{ ans_rule(1) \} )=(\{ ans_rule(1) \} ). $PAR
+Extremo derecho: \{$fun_u->menu() \}(\{ ans_rule(1) \} ,\{ ans_rule(1) \} )=(\{ ans_rule(1) \} ).
+$PAR
+Si hay transferencia de calor desde la superficie lateral de la varilla hacia los alrededores a temperatura $ambiente
+
+\{$par_x->menu() \}=(\{ ans_rule(5) \}).
+$PAR
+Cuáles serían las condiciones si la temperatura inicial de la varilla es cien en todo punto. $BR
+ 
+\{$fun_u->menu() \}(\{ ans_rule(1) \} ,\{ ans_rule(1) \} )=(\{ ans_rule(1) \} ).
+$BR \{ htmlLink("#","Help (Notación)","onClick='openhelpCustom1()';") \}
+END_TEXT
+####################################################################
+$showPartialCorrectAnswers = 1;
+ANS( $par_x->cmp() ); 
+ANS(num_cmp(0));ANS($te->cmp()) ; ANS(num_cmp(0));
+
+ANS( $par_x->cmp() ); 
+ANS($ele->cmp());ANS($te->cmp()) ; ANS(num_cmp(0));
+
+ANS( $par_x->cmp() ); ANS($transfer->cmp()); 
+
+
+ANS( $fun_u->cmp() ); 
+ANS($equis->cmp()); ANS(num_cmp(0)); ANS(num_cmp(100));
+  
+##############################################################################
+
+    ENDDOCUMENT();        # This should be the last executable line in the problem.
+
+
+      

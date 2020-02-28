@@ -1,0 +1,171 @@
+######################### ENGLISH ######################################
+
+# DESCRIPTION
+# Problem for Partial Differential Equations. -wave equation in one dimension. 
+# Author: Nelly Sélem GSoC <nselem84@gmail.com>
+# ENDDESCRIPTION
+
+## KEYWORDS('partial','wave')
+
+## DBsubject('Partial Differential Equations')
+## DBchapter('Boundary Problems')
+## DBsection('Wave equation')
+
+DOCUMENT();
+
+loadMacros(
+"PGstandard.pl",
+"MathObjects.pl",
+"PGchoicemacros.pl",
+   "PGgraphmacros.pl",
+"unionTables.pl",
+
+);
+
+Context("Numeric");
+Context()->flags->set( reduceConstants=>0 );
+Context()->variables->add( n=>'Real',k=>'Real',T=>'Real',dT=>'Real',t=>'Real',X=>'Real');
+$showPartialCorrectAnswers = 1;
+TEXT();
+#           Parámetros del problema
+#
+
+$Objeto="una cuerda";
+$Accion="se desplaza";
+$Funcion="desplazamiento";
+$L=random(2,10,1); #Longitud de la varilla
+$L1=$L/3;$L2=2*$L/3;
+$a=random(2,10,1); #largo en x de la placa
+$b=random(2,10,1); #largo en y de la placa
+$onda="\($a^2\frac{\partial^2 u}{\partial x^2}=\frac{\partial^2 u}{\partial t^2}\)";
+
+$Frontera1="que mantiene sus extremos fijos";
+$Frontera2="";
+$Inicial1="la función \( f(x)\)";
+$Inicial2="\( \frac{\partial u}{\partial t} |_{t=0}=0\)";
+
+
+
+#################################################
+#            Soluciones
+#
+$EDO=Formula("dT/(k*T)");
+$lambda_cero=Compute("0");
+$lambda_positiva=Compute("cos(n*pi*x/$L)");
+$lambda_negativa=Compute("0");
+$T_n1=Compute("$a*n*pi*t/$L");
+$T_n2=Compute("sin($a*n*pi*t/$L)");
+$X_n=Compute("sin(n*pi*x/$L)");
+$A_0=Compute("0");
+$A_n=Compute("-((6*sin(pi*n)-6*pi*n*cos(pi*n)-6*sin((2*pi*n)/3)+4*pi*n*cos((2*pi*n)/3)-6*sin((pi*n)/3)+2*pi*n*cos((pi*n)/3))*$L+
+6*pi*n*cos(pi*n)-4*pi*n*cos((2*pi*n)/3)-2*pi*n*cos((pi*n)/3))/(pi^2*n^2*$L)");
+$B_n=Compute("0");
+
+
+
+
+
+
+	
+	
+$A_n->{test_points} = [[1,1,1,1,1,1,1],[2,2,2,2,2,2,2],
+                     [3,3,3,3,3,3,3],[4,4,4,4,4,4,4],[5,5,5,5,5,5,5]];
+$bn->{test_points} =  [[1,1,1,1,1,1,1],[2,2,2,2,2,2,2],
+                     [3,3,3,3,3,3,3],[4,4,4,4,4,4,4],[5,5,5,5,5,5,5]];
+
+# Show which answers are correct and which ones are incorrect
+$showPartialCorrectAnswers = 1;
+
+##############################################################
+
+##############################################################
+#
+# Graficos
+#
+#
+    ## then we graph
+    $ftex = "\begin{cases}x & 0 < x < 1\cr 0 & 1 < x < 2\end{cases}";
+  
+
+       @nelly = ( "3*x/$L for x in <0,$L1> using color:blue and weight:4",
+	      "1 for x in <$L1,$L2> using color:red and weight:4",
+            "-3*x/$L+3 for x in <$L2,$L> using color:red and weight:4",
+            );
+
+        $grafico = init_graph(-1,-.5,$L+1,1.5,axes=>[0,0],
+		  size=>[500,500]);
+# add a label
+$grafico->lb( new Label($L/3,0,'L/3','black'));
+$grafico->lb( new Label(2*$L/3,0,'2L/3','black'));
+$grafico->lb( new Label(-.2,1,'1','black'));
+$grafico->lb( new Label($L,0,'L','black'));
+
+        add_functions( $grafico, @nelly,);
+##############################################################
+#
+#  Text
+#
+#
+
+
+Context()->texStrings;
+BEGIN_TEXT
+\{
+ColumnTable(
+"
+$PAR Encuentra analíticamente el $Funcion \(u(x,t)\) de $Objeto de longitud $L,  $Frontera1. La cuerda parte desde el reposo, es decir $Inicial2. Se sabe además que el $Funcion inicial de la cuerda está dado por $Inicial1, cuya gráfica es la de la figura $PAR
+
+$BR Al utilizar la constante \(-\lambda\) en el método de variables separables para resolver la ecuación de onda: $onda, se obtienen dos ecuaciones ordinarias. Escoge una de ellas como:
+ \[\frac{X''}{X}=-\lambda\] $PAR
+
+Para garantizar que la solución satisfaga las condiciones iniciales,  utiliza el principio de superposición. Finalmente calcula los coeficientes \(A_n\) y \(B_n\) y determina completamente \(u(x,t)\).$PAR
+
+Escribe tu respuesta de la forma \(u(x,t) = A_0 + \sum_{n=1}^{\infty} A_n\,[X_n(x)]\times [T_n(t)]\)
+$PAR
+$BR"
+,
+$BCENTER.
+image( insertGraph($grafico), width=>300, height=>300 ).
+$PAR.
+"Gráfica de un disco".
+$ECENTER
+,
+indent => 0, separation => 30, valign => "TOP"
+); 
+\}
+
+\(u(x,t)=\)\{ ans_rule(3) \} +\(\sum_{n=1}^{\infty} \) \{ ans_rule(7) \} \(\times [A_n\cos(\)\{ ans_rule(7) \}\()+B_n\)\{ ans_rule(7) \}\(]\)    $PAR
+
+$PAR
+
+Donde \( A_0=\) \{ ans_rule(35) \} $BR
+Donde \( A_n=\) \{ ans_rule(35) \} $BR
+Donde \( B_n=\) \{ ans_rule(35) \} $BR
+
+Si por las propiedades del material se estima que \(k=1.63\) Utiliza la aplicación 3D de tu SAC (sistema de álgebra computarizado) favorito para trazar la gráfica de \(S_5(x,t)\). Es decir la sumatoria hasta \(n=5\). 
+$BR \{ htmlLink("#","Help (Notación)","onClick='openhelpCustom1()';") \}
+
+END_TEXT
+Context()->normalStrings;
+
+##############################################################
+#
+#  Answers
+#
+#
+ANS( $A_0->cmp() );
+ANS( $X_n->cmp() );
+ANS( $T_n1->cmp() );
+ANS( $T_n2->cmp() );
+ANS( $A_0->cmp() );
+ANS( $A_n->cmp() );
+ANS( $B_n->cmp() );
+##############################################################
+#
+#  Answers
+#
+#
+
+
+
+ENDDOCUMENT();        

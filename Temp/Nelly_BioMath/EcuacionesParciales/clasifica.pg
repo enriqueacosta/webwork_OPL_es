@@ -1,0 +1,64 @@
+# DESCRIPTION
+# Problem from Calculus, single variable, Hughes-Hallett et al., 4th ed.
+# WeBWorK problem written by Gavin LaRose, <glarose@umich.edu>
+# modified: Nelly Sélem GSoC<nselem84@gmail.com>
+# ENDDESCRIPTION
+
+## KEYWORDS('calculus','integral', 'fourier', 'series', 'approximation')
+
+
+DOCUMENT();
+
+loadMacros(
+"PG.pl",
+"PGbasicmacros.pl",
+"PGchoicemacros.pl",
+"PGanswermacros.pl",
+"unionTables.pl",
+"PGstandard.pl",
+"MathObjects.pl",
+
+);
+$A=random(2,53,1);
+$DosA=2*$A;
+$B=random(2,53,1);
+$D=random(-10,10,1);
+$E=random(-10,10,1);
+$F=random(2,53,1);
+$Celiptica=$B*$B;
+$Bparabolica=$DosA;
+$Chiperbolica=$A-random(2,5,1);
+
+TEXT(beginproblem());
+$ml = new_match_list();
+$ml->qa(
+"De que tipo es la ecuacion 
+\( $A u_{xx}+$B u_{xy}+$Celiptica u_{yy}+$D u_x +$F=0 \)?", "Elíptica",
+"De que tipo es la ecuacion 
+\($A u_{xx}+$Bparabolica u_{xy}=-$A u_{yy}+$D u_x -$E u_y \)?", "Parabólica",
+"De que tipo es la ecuacion 
+\( $A u_{xx}=-$DosA u_{xy}-$Chiperbolica u_{yy} \)?", "Hiperbólica",
+);
+
+# use pop-up-lists
+$ml->rf_print_q(~~&pop_up_list_print_q);
+# you may need to add more letters D=>"D", etc. 
+$ml->ra_pop_up_list([No_answer=>"?",A=>"A",B=>"B",C=>"C",D=>"D"]);
+
+$ml->choose(3);
+  
+$ml->makeLast("Ninguna de las anteriores");
+BEGIN_TEXT
+
+\{ $ml->print_q() \}
+$BR
+\{ $ml->print_a() \}
+
+END_TEXT
+# no credit until all answers are correct
+install_problem_grader(~~&std_problem_grader);
+$showPartialCorrectAnswers = 0;
+
+ANS( str_cmp( $ml->ra_correct_ans ) );
+
+ENDDOCUMENT();

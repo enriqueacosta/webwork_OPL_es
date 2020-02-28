@@ -1,0 +1,375 @@
+## DESCRIPTION
+## Partial cylindrical differential equations. This problem is about the 
+## movement of a circular membrane. Autor  Nelly Sélem nselem84@gmail.com
+## ENDDESCRIPTION
+## GSoC nselem84@gmail.com
+
+DOCUMENT();
+
+loadMacros(
+"PGstandard.pl",
+"MathObjects.pl",
+"AnswerFormatHelp.pl",
+"PGgraphmacros.pl",
+"unionTables.pl",
+"answerHints.pl",
+);
+###############################################################################
+#   Notation Help Window Code
+#   Código para la Ventana de ayuda para la notación
+###############################################################################
+
+HEADER_TEXT(<<END_HEADER_TEXT);
+<script type="text/javascript">
+<!--
+function openhelpCustom1() {
+OpenWindow=window.open("","answer_format_help","width=550,height=550,status=0,toolbar=0,location=0,menubar=0,directories=0,resizeable=1,scrollbars=1");
+OpenWindow.document.write("<title>Notación utilizada por WebWork para Ecuaciones diferenciales Parciales</title>")
+OpenWindow.document.write("<body bgcolor='#ffffff'>")
+OpenWindow.document.write("<center><h2>Ayuda con la notacion</h2></center>")
+
+OpenWindow.document.write("<center><h3>Variables:</h3></center>")
+OpenWindow.document.write("<ul>")
+OpenWindow.document.write("<li><font color='#222255'>Alpha</font><blockquote>Escribe an si necesitas escribir α_n   </blockquote></li>")
+OpenWindow.document.write("<li><font color='#222255'>Theta</font><blockquote>Escribe t si necesitas escribir θ   </blockquote></li>")
+OpenWindow.document.write("</ul>")
+OpenWindow.document.write("</body>")
+OpenWindow.document.write("</html>")
+OpenWindow.document.close()
+self.name="main"
+if (window.focus) {OpenWindow.focus()}
+return false;
+}
+-->
+</script>
+END_HEADER_TEXT
+################################################################################
+TEXT(beginproblem());
+
+$refreshCachedImages = 1;
+Context("Numeric");
+Context()->flags->set(
+  tolerance=>0.001,
+  tolType=>"absolute"
+);
+
+##############################################
+#  Setup
+
+Context("Numeric");
+Context()->flags->set(tolerance=>0);
+Context()->variables->add( r=>'Real',t=>'Real');
+$showHint = 3;
+
+$a = random(.5,8,.5);    # 
+$b = random(.5,8,.5);    # 
+$k = random(1,5,1);      # Término a preguntar
+$c1 = random(.2,1,.1);   # radio de la membrana.
+
+$onda="\frac{\partial ^2 u}{\partial r^2}+\frac{1}{r}\frac{\partial u}{\partial r}=\frac{\partial^2 u}{\partial t^2}";
+
+##################################################################
+# Funciones de Bessel orden 0 y orden 1
+####################################################################
+
+$FuncBessel="J_v(x)=\sum_{n=0}^{\infty}\frac{(-1)^n}{n!\Gamma(1+v+n)}(\frac{x}{2})^{2n+v}";
+
+sub Bessel_cero{
+  $equis=$_[0]; $suma=0;
+  for($n=0;$n<=60;$n++){
+           $sumando[$n]=Compute("($equis/2)^(2*$n)*(-1)^$n/($n!*$n!)");
+           $suma=$suma+$sumando[$n];
+                       }	
+  return ( $suma);
+  }
+
+
+
+sub Bessel_uno{
+  $equis=$_[0]; $suma=0;
+  for($n=0;$n<=60;$n++){
+           $sumando[$n]=Compute("($equis/2)^(2*$n+1)*(-1)^$n/($n!*($n+1)!)");
+           $suma=$suma+$sumando[$n];
+                       }	
+  return ( $suma);
+  }
+
+####################################################################
+### Los ceros/raíces de las funciones de Bessel
+#######################################################################
+
+@Raices0=(Compute("2.4048"),Compute("5.5201"),Compute("8.6537"),Compute("11.7915"),Compute("14.9309"));
+
+@Raices1=(Compute("0"),Compute("3.8317"),Compute("7.0156"),Compute("10.1735"),Compute("13.3237"));
+
+@nombres=("primera","segunda","tercera","cuarta","quinta");
+
+$a1=round(100*2.4048/$c1)/100; $Alpha0[1]=Compute("$a1");
+$a2=round(100*5.5201/$c1)/100; $Alpha0[2]=Compute("$a2");
+$a3=round(100*8.6537/$c1)/100; $Alpha0[3]=Compute("$a3");
+$a4=round(100*11.7915/$c1)/100; $Alpha0[4]=Compute("$a4");
+$a5=round(100*14.9309/$c1)/100; $Alpha0[5]=Compute("$a5");
+
+
+
+######################################################################
+##                         Respuestas/Answers
+######################################################################
+
+############################################################################
+#####      Los primeros cinco términos de J_0 (a_n*r) 
+###########   Contando desde k=0 hasta k= 4
+#####
+#############################################################################
+
+for($n=1;$n<=5;$n++){ ####Este for corre para las alfas
+$J0ar[$n]=Compute("1");
+$J0ar[$n]=Compute("$J0ar[$n]-(r*$Alpha0[$n]/2)^(2*1)");
+$J0ar[$n]=Compute("$J0ar[$n]+(1/2^2)*(r*$Alpha0[$n]/2)^(2*2)");
+$J0ar[$n]=Compute("$J0ar[$n]-(1/6^2)*(r*$Alpha0[$n]/2)^(2*3)");
+$J0ar[$n]=Compute("$J0ar[$n]+1/(24^2)*(r*$Alpha0[$n]/2)^(2*4)");
+}
+##################################################################
+
+############################################################################
+###  Evaluación de J_1 (a_n*$c1) 
+#### Aproximación Contando desde k=0 hasta k= 60
+#####
+#############################################################################
+$j1=round(100*Bessel_uno($Raices0[0]))/100; $J1[1]=Compute("$j1");
+$j2=round(100*Bessel_uno($Raices0[1]))/100; $J1[2]=Compute("$j2");
+$j3=round(100*Bessel_uno($Raices0[2]))/100; $J1[3]=Compute("$j3");
+$j4=round(100*Bessel_uno($Raices0[3]))/100; $J1[4]=Compute("$j4");
+$j5=round(100*Bessel_uno($Raices0[4]))/100; $J1[5]=Compute("$j5");
+                      ##################################################################
+############################################################################
+#####      Los cinco primeros A_n aproximados sumando las primeras 5 integrales
+###########   Contando desde k=0 hasta k= 4
+#####
+#############################################################################
+
+for($n=1;$n<=5;$n++){   ####Este for corre para las A_n
+     $A[$n]=Compute("0");
+    
+    for($m=0;$m<=4;$m++){ 
+    ### Este for es de la sumatoria de J0
+    $integral[$m]= Compute("($c1^(2*$m+2)/(2*$m+2))-($c1)^(2*$m+4)/(2*$m+4)");
+    $A[$n]=Compute("$A[$n]+$integral[$m]/($m!)^2*($Alpha0[$n]/2)^(2*$m)*(-1)^($m)");
+                      }   
+   $A[$n]= (2/($c1*$J1[$n])**2)*$A[$n];
+                  }
+
+##################################################################
+
+############################################################################
+#####      Los cinco primeros B_n aproximados sumando las primeras 5 integrales
+###########   Contando desde k=0 hasta k= 4
+#####
+#############################################################################
+
+for($n=1;$n<=5;$n++){   ####Este for corre para las A_n
+     $B[$n]=Compute("0");
+    
+    for($m=0;$m<=4;$m++){ 
+    ### Este for es de la sumatoria de J0
+    $integral[$m]= Compute("$c1^(2*$m+1)/(2*$m+1)");
+    $B[$n]=Compute("$B[$n]+(-1)^($m)*$integral[$m]/($m!*$m!)*($Alpha0[$n]/2)^(2*$m)");
+                      }   
+      
+   $B[$n]= (2*$a/($Alpha0[$n]*($c1*$J1[$n])**2))*$B[$n];            }
+
+##################################################################
+########### Aproximacion de u primeros dos términos
+
+$u1=Compute("($A[1]*cos($Alpha0[1]*t)+$B[1]*sin($Alpha0[1]*t))*$J0ar[1]");
+$u2=Compute("($A[2]*cos($Alpha0[2]*t)+$B[2]*sin($Alpha0[2]*t))*$J0ar[2]");
+$u=Compute("$u1+$u2");
+$u->{test_points} = [[1,1,1],[2,2,2],
+                     [3,3,3],[4,4,4],[5,5,5]];
+
+####################################################################
+#### Variables para la solución
+############################
+
+$Aintegral= "(\frac{$c1^{2m+2}}{2m+2}-\frac{$c1^{2m+4}}{2m+4})dr";
+
+$An00="\frac{2}{$c1^2 J_1($Alpha0[$k]*$c1)^2} \sum_{m=0}^4 \int_{0}^{$c1}\frac{(-1)^m}{(m!)^2}(\frac{$Alpha0[$k]r}{2})^{2m}(r-r^3)dr";    
+
+$An0="\frac{2}{$c1^2*$J1[$k]^2}\sum_{m=0}^4 \int_{0}^{$c1}\frac{(-1)^m}{(m!)^2}(\frac{$Alpha0[$k]}{2})^{2m}(r^{2m+1}-r^{2m+3})dr";    
+
+$An="\frac{2}{$c1^2 $J1[$k]^2}\sum_{m=0}^4 \frac{(-1)^m}{(m!)^2}(\frac{$Alpha0[$k]}{2})^{2m} $Aintegral ";                        
+
+
+$Bintegral= "(\frac{$c1^{2m+1}}{2m+1})dr";
+
+$Bn00="\frac{2}{$c1^2 J_1($Alpha0[$k]*$c1)^2} \sum_{m=0}^4 \int_{0}^{$c1}\frac{(-1)^m}{(m!)^2}(\frac{$Alpha0[$k]r}{2})^{2m}($a)dr";    
+
+$Bn0="\frac{2*$a}{$Alpha0[$k]*$c1^2*$J1[$k]^2}\sum_{m=0}^4 \int_{0}^{$c1}\frac{(-1)^m}{(m!)^2}(\frac{$Alpha0[$k]}{2})^{2m}(r^{2m})dr";    
+
+$Bn="\frac{2*$a}{$Alpha0[$k]*$c1^2 $J1[$k]^2}\sum_{m=0}^4 \frac{(-1)^m}{(m!)^2}(\frac{$Alpha0[$k]}{2})^{2m} $Bintegral ";                        
+
+
+$Bessel="\frac{(\frac{$Alpha0[$k]r}{2})^0}{0!^2}-\frac{(\frac{$Alpha0[$k]r}{2})^2}{1!^2}+
+\frac{(\frac{$Alpha0[$k]r}{2})^4}{2!^2}-\frac{(\frac{$Alpha0[$k]r}{2})^6}{3!^2}+
+\frac{(\frac{$Alpha0[$k]r}{2})^8}{4!^2}";
+
+
+$Besseln="\frac{(\frac{\alpha_n r}{2})^0}{0!^2}-\frac{(\frac{\alpha_n r}{2})^2}{1!^2}+
+\frac{(\frac{\alpha_n r}{2})^4}{2!^2}-\frac{(\frac{\alpha_n r}{2})^6}{3!^2}+
+\frac{(\frac{\alpha_n r}{2})^8}{4!^2}";
+################################################################3
+####################################################################
+#  Main text
+#
+####################################################################
+
+Context()->texStrings;
+BEGIN_TEXT
+\{
+ColumnTable(
+" Determina el desplazamiento \(u(r,t)\) de una membrana circular de radio $c1. La membrana tiene un desplazamiento inicial de \(f(r)=1-r^2\), y una velocidad inicial dada por \(\left \frac{\partial u}{\partial t} \right |_{t=0}=$a\)
+
+$PAR
+
+Utilizando la ecuación de onda \($onda\), la solución te quedará de la forma: 
+\[u(r,\theta)=\sum_{n=1}^{\infty} \big[A_n \cos(\alpha_n\theta)+B_n\Theta_n(\theta)\big]J_0(\alpha_nr)\]
+$PAR
+ 
+Escribe los valores que se te piden. $PAR
+(a) Hasta los primeros dos decimales de \( \alpha_{$k} \) $BR
+\( \alpha_{$k} = \)" .ans_rule(20).$BR.htmlLink("#","help (Notación)","onClick='openhelpCustom1()';")." $PAR $BR
+
+(b)Con el valor que encontraste, utiliza los primeros cinco términos de la serie de Bessel para aproximar \( J_0(\alpha_{$k}r)\). $BR
+\( J_0(\alpha_{$k}r)\approx $Besseln\) 
+ $PAR $BR
+
+(c)Escribe hasta los dos primeros decimales del número \( J_1($c1\alpha_{$k})\) utilizando los primeros 60 sumandos de su representación en serie.
+$BR \( J_1($c1\alpha_{$k}) \approx \) " . 
+ans_rule(20).$BR.htmlLink("#","help (Notación)","onClick='openhelpCustom1()';")." $PAR $BR
+
+",
+
+"$BCENTER Membrana vibratoria circular de radio \(r=$c1\) $ECENTER".
+image( "Cilindricas2.png", width=>400, height=>400,tex_size=>700). 
+  
+"$BCENTER Ecuación de onda en coordenadas cilindricas $ECENTER"
+,
+indent => 0, separation => 30, valign => "TOP"
+)
+\}
+
+(d) Utilizando los valores que ya calculaste, obtén \( A_$k \). Aproxima con las primeras cinco integrales. $BR
+
+\( A_$k \approx \) \{ans_rule(40)\}
+$PAR
+$BR
+(e) Utilizando los valores que ya calculaste, obtén \( B_$k \). Aproxima con las primeras cinco integrales. $BR
+ \( B_$k\approx \) \{ans_rule(40)\} 
+
+$BR $PAR
+(f) Finalmente, procediendo análogamente con las aproximaciones, escribe los dos primeros sumandos de la serie de \(u(r,\theta)\) $BR
+\(u(r,\theta)\approx \) \{ans_rule(80)\} $BR
+
+END_TEXT
+
+BEGIN_HINT
+HINT: Utiliza las funciones de Bessel de orden \(v\) para tus soluciones, evaluándolas en algún SAC.
+$PAR \($FuncBessel\), para \(x>0\)
+$PAR También te sería útil tener las raíces de \(J_0\)
+END_HINT
+
+###############################################
+#  Answer evaluation
+
+$showPartialCorrectAnswers = 1;
+
+ANS($Alpha0[$k]->cmp() );
+ANS(fun_cmp($J1[$k]) );
+ANS(num_cmp($A[$k]) );
+ANS(num_cmp($B[$k]) );
+ANS($u->cmp() );
+
+#  Solution
+BEGIN_SOLUTION
+
+
+${PAR}SOLUTION:${PAR}
+Para resolver este problema se utiliza la ecuación polar de Laplace:
+\(\frac{\partial^2 u}{\partial r^2}+\frac{1}{r}\frac{\partial u}{\partial r}=\frac{\partial u}{\partial t}\). $PAR
+
+Al separar variables se obtienen las ecuaciones: 
+$BR 1) \(T''+a^2\lambda T=0\) (Ecuación lineal de coeficientes constantes)
+$BR 2) \(rR''+ R'-\lambda r R=0\) $BR (Ecuación de Cauchy Euler)
+$PAR
+
+Como las soluciones de la ecuación uno deben ser oscilatorias (modelamos una membrana vibrante), el único caso no trivial será el que produce como solución a las funciones seno y coseno: \(\lambda=\alpha^2\). $BR
+
+La primera ecuación es la ecuación de Bessel de orden \(0\) cuya solución está dada por las funciones de Bessel. $PAR
+ 
+ \[R=c_1 J_0(\alpha x)+c_2Y_0(\alpha x)\]
+ 
+Como \(Y_0(x)\) no es acotada en \(x=0\) y nuestro modelo no considera vibraciones infinitas tenemos que \(c_2=0\) $BR
+Entonces: \[R=c_1 J_0(\alpha x)\]
+
+Utilizando la condición de Frontera \(R($c1,t)=0\) tenemos que:
+\(J_0(\alpha $c1)=0\) y entonces \(\alpha_n $c1=x_n\), es decir \(\alpha_n =\frac{x_n}{$c1}\)$BR
+donde \(x_n\) es la n-sima raíz de \(J_0).
+
+$PAR
+Así pues las soluciones producto quedan: $BR
+\(u_n(r,t)=R(r)T(t)=(A_n cos(\alpha_n t)+B_n\sin(\alpha_n t))(J_0(\alpha_n r))\)
+
+Asi pues aplicando el principio de superposición: $PAR
+\(u(r,t)=\displaystyle \sum_{n=1}^{\infty}(A_{n}cos(\alpha_n t)+B_{n}sin(\alpha_n t) J_0(\alpha_n r)) \)$BR
+
+$PAR
+Para calcular los coeficientes \(A_n, B_n\) evaluamos las condiciones de frontera \(f(r)=1-r^2\) y  \(g(r)=\left \frac{\partial u}{\partial t} \right |_{t=0}=$a\): $PAR
+
+\(f(r)=u(r,0)={\displaystyle \sum_{n=1}^{\infty} A_{n} J_0(\alpha_n r)} \)$BR
+\(g(r)=u_t(r,0)={\displaystyle \sum_{n=1}^{\infty} \alpha_n B_{n} J_0(\alpha_n r)} \)$BR
+y la comparamos con su serie de Fourier-Bessel:
+
+De ahi concluimos que $BR
+\(A_n=\frac{2}{c J_1^2(\alpha_n c)}\int_0^{c}rJ_0(\alpha_n r)f(r) dr\) , \(B_n=\frac{2}{\alpha_n c^2 J_1^2(\alpha_n c)}\int_0^{c}rJ_0(\alpha_n r)g(r) dr\) $BR $PAR
+
+Como se puede ver, se necesita calcular \(J_0(\alpha_n r) \) así como \(J_1^2(\alpha_n $c1)\). $PAR
+Hagamos un ejemplo de coeficiente. $PAR
+
+Para \(n=$k\) se tiene que: $PAR
+\(\alpha_3=$Alpha0[$k] \) $BR
+\(x_3=$Alpha0[$k]*$c1 \) $BR
+\(J_0(\alpha_$k r)\approx\) $BR
+\( $Bessel \) $PAR
+\(J_1(\alpha_$k $c1)=J_1($Alpha0[$k]*$c1)=J_1($Alpha0[$k]*$c1)=$J1[$k]\) $PAR $BR
+
+\(A_n=\frac{2}{$c1^2 J_1^2($Alpha0[$k]* $c1)}\int_0^{$c1}r [$Bessel] f(r) dr\) $PAR En particular:$BR $PAR
+
+\(A_{$k}\approx\frac{2}{$c1^2 ($J1[$k])^2}\int_0^{$c1}r [$Bessel](1-r^2) dr\) $PAR
+\(=$An00\) $PAR
+\(=$An0\) $PAR
+\(=$An\) $PAR
+=\($A[$k]\) $PAR
+$BR
+
+
+
+\(B_{$k}\approx\frac{2}{$Alpha0[$k]$c1^2 ($J1[$k])^2}\int_0^{$c1}r [$Bessel] $a dr\) $PAR
+\(=$Bn00\) $PAR
+\(=$Bn0\) $PAR
+\(=$Bn\) $PAR
+=\($B[$k]\) $PAR 
+
+
+$BR
+Entonces  \(u_2(r,t)=\sum_{n=0}^1(A_n\cos(\alpha_n t)+B_n\cos(\alpha_n t))J_0[\alpha_n r] \)es la aproximación de \(u(r,t)\) que utiliza los dos primeros sumandos de la serie. $PAR
+
+\(u(r,t)\approx $u\)
+END_SOLUTION
+Context()->normalStrings;
+
+COMMENT('MathObject version.');
+
+
+
+ENDDOCUMENT();
+

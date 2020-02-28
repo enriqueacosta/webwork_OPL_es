@@ -1,0 +1,122 @@
+##DESCRIPTION
+##  Complex integral
+##ENDDESCRIPTION
+
+## GSoC nselem84@gmail.com
+########################################################################
+DOCUMENT() ;
+loadMacros(
+	"PG.pl",
+	"PGbasicmacros.pl",
+	"PGchoicemacros.pl",
+	"PGanswermacros.pl",
+	"PGauxiliaryFunctions.pl",
+	"PGgraphmacros.pl",
+        "MathObjects.pl",
+        "unionTables.pl",
+
+        "MathObjects.pl",
+
+  
+
+) ;
+# Print problem number and point value (weight) for the problem
+TEXT(beginproblem());
+
+# Show which answers are correct and which ones are incorrect
+$showPartialCorrectAnswers = 1;
+
+##############################################################
+#
+#  Setup
+#
+#
+
+$f="e^z";
+
+$radio1=random(2,4,1); 
+$radio2=random(5,7,1); 
+
+$trayectoria1="la mitad superior del círculo de radio $radio2 recorrida en el sentido contrario a las manecillas del reloj";
+
+$trayectoria2="el círculo de radio $radio1";
+
+Context()->variables->add( i=>'Real',t=>'Real');
+
+$graph = init_graph(-8, -8, 8, 8,grid=>[16,16],axes=>[0,0]);
+
+$x1 = Formula("$radio1*cos(t)");
+$y1 = Formula("$radio1*sin(t)");
+
+$g = new Fun( $x1->perlFunction, $y1->perlFunction, $graph );
+$g->domain(0,2*pi); $g->steps(90); $g->color('red'); $g->weight('2');
+
+$x2 = Formula("$radio2*cos(t)");
+$y2 = Formula("$radio2*sin(t)");
+$h = new Fun( $x2->perlFunction, $y2->perlFunction, $graph );
+$h->domain(0,pi); $h->steps(90); $h->color('blue'); $h->weight('2');
+
+# Etiquetas sobre la gráfica
+$graph->lb( new Label($radio1+.5,0,$radio1,'red','center','middle'));
+$graph->lb( new Label(0,$radio1-.5,$radio1,'red','center','middle'));
+
+# Etiquetas sobre la gráfica
+$graph->lb( new Label($radio2+.5,0,$radio2,'blue','center','middle'));
+$graph->lb( new Label(0,$radio2-.5,$radio2,'blue','center','middle'));
+
+
+$sol1=Compute("exp(-$radio2)-exp($radio2)");
+$sol2=0;
+##############################################################
+#
+#  Text
+#
+#
+
+BEGIN_TEXT
+
+
+
+\{
+ColumnTable(
+"
+ Calcula la integral $BR
+
+\(\int_{\gamma} $f dz\) =".ans_rule." $BR
+donde \(\gamma\) es $trayectoria1.
+$PAR
+
+\(\int_{\gamma} $f dz\) =".ans_rule." $BR
+donde \(\gamma\) es $trayectoria2.
+
+$PAR
+
+$PAR
+"
+
+,
+$BCENTER.
+
+
+image( insertGraph($graph), width=>200, height=>200 ).
+$PAR.
+"Gráfica de un disco".
+$ECENTER
+,
+indent => 0, separation => 30, valign => "TOP"
+); 
+\}
+
+END_TEXT
+
+
+##############################################################
+#
+#  Answers
+#
+#
+
+ANS($sol1->cmp());
+ANS(num_cmp($sol2));
+
+ENDDOCUMENT();        

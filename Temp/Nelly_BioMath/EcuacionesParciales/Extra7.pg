@@ -1,0 +1,172 @@
+##DESCRIPTION
+## This is a problem of non homogeneous partial differential  equations. 
+## ENDDESCRIPTION
+
+## GSoC nselem84@gmail.com
+
+########################################################################
+
+DOCUMENT();      
+
+loadMacros(
+   "PGstandard.pl",     # Standard macros for PG language
+   "MathObjects.pl",
+   #"source.pl",        # allows code to be displayed on certain sites.
+   #"PGcourse.pl",      # Customization file for the course
+"parserRadioButtons.pl",
+"weightedGrader.pl",
+   "unionTables.pl",
+   "PGchoicemacros.pl",
+);
+install_weighted_grader();
+# Print problem number and point value (weight) for the problem
+TEXT(beginproblem());
+
+# Show which answers are correct and which ones are incorrect
+$showPartialCorrectAnswers = 1;
+
+##############################################################
+#
+#  Setup /Variables
+#
+##############################################################
+Context("Numeric");
+Context()->variables->add( n=>'Real',k=>'Real',T=>'Real',dT=>'Real',t=>'Real',X=>'Real');
+
+$a =random(2,15);$L =random(2,15);
+$b =random(2,15);$c =random(2,15);
+$r =random(2,15); $Iniciales =Formula("x-$c");
+
+$metodo1="Se propone \(u\left(x,t)=X(x)T(t)\) ";
+$metodo2="Se propone \(u(x,t)=\nu(x,t)+\phi(x)\)";
+$metodo3="Se propone \(u(x,t)=\nu(x,t)+\phi(t)\)";
+$metodo4="Se propone \(u(x,t)=\sum_{n=1}^{\infty}}u_{n}(t)\sin(n\pi x)\) ";
+$metodo5="Se propone \(u(x,t)={ \sum_{n=1}^{\infty}}u_{n}(t)\cos(n\pi x)\)";
+
+
+$radio = RadioButtons(
+  [$metodo1,$metodo2,$metodo3,$metodo4,$metodo5],
+  
+  $metodo2, # correct answer
+
+);
+
+$CF_R = new_multiple_choice();
+$CF_R->qa("","\(\nu\left(x,t\right)={\displaystyle \sum_{n=1}^{\infty}}A_{n}e^{-kn^{2}\pi^{2}t}\sin\left(\frac{n\pi x}{L})\)" );
+$CF_R->extra("\(\nu\left(x,t\right)={\displaystyle A_{0}+\sum_{n=1}^{\infty}}A_{n}e^{-kn^{2}\pi^{2}t}\cos\left(\frac{n\pi x}{L})\)" );
+$CF_R->makeLast("\(\nu\left(x,t\right)={\displaystyle \sum_{n=1}^{\infty}}\left(A_{n}\cos(\frac{n\pi x}{L})+B_{n}\sin\left(\frac{n\pi x}{L})\right)e^{-kn^{2}\pi^{2}t}\)");
+##############################################################
+#            Solutions/ soluciones
+##############################################################
+
+$equis=Compute("x");
+$te=Compute("t");$ka=Compute("k");
+$phi=Compute("-1*$r*x^2/(2*k)+(($b-$a)/($L)+$r*$L/(2*k))*x+$a");
+$A_n=Compute("($Iniciales-$phi)*sin(n*pi*x/$L)*2/$L");
+$nu=Compute("x-$c-$phi");	
+$Func=Compute("sin(n*pi*x/$L)");
+	
+
+###################################################################
+### 
+########  Estas líneas de código evalúan la fórmulas en
+#####            distintos puntos para permitir 
+##        que se reconozcan como equivalentes expresiones como 
+###       por ejemplo cos (n pi) = (-1)^n
+## The next lines are to set the equivalence between cos (n pi) = (-1)^n
+##   by evaluating the student answer and ours in different points and compare ### them.
+###################################################
+
+$A_n->{test_points} = [[1,1,1,1,1,1,1],[2,2,2,2,2,2,2],
+                     [3,3,3,3,3,3,3],[4,4,4,4,4,4,4],[5,5,5,5,5,5,5]];
+##############################################################
+#
+#  Text
+#
+################################################################
+
+Context()->texStrings;
+BEGIN_TEXT
+
+
+Resuelve un problema no homogéneo de temperatura en una varilla.
+
+$BR Ecuación del calor perturbado: \( k\frac{\partial^2 u}{\partial x^2}+$r =\frac{\partial u}{\partial t} \)  
+$BR Condiciones de frontera: 
+$BR \(u(0,t)=$a\)   ,    \(u($L,t)=$b\)
+$BR Condiciones iniciales
+$BR \(u(x,0)=$Iniciales\) $BR
+
+$BR 
+Primero escoge que método utilizarás para resolver este problema.
+$BR
+$BR
+\{ $radio->buttons() \}
+$PAR
+
+Si la EDP se reduce a dos problemas ordinarios, escribe sus ecuaciones con sus respectiVas condiciones. $BR
+$BCENTER
+\{ begintable(3) \}
+\{ row( "", "$BBOLD Problema 1 $EBOLD",  "$BBOLD Problema 2 $EBOLD" ) \}
+\{ row( "", "\(k\phi''+\) ".ans_rule(2)."=".ans_rule(2)."", 
+"".ans_rule(3)."\(\dfrac{\partial^{2}\nu}{\partial x^{2}}+\)".ans_rule(2)."\(=\dfrac{\partial\nu}{\partial t}\) ") \}
+
+\{ row("$BBOLD Condiciones $EBOLD","Izquierda: \(\phi\)(".ans_rule(1).")\(=\)".ans_rule(1)." $BR Derecha: \(\phi\)(".ans_rule(1).")\(=\)".ans_rule(1)."","Izquierda: \(\nu\)(".ans_rule(1).",".ans_rule(1).")\(=\)".ans_rule(1)." $BR Derecha: \(\nu\)(".ans_rule(1).",".ans_rule(1).")\(=\)".ans_rule(1)."
+$BR Inicial: \(\nu\)(".ans_rule(1).",".ans_rule(1).")\(=\)".ans_rule(20)."") \}
+
+\{ row("$BBOLD Solución $EBOLD", "\(\phi(x)=\)".ans_rule(20)."",  $CF_R->print_a()) \}
+
+\{ endtable() \}
+$ECENTER
+$BR donde los coeficientes están dados por:
+$BR \(A_n(t)=\int_0^{$L}\)\{ ans_rule(15) \} \(dx\)
+$BR \(B_n(t)=\int_0^{$L}\)\{ ans_rule(15) \} \(dx\)
+
+END_TEXT
+Context()->normalStrings;
+
+##############################################################
+#
+#  Answers
+#
+################################################################
+
+$showPartialCorrectAnswers = 0;
+
+
+WEIGHTED_ANS($radio->cmp(),3);
+WEIGHTED_ANS( num_cmp($r), 3 );
+WEIGHTED_ANS( num_cmp(0), 3);
+WEIGHTED_ANS( ($ka)->cmp(), 3 );
+WEIGHTED_ANS(  num_cmp(0), 3 );
+WEIGHTED_ANS(  num_cmp(0), 3 );
+WEIGHTED_ANS(  num_cmp($a), 3 );
+WEIGHTED_ANS(  num_cmp($L), 3 );
+WEIGHTED_ANS(  num_cmp($b), 3 );
+WEIGHTED_ANS(  num_cmp(0), 3 );
+WEIGHTED_ANS( $te->cmp(), 3 );
+WEIGHTED_ANS(  num_cmp(0), 3 );
+WEIGHTED_ANS(  num_cmp($L), 3 );
+WEIGHTED_ANS( ($te)->cmp(), 3 );
+WEIGHTED_ANS(  num_cmp(0), 3 );
+
+WEIGHTED_ANS( ($equis)->cmp(), 3 );
+WEIGHTED_ANS(  num_cmp(0), 3 );
+
+WEIGHTED_ANS( ($nu)->cmp(), 10 );
+WEIGHTED_ANS( ($phi)->cmp(), 15 );
+WEIGHTED_ANS(radio_cmp( $CF_R->correct_ans() ) ,10);
+
+
+WEIGHTED_ANS( ($A_n)->cmp(), 10 );
+WEIGHTED_ANS( num_cmp(0),4);
+
+
+Context()->texStrings;
+BEGIN_SOLUTION
+${PAR}SOLUTION:$PAR
+The correct answer is \{ $radio->correct_ans() \}
+END_SOLUTION
+Context()->normalStrings;
+
+ENDDOCUMENT();        

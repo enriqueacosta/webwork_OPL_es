@@ -1,0 +1,229 @@
+## DESCRIPTION
+## Partial spherical differential equations. This problem is about the 
+## temperature of a sphere. Autor  Nelly Sélem nselem84@gmail.com
+## ENDDESCRIPTION
+
+## GSoC nselem84@gmail.com
+
+#############################################
+#  Initialization
+
+DOCUMENT();
+
+loadMacros(
+"PGstandard.pl",
+"MathObjects.pl",
+"AnswerFormatHelp.pl",
+"PGgraphmacros.pl",
+"unionTables.pl",
+"answerHints.pl",
+);
+###############################################################################
+#   Notation Help Window Code
+#   Código para la Ventana de ayuda para la notación
+###############################################################################
+
+HEADER_TEXT(<<END_HEADER_TEXT);
+<script type="text/javascript">
+<!--
+function openhelpCustom1() {
+OpenWindow=window.open("","answer_format_help","width=550,height=550,status=0,toolbar=0,location=0,menubar=0,directories=0,resizeable=1,scrollbars=1");
+OpenWindow.document.write("<title>Notación utilizada por WebWork para Ecuaciones diferenciales Parciales</title>")
+OpenWindow.document.write("<body bgcolor='#ffffff'>")
+OpenWindow.document.write("<center><h2>Ayuda con la notacion</h2></center>")
+
+OpenWindow.document.write("<center><h3>Variables:</h3></center>")
+OpenWindow.document.write("<ul>")
+OpenWindow.document.write("<li><font color='#222255'>Alpha</font><blockquote>Escribe an si necesitas escribir α_n   </blockquote></li>")
+OpenWindow.document.write("<li><font color='#222255'>theta</font><blockquote>Escribe t si necesitas escribir θ   </blockquote></li>")
+OpenWindow.document.write("</ul>")
+OpenWindow.document.write("</body>")
+OpenWindow.document.write("</html>")
+OpenWindow.document.close()
+self.name="main"
+if (window.focus) {OpenWindow.focus()}
+return false;
+}
+-->
+</script>
+END_HEADER_TEXT
+#################################################################################
+TEXT(beginproblem());
+
+$refreshCachedImages = 1;
+
+
+##############################################
+#  Setup
+
+Context("Numeric");
+Context()->variables->add(r=>'Real',t=>'Real');
+Context()->flags->set(tolerance=>0.0001, tolType=>"absolute");
+$showHint = 3;
+
+$a = random(2,80,.5); # valor a evaluar
+$k = random(1,4,1); # valor a evaluar
+$c1 = random(1,8,.5); # valor a evaluar
+
+$Frontera1 = "u($c1,\theta)=\begin{cases} $a & 0 \le \theta < \frac{\pi}{2} \cr 0 & \frac{\pi}{2} \le \theta < \pi\end{cases}";
+
+$Laplace = "\frac{\partial^2 u}{\partial r^2}+\frac{2}{r}\frac{\partial u}{\partial r}+\frac{1}{r^2}\frac{\partial^2 u}{\partial \theta^2}+\frac{cot(\theta)}{r^2}\frac{\partial u}{\partial \theta}=0";
+
+##################################################################
+# Funciones de Bessel orden 0 y orden 1
+####################################################################
+
+$Legendre0="P_0(x)=1"; 
+$Legendre1="P_1(x)=x";
+$Legendre2="P_2(x)=\frac{1}{2}(3x^2-1)";
+$Legendre3="P_3(x)=\frac{1}{2}(5x^3-3x)";
+$Legendre4="P_4(x)=\frac{1}{8}(35x^4-30x^2+3)";
+$Legendren="P_n(x)=\frac{1}{2^n n!}\frac{d^n }{dx^n}[(x^2-1)^n]";
+
+$L[0]=Formula("1"); 
+$L[1]=Formula("cos(t)");
+$L[2]=Formula("(1/2)(3*cos(t)^2-1)");
+$L[3]=Formula("(1/2)*(5*(cos(t))^3-3*cos(t))");
+$L[4]=Formula("(1/8)*(35*(cos(t))^4-30*(cos(t))^2+3)");
+
+$Lx[0]=Formula("1"); 
+$Lx[1]=Formula("x");
+$Lx[2]=Formula("(1/2)(3*x^2-1)");
+$Lx[3]=Formula("(1/2)*(5*x^3-3*x)");
+$Lx[4]=Formula("(1/8)*(35*x^4-30*x^2+3)");
+
+
+$TL[0]="1"; 
+$TL[1]="cos(\theta)";
+$TL[2]="(1/2)(3*cos(\theta)^2-1)";
+$TL[3]="(1/2)*(5*cos^3(\theta)-3*cos(\theta))";
+$TL[4]="(1/8)*(35*cos^4(\theta)-30*cos^2(\theta)+3)";
+
+####################################################################
+### Los ceros/raíces de las funciones de Bessel
+#######################################################################
+
+
+######################################################################
+##                         Respuestas/Answers
+################################################################
+$TInt0="\int_0^{\frac{pi}{2}}$a*$TL[0]\sin(\theta) d\theta";
+$TInt1="\int_0^{\frac{pi}{2}}$a*$TL[1]\sin(\theta) d\theta";
+$TInt2="\int_0^{\frac{pi}{2}}$a*$TL[2]\sin(\theta) d\theta";
+$TInt3="\int_0^{\frac{pi}{2}}$a*$TL[3]\sin(\theta) d\theta";
+
+$Int0=Compute("$a");
+$Int1=Compute("$a/2");
+$Int2=Compute("0");
+$Int3=Compute("$a/8");
+
+$A0=Compute("(2*0+1)*$Int0/(2*$c1^0)");  
+$A1=Compute("(2*1+1)*$Int1/(2*$c1^1)");  
+$A2=Compute("(2*2+1)*$Int2/(2*$c1^2)");  
+$A3=Compute("(2*3+1)*$Int3/(2*$c1^3)");  
+
+$u3=Compute("$A0*r^0*$L[0]+$A1*r^1*$L[1]+$A2*r^2*$L[2]+$A3*r^3*$L[3]");  
+####################################################################
+#  Main text
+#
+####################################################################
+
+Context()->texStrings;
+BEGIN_TEXT
+\{
+ColumnTable(
+"
+Utiliza la ecuación de Laplace en coordenadas esféricas
+\($Laplace\), para calcular la temperatura de una esfera con condiciones de frontera 
+$BR \($Frontera1\) $BR 
+
+La solución te quedará de la forma: 
+\[u(r,\theta)=\sum_{n=0}^{\infty} A_n r^n P_n(cos\theta)\]
+$PAR
+ 
+Donde: $BR
+(a) \( P_{$k}(cos\theta) = \) " . 
+ans_rule(20).$SPACE.htmlLink("#","help (Notación)","onClick='openhelpCustom1()';")." $PAR $BR
+
+(b) \( A_1 = \) ".ans_rule(25)."
+$PAR
+$BR
+(c)  \( A_2= \) ".ans_rule(25)." 
+",
+
+"$BCENTER Esfera de radio \(r=$c1\) $ECENTER".
+image( "Esfericas1.png", width=>400, height=>400,tex_size=>700). 
+  
+"$BCENTER Ecuación de Laplace en coordenadas esféricas $ECENTER"
+,
+indent => 0, separation => 30, valign => "TOP"
+)
+\}
+
+$BR
+(d) Asi pues \(u(r,\theta)\approx \sum_{n=0}^3A_n r^n P_n(cos\theta)=\) 
+ \{ans_rule(40)\} $BR
+
+END_TEXT
+
+BEGIN_HINT
+HINT: Evalua \( cos(\theta) \) en lugar de \(x\) en los polinomios de Legendre.
+Recuerda que el n-simo polinomio de Legendre se define por:
+ \[$Legendren\]
+END_HINT
+
+Context()->normalStrings;
+
+
+###############################################
+#  Answer evaluation
+
+$showPartialCorrectAnswers = 1;
+
+ANS($L[$k]->cmp()->withPostFilter(AnswerHints( 
+  $Lx[$k] => "¿Estás evaluando con la variable correcta?",
+  $L[$k] => "!Buen trabajo!", ))  
+);
+
+ANS($A1->cmp() );
+
+ANS($A2->cmp() );
+
+ANS($u3->cmp() );
+############################
+#  Solution
+BEGIN_SOLUTION
+${PAR}SOLUCIÓN:${PAR}
+En la solución de esta ecuación está involucrada la serie de Fourier-Legendre. $BR
+La solución está dada por:
+\[u(r,\theta)=\sum_{n=0}^{\infty} A_n r^n P_n(cos\theta)\]
+
+donde  \[P_n(x)=$Legendren\] es el n-simo polinomio de Legendre.
+$PAR
+Calculando algunos tenemos que:
+\(P_0(x)=$Legendre0\) $BR
+\(P_1(x)=$Legendre1\) $BR
+\(P_2(x)=$Legendre2\) $BR
+\(P_3(x)=$Legendre3\) $BR
+
+En general el coeficiente de la serie de Fourier_Legendre está dado por:
+\(A_n=\frac{2*n+1}{2$c1^n}\int_0^{\pi}f(\theta)P_n(x) dx\) $PAR
+
+$BR con lo cual si P_n está evaluado en \(cos(\theta)\) en lugar de en \(x\) obtenemos:
+
+\(A_n=\frac{2*n+1}{2*$c1^n}\int_0^{\pi}f(\theta)P_n(cos(\theta))\sin(\theta) d\theta\) $PAR
+
+Es decir: $BR
+\(A_0=\frac{1}{2}$TInt0=$A0\) $BR
+\(A_1=\frac{3}{2*$c1^1}$TInt1=$A1\) $BR
+\(A_2=\frac{5}{2*$c1^2}$TInt2=$A2\) $BR
+\(A_3=\frac{7}{2*$c1^3}$TInt3=$A3\) $BR
+
+$PAR 
+Y finalmente: \(u_3(r,\theta)=$A0+$A1 r\cos(\theta)+$A3 r^3 $TL[3]\).
+END_SOLUTION
+Context()->normalStrings;
+
+COMMENT('MathObject version.');
+
+ENDDOCUMENT();

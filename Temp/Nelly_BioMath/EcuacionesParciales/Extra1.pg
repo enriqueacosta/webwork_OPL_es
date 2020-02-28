@@ -1,0 +1,107 @@
+##DESCRIPTION
+## Fourier Series.Virtual version.
+##ENDDESCRIPTION
+
+## GSoC nselem84@gmail.com
+
+########################################################################
+###########################
+#  Initialization
+
+DOCUMENT();  
+
+loadMacros(
+"PGstandard.pl",
+"MathObjects.pl",
+"PGchoicemacros.pl",
+"PGgraders.pl",
+"unionTables.pl",
+);
+
+TEXT(beginproblem());
+
+
+###########################
+#  Setup
+
+#
+#  Create a matching list and use popups
+#
+$showPartialCorrectAnswers = 0;
+$ml = new_match_list();
+$ml->rf_print_q(~~&pop_up_list_print_q);
+$ml->ra_pop_up_list([
+"No answer" => "?",
+"A" => "A", "B" => "B", "C" => "C", 
+"D" => "D", "E" => "E", "F" => "F",
+"G" => "G", "H" => "H", "I" => "I",
+]);
+
+#
+#  Add correct questions and answers
+#
+
+$ml->qa(
+"\(x^3|x|\)",,"\(\sum_{n=0}^{\infty}b_n sin(\frac{n\pi x}{L}) \)$BR",
+"\(x^3 \cos(x)\)",,"\(\sum_{n=0}^{\infty}b_n sin(\frac{n\pi x}{L}) \)$BR",
+
+"\(x^2\cos(x)\)", "\(\sum_{n=0}^{\infty}a_n cos(\frac{n\pi x}{L}) \)$BR",
+"\(x^4 |x|\)", "\(\sum_{n=0}^{\infty}a_n cos(\frac{n\pi x}{L}) \)$BR",
+
+"\(x^3+x^2\)", "\(\sum_{n=0}^{\infty}a_n cos(\frac{n\pi x}{L})+ b_n sin(\frac{n\pi x}{L})\) $BR",
+"\(x^3 +|x|\)", "\(\sum_{n=0}^{\infty}a_n cos(\frac{n\pi x}{L})+ b_n sin(\frac{n\pi x}{L})\) $BR",
+
+);
+$ml->choose(3);
+
+#
+#  Add extra incorrect answers
+#
+
+$ml->extra(
+"\(\sum_{i=0}^{\infty}c_iJ_n(\alpha_i) \)$BR",
+"\(\frac{n+1}{2n}\sum_{n=0}^{\infty}c_n P_n(x) \)$BR",
+);
+
+$ml->choose_extra(2);
+  
+$ml->makeLast("Ninguna de las anteriores $BR");
+
+
+
+###########################
+#  Main text
+
+Context()->texStrings;
+BEGIN_TEXT
+Relaciona cada función con su serie de Fourier correspondiente.
+\{ ColumnMatchTable($ml) \}
+END_TEXT
+Context()->normalStrings;
+
+
+############################
+#  Answer evaluation
+
+
+
+
+ANS( str_cmp( $ml->ra_correct_ans ) );
+
+
+############################
+#  Solution
+
+@correct = @{$ml->ra_correct_ans()};
+$answerstring = join(", ", @correct);
+Context()->texStrings;
+
+BEGIN_SOLUTION
+${PAR}SOLUTION:$PAR
+Las respuestas correctas son $answerstring
+END_SOLUTION
+
+Context()->normalStrings;
+COMMENT('MathObject version.');
+
+ENDDOCUMENT();

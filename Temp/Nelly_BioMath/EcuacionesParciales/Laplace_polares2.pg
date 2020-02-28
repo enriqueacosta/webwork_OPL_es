@@ -1,0 +1,234 @@
+##DESCRIPTION
+## EDP de Laplace en coordenadas polares. Solo version Virtual.
+##ENDDESCRIPTION
+## GSoC nselem84@gmail.com
+
+########################################################################
+
+DOCUMENT();      
+##############################################
+############################################
+loadMacros(
+
+"PGchoicemacros.pl",
+"unionTables.pl",
+"PGstandard.pl",
+"MathObjects.pl",
+"PGgraphmacros.pl",
+"AnswerFormatHelp.pl",
+"PGchoicemacros.pl",
+"unionTables.pl",
+
+);
+
+
+###############################################################################
+#   Notation Help Window Code
+#   Código para la Ventana de ayuda para la notación
+###############################################################################
+
+HEADER_TEXT(<<END_HEADER_TEXT);
+<script type="text/javascript">
+<!--
+function openhelpCustom1() {
+OpenWindow=window.open("","answer_format_help","width=550,height=550,status=0,toolbar=0,location=0,menubar=0,directories=0,resizeable=1,scrollbars=1");
+OpenWindow.document.write("<title>Notación utilizada por WebWork para Ecuaciones diferenciales Parciales</title>")
+OpenWindow.document.write("<body bgcolor='#ffffff'>")
+OpenWindow.document.write("<center><h2>Ayuda con la notacion</h2></center>")
+
+OpenWindow.document.write("<center><h3>Variables:</h3></center>")
+OpenWindow.document.write("<ul>")
+OpenWindow.document.write("<li><font color='#222255'>theta</font><blockquote>Escribe t si necesitas escribir θ   </blockquote></li>")
+OpenWindow.document.write("</ul>")
+OpenWindow.document.write("</body>")
+OpenWindow.document.write("</html>")
+OpenWindow.document.close()
+self.name="main"
+if (window.focus) {OpenWindow.focus()}
+return false;
+}
+-->
+</script>
+END_HEADER_TEXT
+
+
+TEXT(beginproblem());
+
+$refreshCachedImages = 1;
+
+Context("Numeric");
+Context()->flags->set( reduceConstants=>0 );
+Context()->variables->add(r=>'Real',t=>'Real');
+$showPartialCorrectAnswers = 0;
+
+########################################################
+#                 Variables
+########################################################
+#
+
+$Objeto="una placa";
+$Accion="se calienta";
+$Funcion="la temperatura";
+$c1=random(2,5);
+$c2=random(6,12);
+$u1=random(2,5);
+$u2=random(6,12);
+
+$U=Formula("($u1*log(r/$c2)-$u2*log(r/$c1))/log($c1/$c2)");	
+$U->{test_points} = [[1,1,1],[2,2,2],[3,3,3],[4,4,4],[5,5,5]];
+
+Context()->texStrings;
+$gr = init_graph(-($c2+.1),-($c2+.1),($c2+.1),($c2+.1),axes=>[0,0],size=>[300,300]);
+
+$gr->new_color("lightgreen", 187, 255, 153); 
+$gr->new_color("darkgreen",    0, 208, 0);
+
+#  If the polar curve is r1 = c1 , r2=c2, then
+#      c1<c2
+#  x1 = r cos(t) = c1 cos(t)
+#  y1 = r sin(t) = c1 sin(t)
+#  x2 = r cos(t) = c2 cos(t)
+#  y2 = r sin(t) = c2 sin(t)
+#
+
+$x1 = Formula("$c1*cos(t)");
+$y1 = Formula("$c1*sin(t)");
+
+$x2 = Formula("$c2*cos(t)");
+$y2 = Formula("$c2*sin(t)");
+
+#####################################################
+## Opcion Multiple
+
+$U_p="\( \psi\left(r\right)=\dfrac{$u1\ln\left(r/$c2\right)-$u2 \ln \left(r/$c1\right)}{\ln\left($c1/$c2\right)} \)";
+
+$CF_nu = new_multiple_choice();
+$CF_nu->qa("","\(\nu\left($c1,\theta\right)=0,\;\nu\left($c2,\theta\right)=0\)");
+$CF_nu->extra("\( \nu\left($u1,\theta\right)=0,\;\nu\left($u2,\theta\right)=0 \)","\( \nu\left($c1,\theta\right)=$u1,\;\nu\left($c2,\theta\right)=$u2 \)");
+
+$CF_psi = new_multiple_choice();
+$CF_psi->qa("", "\( \psi\left($c1\right)=$u1,\;\psi\left($c2\right)=$u2 \)");
+$CF_psi->extra("\( \psi\left($u1\right)=$c1,\;\psi\left($u2\right)=$c2 \)", "\( \psi\left($c2\right)=$u1,\;\psi\left($c1\right)=$u2 \)");
+$CF_psi->makeLast("Ninguna");
+
+$psi = new_multiple_choice();
+$psi->qa("", "$U_p");
+$psi->extra("\( \psi\left(r\right)=\dfrac{$u1\ln\left(r/$c2\right)-$u2\ln\left(r/$c1\right)-\ln\left($u1-$u2\right)}{\ln\left($c1/$c2\right)} \)", "\( \psi\left(r\right)=$u1-\dfrac{$u1-$u2}{\ln\left($c1\right)-\ln\left($c2\right)} \)");
+$psi->makeLast("\( \psi\left(r\right)=\dfrac{$u2\ln\left(r/$c2\right)-$u1\ln\left(r/$c1\right)}{\ln\left($c2/$c1\right)} \)");
+
+$u_xt = new_multiple_choice();
+$u_xt->qa("", "\( u\left(r,\theta\right)=\dfrac{$u1\ln\left(r/$c2\right)-$u2\ln\left(r/$c1\right)}{\ln\left($c1/$c2\right)} \)");
+$u_xt->extra("\( u\left(r,\theta\right)=0 \)", "\( u\left(r,\theta\right)=$u1-\dfrac{$u1-$u2}{\ln\left($c1\right)-\ln\left($c2\right)} \)");
+$u_xt->makeLast("No existe");
+
+
+
+########################################
+# $CF_T = new_multiple_choice();
+# $CF_T->qa("", "\( \)");
+# $CF_T->extra("\(  \)", "\(  \)");
+# $CF_T->makeLast("\(  \)");
+###########################################################################
+####
+#         Gráficas
+###########################################################################
+#
+#Círculo pequeño
+$f = new Fun( $x1->perlFunction, $y1->perlFunction, $gr );
+$f->domain(0,2*pi);
+$f->steps(90);
+$f->color('darkgreen');
+$f->weight('2');
+
+#Círculo grande
+$g = new Fun( $x2->perlFunction, $y2->perlFunction, $gr );
+$g->domain(0,2*pi);
+$g->steps(90);
+$g->color('darkgreen');
+$g->weight('2');
+$gr->fillRegion([$c1+.5,.5,'lightgreen']);
+
+#Etiquetas
+$gr->lb( new Label($c1,0,$c1,
+    'black','center','middle'));
+$gr->lb( new Label(.5,$c2-.5,$c2,
+    'black','center','middle'));
+
+$gr->lb( new Label($c1/sqrt(2),$c1/sqrt(2),('u = '),
+    'black','center','middle'));
+$gr->lb( new Label($c2/sqrt(2),$c2/sqrt(2),('u = '),
+    'black','center','middle'));
+
+$gr->lb( new Label($c1/sqrt(2)+1,$c1/sqrt(2), $u1,
+    'black','center','middle'));
+
+$gr->lb( new Label($c2/sqrt(2)+1,$c2/sqrt(2), $u2,
+    'black','center','middle'));
+
+
+
+##########################
+#  Main Text 
+
+Context()->texStrings;
+BEGIN_TEXT
+\{
+ColumnTable(
+"
+$PAR Encuentra la $Funcion \(u(r,\theta)\) de estado estable de $Objeto que tiene forma de un anillo. Las condiciones en la frontera de dicha placa se muestran en la figura.$PAR
+$BR 
+
+Proponiendo una solución de la forma \(u(r,\theta)=\nu(r,\theta)+\psi(r)\) se tienen las ecuaciones: $PAR
+
+\( \dfrac{\partial^{2}\nu}{\partial r^{2}}+\dfrac{1}{r}\dfrac{\partial \nu} {\partial r}+\dfrac{1}{r^{2}}\dfrac{\partial^{2}\nu}{\partial\theta^{2}}=0 \)
+$BR
+$BR
+con condiciones de frontera:".$CF_nu->print_q().$CF_nu->print_a." $PAR 
+y \( r^{2}\psi''+r\psi=0 \) 
+$BR
+$BR
+con condiciones de frontera:".$CF_psi->print_q().$CF_psi->print_a." $PAR ".""
+,
+$BCENTER.
+image( insertGraph($gr), width=>300, height=>300 ).
+$PAR.
+"Gráfica de un anillo".
+$ECENTER
+,indent => 0, separation => 30, valign => "TOP"); 
+\}
+$PAR 
+
+Aplicando las condiciones de frontera a la ecuaición \( r^{2}\psi''+r\psi=0 \), la solución está dada por:
+$BR
+\{ $psi->print_q() \}
+\{ $psi->print_a() \}
+$PAR
+Finalmente, si la solución de la ecuación diferencial parcial de la variable \( \nu \) es \( \nu(r,\theta)=0 \) entonces la temperatura de estado estable \( u(r,\theta)\) está dada por:
+$BR
+\{ $u_xt->print_q() \}
+\{ $u_xt->print_a() \}
+$PAR  
+  
+
+END_TEXT
+Context()->normalStrings;  
+ANS( radio_cmp( $CF_nu->correct_ans() ) );
+ANS( radio_cmp( $CF_psi->correct_ans() ) );
+ANS( radio_cmp( $psi->correct_ans() ) );
+ANS( radio_cmp( $u_xt->correct_ans() ) );
+
+
+
+##############################################################
+#
+#  Answers
+#
+#
+$showPartialCorrectAnswers = 1;
+
+############################ANS( $U->cmp() );
+#######################
+
+COMMENT('MathObject version.');
+
+ENDDOCUMENT();

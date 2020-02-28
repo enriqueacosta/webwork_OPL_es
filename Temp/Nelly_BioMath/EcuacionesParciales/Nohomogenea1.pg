@@ -1,0 +1,102 @@
+##DESCRIPTION
+##  This is a problem of non homogeneous partial differential equations  . 
+## ENDDESCRIPTION
+
+## GSoC nselem84@gmail.com
+
+########################################################################
+
+DOCUMENT();      
+
+loadMacros(
+   "PGstandard.pl",     # Standard macros for PG language
+   "MathObjects.pl",
+);
+
+# Print problem number and point value (weight) for the problem
+TEXT(beginproblem());
+
+# Show which answers are correct and which ones are incorrect
+$showPartialCorrectAnswers = 1;
+
+##############################################################
+#
+#  Setup /Variables
+#
+##############################################################
+Context("Numeric");
+Context()->variables->add( n=>'Real',k=>'Real',T=>'Real',dT=>'Real',t=>'Real',X=>'Real');
+$a =random(2,15);$L =random(2,15);
+$A =random(2,15); $Iniciales =random(2,15);
+
+##############################################################
+#            Solutions/ soluciones
+##############################################################
+$psi=Compute("($A/(k*$a^2))*(-e^{-$a*x}+(e^{-$a*$L}-1)*(x/$L)+1)");
+$A_n=Compute("($Iniciales-$psi)*sin(n*pi*x/$L)*2/$L");
+$X_n=Compute("sin(n*pi*x/$L)");
+$T_n=Compute("e^{-(k*n^2*pi^2*t/$L^2)}");	
+$Func=Compute("sin(n*pi*x/$L)");
+	
+
+###################################################################
+### 
+########  Estas líneas de código evalúan la fórmulas en
+#####            distintos puntos para permitir 
+##        que se reconozcan como equivalentes expresiones como 
+###       por ejemplo cos (n pi) = (-1)^n
+## The next lines are to set the equivalence between cos (n pi) = (-1)^n
+##   by evaluating the student answer and ours in different points and compare ### them.
+###################################################
+
+$A_n->{test_points} = [[1,1,1,1,1,1,1],[2,2,2,2,2,2,2],
+                     [3,3,3,3,3,3,3],[4,4,4,4,4,4,4],[5,5,5,5,5,5,5]];
+$X_n->{test_points} = [[1,1,1,1,1,1,1],[2,2,2,2,2,2,2],
+                     [3,3,3,3,3,3,3],[4,4,4,4,4,4,4],[5,5,5,5,5,5,5]];
+$T_n->{test_points} = [[1,1,1,1,1,1,1],[2,2,2,2,2,2,2],
+                     [3,3,3,3,3,3,3],[4,4,4,4,4,4,4],[5,5,5,5,5,5,5]];
+##############################################################
+#
+#  Text
+#
+################################################################
+
+Context()->texStrings;
+BEGIN_TEXT
+
+Plantea el sistema de ecuaciones ordinarias que resulta al hacer un cambio de variable en un problema no homogeneo con valores en la frontera. 
+
+$BR Ecuación del calor perturbado: \( k\frac{\partial^2 u}{\partial x^2}+$A e^{-$a x}=\frac{\partial u}{\partial t} \)  
+$BR Condiciones de frontera: 
+$BR \(u(0,t)=0\)   ,    \(u($L,t)=0\)
+$BR Condiciones iniciales
+$BR \(u(x,0)=$Iniciales\) $BR
+
+$BR 
+$BR Para resolver este problema primero necesitas plantear: 
+$BR \(u(x,t)=\psi(x)+v(x,t)\) $BR
+$BR Es decir: \(u(x,t)=\psi(x)+\sum_{n=1}^{\infty}A_n X_n(x)T_n(t)\)
+
+$BR donde:
+$BR \(\psi(x)\)=\{ ans_rule(15) \} 
+$BR \(A_n(t)=\int_0^{$L}\)\{ ans_rule(15) \} \(dx\)
+$BR \(X_n(x)\)=  \{ ans_rule(15) \}
+$BR\(T_n(t)=\)\{ ans_rule(15) \} $BR
+
+END_TEXT
+Context()->normalStrings;
+
+##############################################################
+#
+#  Answers
+#
+################################################################
+
+
+ANS( $psi->cmp() );
+ANS( $A_n->cmp() );
+ANS( $X_n->cmp() );
+ANS( $T_n->cmp() );
+
+
+ENDDOCUMENT();        

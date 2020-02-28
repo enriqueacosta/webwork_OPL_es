@@ -1,0 +1,189 @@
+## DESCRIPTION
+## Partial differential equations. This problem is about the 
+## Laplace equation. # Author: Nelly Sélem GSoC<nselem84@gmail.com>
+
+## ENDDESCRIPTION
+
+
+################################################################################
+
+
+ DOCUMENT();        # This should be the first executable line in the problem.
+
+    loadMacros(
+      "PGstandard.pl",
+      "Parser.pl",
+      "parserPopUp.pl",
+      "PGunion.pl",
+      "PGchoicemacros.pl",
+    );
+
+###############################################################################
+    TEXT(beginproblem);
+    $showPartialCorrectAnswers = 1;
+
+##############################################################################
+#   Ventana de ayuda / help window
+##############################################################################
+
+HEADER_TEXT(<<END_HEADER_TEXT);
+<script type="text/javascript">
+<!--
+function openhelpCustom1() {
+OpenWindow=window.open("","answer_format_help","width=550,height=550,status=0,toolbar=0,location=0,menubar=0,directories=0,resizeable=1,scrollbars=1");
+OpenWindow.document.write("<title>Notación conocida por WebWork para Ecuaciones diferenciales Parciales</title>")
+OpenWindow.document.write("<body bgcolor='#ffffff'>")
+OpenWindow.document.write("<center><h2>Ayuda con la notacion</h2></center>")
+
+OpenWindow.document.write("<center><h3>Constantes:</h3></center>")
+OpenWindow.document.write("<ul>")
+OpenWindow.document.write("<li><font color='#222255'>h</font><blockquote>Escribe h si necesitas una constante de proporcionalidad   </blockquote></li>")
+
+OpenWindow.document.write("<li><font color='#222255'>λ</font><blockquote>Escribe l cuando necesites introducir  λ</blockquote></li>")
+
+OpenWindow.document.write("<li><font color='#222255'>α</font><blockquote>Escribe a cuando necesites introducir α</blockquote></li>")
+
+OpenWindow.document.write("<li><font color='#22225'>L</font><blockquote>Utiliza L cuando quieras escribir la longitud de una varilla o el largo de una cuerda. </blockquote></li>")
+
+OpenWindow.document.write("<li><font color='#222255'>Parametros constantes:</font><blockquote>Utiliza las constantes A, B, C, D en ese orden cuando las funciones solución aparezcan multiplicadas por una constante. </blockquote></li>")
+OpenWindow.document.write("</ul>")
+
+OpenWindow.document.write("<center><h3>Variables:</h3></center>")
+OpenWindow.document.write("<ul>")
+OpenWindow.document.write("<li><font color='#22225'>Funciones X, Y, T:</font><blockquote>Utiliza las variables X, Y, T cuando nececesites escribir las funciones X(x), Y(y), T(t). </blockquote></li>")
+
+OpenWindow.document.write("<li><font color='#22225'>Variables independientes x, y, t:</font><blockquote>Utiliza las variables x, y, t cuando nececesites escribir las variables independientes x, y, t. <BR> Recuerda que en este contexto x, X tienen significados distintos. x es una variable independiente, X es la función que depende de x. </blockquote></li>")
+
+OpenWindow.document.write("<li><font color='#222255'>Función u</font><blockquote>u es una abreviatura de u(x,t). Puedes utilizarla para la función temperatura de una varilla o desplazamiento de una cuerda</blockquote></li>")
+
+
+OpenWindow.document.write("<li><font color='#22225'>Función derivada X', Y', T':</font><blockquote>Utiliza dY cuando quieras escribir Y'. <BR>Utiliza dX para escribir X' <BR> Utiliza dT para escribir T'. </blockquote></li>")
+
+OpenWindow.document.write("<li><font color='#22225'>Derivadas parciales u_x, u_t, u_y:</font><blockquote>u_t es la función derivada parcial de u respecto a t<BR> u_x es la función derivada parcial de u respecto a x. <BR> u_y es la función derivada parcial respecto a y . </blockquote></li>")
+
+OpenWindow.document.write("</ul>")
+OpenWindow.document.write("</body>")
+OpenWindow.document.write("</html>")
+OpenWindow.document.close()
+self.name="main"
+if (window.focus) {OpenWindow.focus()}
+return false;
+}
+-->
+</script>
+END_HEADER_TEXT
+
+##############################################################################
+
+Context()->variables->add(y=>'Real',h=>'Real',L=>'Real',k=>'Real',u=>'Real');
+
+################################################################################
+#   Setup
+##############################################################################
+
+
+################################################################################
+
+#__________________________________________________________________________
+
+  $fun_u = PopUp(  ["?","u","u_y","u_x"],"u",);
+  $u_x = PopUp(  ["?","u","u_y","u_x"],"u_x",);
+  $u_y = PopUp(  ["?","u","u_y","u_x"],"u_y",);
+ 
+#_______________________________________________________________________   
+
+    $I = random(0,1,1);     $L = random(2,6,1);
+    $U0 = random(3,7,2);    $U1 =random(2,6,1);
+    $u1=Formula("$U1");     $u0=Formula("$U0");
+
+    $cero = Formula("0");  $ele=Formula("L");
+    $ye=Formula("y");      $equis=Formula("x");
+    $efe=Formula("x-$u1"); $efe2=Formula("e^{-y}");
+
+  #Respuestas
+@resp2_1=($fun_u,$fun_u); @resp2_2=($equis,$cero);
+@resp2_3=($u1,$ye); @resp2_4=($cero,$efe2);  
+@resp3_1=($fun_u,$fun_u); @resp3_2=($u0,$u0);
+@resp3_3=($ye,$ye); @resp3_4=($efe,$u1);  
+@resp4_1=($u_x,$u_x); @resp4_2=($cero,$u0);
+@resp4_3=($ye,$ye); @resp4_4=($cero,$cero);  
+@resp5_1=($u_y,$fun_u);@resp5_2=($equis,$equis);
+@resp5_3=($cero,$cero);@resp5_4=($cero,$efe);  
+#_______________________________________________________________________
+@Ecuaciones= (
+"\frac{\partial^2 u }{\partial x^2} + \frac{\partial^2 u }{\partial y^2}=0",
+"a^2\frac{\partial^2 u }{\partial x^2}=\frac{\partial^2 u }{\partial t^2}",
+"k\frac{\partial^2 u }{\partial x^2}=\frac{\partial u }  {\partial t}");
+
+$mcLaplace = new_checkbox_multiple_choice();
+$mcLaplace -> qa ( "Selecciona la ecuacion que modela el problema", 
+"\( \displaystyle $Ecuaciones[0] \) $BR"); 
+
+$mcLaplace -> extra(
+"\( \displaystyle  $Ecuaciones[1]\) $BR",
+"\(\displaystyle $Ecuaciones[2]\) $BR" );
+
+$Laplace1=" \(0\le x\le $u0\) y \(0\le y\le $u1\)";
+
+$Laplace2=" \(0\le x\le $u0\) y \( y\ge 0\).";
+
+@Laplace=($Laplace1,$Laplace2);
+
+
+$Frontera1="La parte superior de la placa se mantiene  temperatura cero.
+El extremo derecho de la placa se mantiene a temperatura $efe. $BR";
+
+$Frontera2="  El extremo izquierdo de dicha placa se mantiene a temperatura \(e^{-y}\). El extremo derecho a temperatura $u1. $BR";
+
+@Frontera=($Frontera1,$Frontera2);
+
+$Iniciales1=" dado que el extremo izquierdo y el fondo de la placa estan aislados. ";
+$Iniciales2="$PAR  El extremo derecho esta aislado, y el fondo de la placa se mantiene  temperatura f(x)=$efe. ";
+
+@Iniciales=($Iniciales1,$Iniciales2);
+
+    ##############################################
+
+
+####################################################################
+
+Context()->texStrings();    
+BEGIN_TEXT
+Se quiere modelar la temperatura de una placa rectangular delgada que coincide con la region definida por $Laplace[$I] $BR Esta temperatura no depende del tiempo. Plantea un modelo matematico adecuado. $BR
+
+1. \{ $mcLaplace -> print_q() \}$BR\{ $mcLaplace -> print_a() \}  $BR 
+
+2. Ahora escribe en el siguiente orden las $BBOLD condiciones de frontera: $EBOLD $BR $Frontera[$I]
+ \{$fun_u->menu() \}(\{ ans_rule(1) \} ,\{ ans_rule(1) \} )=(\{ ans_rule(3) \} ). $PAR
+\{$fun_u->menu() \}(\{ ans_rule(1) \} ,\{ ans_rule(1) \} )=(\{ ans_rule(3) \} ). 
+
+ $PAR $BR
+3. Y finalmente plantea tambien en orden las $BBOLD condiciones: $EBOLD $Iniciales[$I]
+
+$PAR
+\{$u_x->menu() \}(\{ ans_rule(1) \} ,\{ ans_rule(1) \} )=(\{ ans_rule(3) \} ).
+$PAR
+\{$u_y->menu() \}(\{ ans_rule(1) \} ,\{ ans_rule(1) \} )=(\{ ans_rule(3) \} ).
+$BR \{ htmlLink("#","Help (Notación)","onClick='openhelpCustom1()';") \}
+
+END_TEXT
+####################################################################
+
+ANS( checkbox_cmp( $mcLaplace->correct_ans() ) );
+
+ANS( $resp2_1[$I]->cmp() ); ANS($resp2_2[$I]->cmp());ANS($resp2_3[$I]->cmp()) ; ANS($resp2_4[$I]->cmp());
+
+ANS( $resp3_1[$I]->cmp() ); ANS($resp3_2[$I]->cmp());ANS($resp3_3[$I]->cmp()) ; ANS($resp3_4[$I]->cmp());
+
+ANS( $resp4_1[$I]->cmp() ); ANS($resp4_2[$I]->cmp()); ANS($resp4_3[$I]->cmp()) ; ANS($resp4_4[$I]->cmp());
+
+ANS( $resp5_1[$I]->cmp()); ANS($resp5_2[$I]->cmp()) ; ANS($resp5_3[$I]->cmp());ANS($resp5_4[$I]->cmp());
+
+###################################################################
+   
+    ##############################################
+
+    ENDDOCUMENT();        # This should be the last executable line in the problem.
+
+
+      

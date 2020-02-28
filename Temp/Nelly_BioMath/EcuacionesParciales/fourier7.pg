@@ -1,0 +1,98 @@
+# DESCRIPTION
+# Problem from Calculus, single variable, Hughes-Hallett et al., 4th ed.
+# WeBWorK problem written by Gavin LaRose, <glarose@umich.edu> and adapted by
+# Nelly Sélem GSoC <nselem84@gmail.com>
+# ENDDESCRIPTION
+
+## KEYWORDS('calculus','integral', 'fourier', 'series', 'approximation')
+
+DOCUMENT();
+
+loadMacros(
+"PGstandard.pl",
+"MathObjects.pl",
+"PGchoicemacros.pl",
+);
+
+Context("Numeric");
+Context()->flags->set( reduceConstants=>0 );
+Context()->variables->add( n=>'Real' );
+$showPartialCorrectAnswers = 1;
+
+$whichR = random(0,1);  ## la funcion de la derecha es 0, x, or -x
+$a = random(2,,25,1);
+
+@funcs = ( "$a x", "-$a x" );
+
+    ## entonces la funcion es o bien ax o bien -ax entre 0 y pi
+    # si f es ax entre 0 y pi, la extenderemos como ax entre -pi y 0
+    # Como f es impar los coeficientes son los mismos que en el 
+    # intervalo simetrico [-pi,pi].
+    
+    $ftex = "\begin{cases} $funcs[$whichR], & 0 < x \le \pi\end {cases}";
+    $ftex2="como función impar.";
+ 
+    # En este caso todos los a_n son cero
+    $a0 = Compute("0");
+    $an = Compute("0");
+
+    ## y los b_n son
+    $bn = Compute("-2*$a*cos(n*pi)/n");
+
+    # si f es -x entre 0 y pi, la extenderemos como -x entre -pi y 0
+    # y calculamos el negativo de bn
+
+    $bn = $bn*(-1) if ( $whichR == 1 );
+
+    ## para la solucion, tenemos:
+    $aint0 = "\frac{2}{\pi}\int_{0}^{\pi}\,$ftex\,dx = 0";
+    $aintn = "\frac{2}{\pi}\int_{0}^{\pi}\,$ftex\,\cos(n x)\,dx = 0";
+    $bintn = "\frac{2}{\pi}\int_{0}^}{\pi}\,$ftex\,\sin(n x)\,dx = " . 
+	$bn->TeX;
+
+
+# $a0 = $a0->reduce();
+# $an = $an->reduce();
+# $bn = $bn->reduce();
+
+$an->{test_points} = [[1,1],[2,2],[3,3],[4,4],[5,5]];
+$bn->{test_points} = [[1,1],[2,2],[3,3],[4,4],[5,5]];
+
+Context()->texStrings;
+TEXT(beginproblem());
+BEGIN_TEXT
+
+Encuentra la \(n-\)sima suma de Fourier para la funcion
+\[ f(x) = $ftex, \]
+
+extendiendo \(f(x)\) $ftex2
+$PAR
+\(F_k(x) = \frac{a_0}{2} + \sum_{n=1}^{k} a_n\,\cos(n x) + b_n\,\sin(n x) =\)
+$BR
+\{ ans_rule(15) \} \( + \sum_{n=1}^{k} \) \{ ans_rule(15) \} \(\cos(n x) + \)
+\{ ans_rule(15) \} \(\sin(n x)\).
+
+END_TEXT
+Context()->normalStrings;
+
+ANS( $a0->cmp() );
+ANS( $an->cmp() );
+ANS( $bn->cmp() );
+
+Context()->texStrings;
+SOLUTION(EV3(<<'END_SOLUTION'));
+$PAR SOLUTION $PAR
+
+Para encontrar la \(k-\)sima suma de Fourier, necesitamos determinar \(a_0\) y los diferentes \(a_n\) y \(b_n\) (for \(1\le n\le k\)).  Estos son:
+\[ a_0 = $aint0, \]
+\[ a_n = $aintn, \]
+y
+\[ b_n = $bintn. \]
+$PAR
+Entonces,
+\[ F_k = $a0 + \sum_{n=1}^k\, $an\,\cos(n x) + $bn\,\sin(n x). \]
+
+END_SOLUTION
+Context()->normalStrings;
+
+ENDDOCUMENT();

@@ -1,0 +1,115 @@
+##DESCRIPTION
+## Fourier Series.Virtual version.
+##ENDDESCRIPTION
+
+## GSoC nselem84@gmail.com
+########################################################################
+
+###########################
+#  Initialization
+
+DOCUMENT();  
+
+loadMacros(
+"PGstandard.pl",
+"MathObjects.pl",
+"PGchoicemacros.pl",
+"PGgraders.pl",
+"unionTables.pl",
+);
+
+TEXT(beginproblem());
+
+
+###########################
+#  Setup
+
+#
+#  Create a matching list and use popups
+#
+$showPartialCorrectAnswers = 0;
+$ml = new_match_list();
+$ml->rf_print_q(~~&pop_up_list_print_q);
+$ml->ra_pop_up_list([
+"No answer" => "?",
+"A" => "A", "B" => "B", "C" => "C", 
+"D" => "D", "E" => "E", "F" => "F",
+"G" => "G", "H" => "H", "I" => "I",
+"J" => "J",
+
+]);
+
+#
+#  Add correct questions and answers
+#
+
+
+
+$ml->qa(
+"\(\frac{\partial u}{\partial x}+xt=\frac{\partial u}{\partial t}\)",,"Esta ecuación no es separable. $PAR",
+
+"\(\frac{\partial v}{\partial r}-1+\frac{\partial v}{\partial \theta}=0\)",,"Esta ecuación no es separable. $PAR",
+
+"\(x\frac{\partial u}{\partial x}+\frac{\partial^2 u}{\partial t^2}=0\)",,"\(T''-\lambda T=0 \)$BR \(xX'+\lambda X=0 \) $PAR",
+
+"\(\frac{\partial^2 u}{\partial t^2}=\frac{\partial^2 u}{\partial x^2}\)", " \(T''+\lambda T = 0 \)$BR \(X''+\lambda X =0\)$PAR",
+
+"\(\frac{\partial^2 v}{\partial t^2}+v-\frac{\partial^2 v}{\partial x^2}=0\)", " \(\frac{T''}{T}+1 =-\lambda \)$BR \(X''+\lambda X =0\)$PAR",
+
+);
+$ml->choose(2);
+
+#
+#  Add extra incorrect answers
+#
+
+$ml->extra( " \(T''-\lambda T = 0 \)$BR \(X''+\lambda X =0\)$BR",
+"\(T''+\lambda T=0 \)$BR \(xX'+\lambda X=0 \) $PAR",
+"\(\Theta''+\lambda \Theta=0 \)$BR \(R'+\lambda R=0 \) $PAR",
+" \(T''+T =-\lambda \)$BR \(X''+\lambda X =0\)$PAR",
+" \(T'+T =-\lambda \)$BR \(X''+\lambda X =0\)$PAR",
+
+);
+
+$ml->choose_extra(8);
+  
+$ml->makeLast("Ninguna de las anteriores $BR");
+
+
+
+###########################
+#  Main text
+
+Context()->texStrings;
+BEGIN_TEXT
+Utilizando la constante de separación \(-\lambda\), relaciona cada ecuación con su separación de variables.
+\{ ColumnMatchTable($ml) \}
+END_TEXT
+Context()->normalStrings;
+
+
+############################
+#  Answer evaluation
+
+
+
+
+ANS( str_cmp( $ml->ra_correct_ans ) );
+
+
+############################
+#  Solution
+
+@correct = @{$ml->ra_correct_ans()};
+$answerstring = join(", ", @correct);
+Context()->texStrings;
+
+BEGIN_SOLUTION
+${PAR}SOLUTION:$PAR
+Las respuestas correctas son $answerstring
+END_SOLUTION
+
+Context()->normalStrings;
+COMMENT('MathObject version.');
+
+ENDDOCUMENT();

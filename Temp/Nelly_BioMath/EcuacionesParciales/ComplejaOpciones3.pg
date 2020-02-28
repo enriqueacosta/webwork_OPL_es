@@ -1,0 +1,142 @@
+##DESCRIPTION
+##  Complex integral
+##ENDDESCRIPTION
+## GSoC nselem84@gmail.com
+
+
+########################################################################
+DOCUMENT() ;
+loadMacros(
+	"PG.pl",
+	"PGbasicmacros.pl",
+	"PGchoicemacros.pl",
+	"PGanswermacros.pl",
+	"PGauxiliaryFunctions.pl",
+	"PGgraphmacros.pl",
+        "MathObjects.pl",
+        "unionTables.pl",
+"PGchoicemacros.pl",
+        "MathObjects.pl",
+
+  
+
+) ;
+# Print problem number and point value (weight) for the problem
+TEXT(beginproblem());
+
+# Show which answers are correct and which ones are incorrect
+$showPartialCorrectAnswers = 1;
+
+##############################################################
+#
+#  Setup
+#
+#
+Context()->variables->add( i=>'Real',t=>'Real');
+$f="z^2+cos(z)";
+
+
+
+$a1=non_zero_random(-7,-1,1);
+$b1=non_zero_random(-7,-1,1);
+$a2=non_zero_random(1,6,1);
+$b2=non_zero_random(1,6,1);
+
+$p1=Compute(" $a1 + $b1*i");
+$p2=Compute(" $a2 + $b2*i");
+
+$trayectoria="el vector que va del punto \(A=$p1\) al punto \(B=$p2\)";
+
+$graph = init_graph(-8, -8, 8, 8,grid=>[16,16],axes=>[0,0]);
+$point1 = closed_circle($a1, $b1, 'red');
+$point2 = closed_circle($a2, $b2, 'blue');
+$graph->stamps($point1,$point2);
+
+
+$x3 = Formula("$a1+t*($a2-$a1)");
+$y3 = Formula("$b1+t*($b2-$b1)");
+$k = new Fun( $x3->perlFunction, $y3->perlFunction, $graph );
+$k->domain(0,1); $k->steps(90); $k->color('green'); $k->weight('2');
+
+
+$graph->lb( new Label($a1+.5,$b1,$a1,'orange','center','middle'));
+$graph->lb( new Label($a1+1,$b1,'+','orange','center','middle'));
+$graph->lb( new Label($a1+1.5,$b1,$b1,'orange','center','middle'));
+$graph->lb( new Label($a1+2,$b1,'i','orange','center','middle'));
+
+
+$graph->lb( new Label($a2+.5,$b2,$a2,'orange','center','middle'));
+$graph->lb( new Label($a2+1,$b2,'+','orange','center','middle'));
+$graph->lb( new Label($a2+1.5,$b2,$b2,'orange','center','middle'));
+$graph->lb( new Label($a2+2,$b2,'i','orange','center','middle'));
+
+$sol1="\left \frac{z^3}{3}+sin(z)\right
+|_{$a2+$b2*i}^{$a1+$b1*i}";
+$sol2="\left \frac{z^3}{3}+sin(z)\right
+|_{$a1+$b1*i}^{$a2+$b2*i}";
+$sol3="\left \frac{z^3}{3}+\sin(z)";
+$sol4="0";
+
+$sol5="\left z^2+cos(z)\right
+|_{$a1+$b1*i}^{$a2+$b2*i}";
+##############################################################
+#
+#  Text
+#
+#
+
+
+##########################################################
+$mc = new_multiple_choice();
+$mc->qa(
+"Cuál es el valor de la integral \(\int_{\gamma} $f dz\)? $BR
+donde \(\gamma\) es $trayectoria $PAR", 
+"\($sol2 \)"
+);
+$mc->extra(
+"\($sol1\)",
+"\($sol3\)",
+"\($sol4\)",
+"\($sol5\)",
+);
+$mc->makeLast("Ninguna de las anteriores");
+##############################################################
+
+
+BEGIN_TEXT
+\{
+ColumnTable(
+"
+".$mc->print_q()."
+".$mc->print_a()." $BR
+$PAR
+
+"
+
+,
+$BCENTER.
+
+
+image( insertGraph($graph), width=>200, height=>200 ).
+$PAR.
+"Gráfica de una recta".
+$ECENTER
+,
+indent => 0, separation => 30, valign => "TOP"
+); 
+\}
+
+END_TEXT
+
+
+##############################################################
+#
+#  Answers
+#
+#
+$showPartialCorrectAnswers = 0;
+
+ANS( radio_cmp( $mc->correct_ans() ) );
+
+
+ENDDOCUMENT();        

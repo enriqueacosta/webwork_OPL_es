@@ -1,0 +1,127 @@
+##DESCRIPTION
+##  Complex integral
+##ENDDESCRIPTION
+
+## GSoC nselem84@gmail.com
+########################################################################
+########################################################################
+DOCUMENT() ;
+loadMacros(
+	"PG.pl",
+	"PGbasicmacros.pl",
+	"PGchoicemacros.pl",
+	"PGanswermacros.pl",
+	"PGauxiliaryFunctions.pl",
+	"PGgraphmacros.pl",
+        "MathObjects.pl",
+        "unionTables.pl",
+) ;
+
+TEXT(beginproblem());
+
+$showPartialCorrectAnswers = 1;
+
+##############################################################
+#
+#  Setup
+#
+#
+
+Context()->variables->add( i=>'Real',t=>'Real');
+
+$Red=non_zero_random(-1,1,.2);
+$Imd=non_zero_random(-1,1,.2);
+
+$Ree=random(-2,2,.5);
+$Ime=non_zero_random(-2,2,.5);
+
+$d =Compute("$Red+$Imd*i");
+$e=Compute("$Ree+$Ime*i");
+
+$normae=Compute("($Ree*$Ree+$Ime*$Ime)**(1/2)");
+$fdez0=Compute("$Red*$Red-$Imd*$Imd+2*$Red*$Imd*i");
+
+$productoreal1=Compute("2*pi*i(($Red*$Red-$Imd*$Imd)*$Ree-(2*$Red*$Imd)*($Ime))");
+$productoimag1=Compute("-2*pi*(2*$Red*$Imd*$Ree+$Ime*($Red*$Red-$Imd*$Imd))");
+
+$solr=Compute("$productoreal1");
+$soli=Compute("$productoimag1");
+
+$f="\frac{($e) z^2}{z-($d)}";
+$radio1=random(2,5,1); 
+$trayectoria="El círculo de radio $radio1 centrado en \($d\)";
+
+
+$radio2=random(4,6,1); 
+
+
+$a1=random(1,6,1);
+$b1=random(1,6,1);
+$a2=random(1,6,1);
+$b2=random(1,6,1);
+
+$p1=Compute(" $a1 + $b1*i");
+$p2=Compute(" $a2 + $b2*i");
+
+$graph = init_graph(-8, -8, 8, 8,grid=>[16,16],axes=>[0,0]);
+$point1 = closed_circle($Red, $Imd, 'orange');
+$graph->stamps($point1);
+
+$x1 = Formula("$Red+$radio1*cos(t)");
+$y1 = Formula("$Imd+$radio1*sin(t)");
+
+$g = new Fun( $x1->perlFunction, $y1->perlFunction, $graph );
+$g->domain(0,2*pi); $g->steps(90); $g->color('red'); $g->weight('2');
+
+
+# Etiquetas sobre la gráfica
+$graph->lb( new Label($Red-2,$Imd,$Red,'orange','center','middle'));
+$graph->lb( new Label($Red-1.5,$Imd,'+','orange','center','middle'));
+$graph->lb( new Label($Red-1,$Imd,$Imd,'orange','center','middle'));
+$graph->lb( new Label($Red-.5,$Imd,'i','orange','center','middle'));
+
+##############################################################
+#
+#  Text
+#
+#
+
+BEGIN_TEXT
+
+\{
+ColumnTable(
+"
+
+\(\int_{\gamma} $f dz\) =".ans_rule(5)." +".ans_rule(5)."\(i\) $BR
+donde \(\gamma\) es $trayectoria.
+$PAR
+
+"
+
+,
+$BCENTER.
+
+
+image( insertGraph($graph), width=>200, height=>200 ).
+$PAR.
+"Gráfica de un disco".
+$ECENTER
+,
+indent => 0, separation => 30, valign => "TOP"
+); 
+\}
+
+
+
+END_TEXT
+
+##############################################################
+#
+#  Answers
+#
+#
+
+ANS($solr->cmp());
+ANS($soli->cmp());
+
+ENDDOCUMENT();        

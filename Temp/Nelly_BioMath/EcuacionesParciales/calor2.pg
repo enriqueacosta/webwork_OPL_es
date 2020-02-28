@@ -1,0 +1,132 @@
+######################### ENGLISH ######################################
+
+# DESCRIPTION
+# Problem for Partial Differential Equations. Heat equation in one dimension. 
+# ENDDESCRIPTION
+
+## GSoC nselem84@gmail.com
+
+########################################################################
+
+DOCUMENT();      
+
+loadMacros(
+   "PGstandard.pl",     # Standard macros for PG language
+   "MathObjects.pl",
+   "PGgraphmacros.pl",
+
+
+);
+
+# Print problem number and point value (weight) for the problem
+TEXT();
+
+# Show which answers are correct and which ones are incorrect
+$showPartialCorrectAnswers = 1;
+
+##############################################################################
+HEADER_TEXT(<<END_HEADER_TEXT);
+<script type="text/javascript">
+<!--
+function openhelpCustom1() {
+OpenWindow=window.open("","answer_format_help","width=550,height=550,status=0,toolbar=0,location=0,menubar=0,directories=0,resizeable=1,scrollbars=1");
+OpenWindow.document.write("<title>Notación conocida por WebWork para Ecuaciones diferenciales Parciales</title>")
+OpenWindow.document.write("<body bgcolor='#ffffff'>")
+OpenWindow.document.write("<center><h2>Ayuda con la notacion</h2></center>")
+
+OpenWindow.document.write("<center><h3>Constantes:</h3></center>")
+OpenWindow.document.write("<ul>")
+OpenWindow.document.write("<li><font color='#222255'>h</font><blockquote>Escribe h si necesitas una constante de proporcionalidad   </blockquote></li>")
+
+OpenWindow.document.write("<li><font color='#222255'>λ</font><blockquote>Escribe l cuando necesites introducir  λ</blockquote></li>")
+
+OpenWindow.document.write("<li><font color='#222255'>α</font><blockquote>Escribe a cuando necesites introducir α</blockquote></li>")
+
+OpenWindow.document.write("<li><font color='#22225'>L</font><blockquote>Utiliza L cuando quieras escribir la longitud de una varilla o el largo de una cuerda. </blockquote></li>")
+
+OpenWindow.document.write("<li><font color='#222255'>Parametros constantes:</font><blockquote>Utiliza las constantes A, B, C, D en ese orden cuando las funciones solución aparezcan multiplicadas por una constante. </blockquote></li>")
+OpenWindow.document.write("</ul>")
+
+OpenWindow.document.write("<center><h3>Variables:</h3></center>")
+OpenWindow.document.write("<ul>")
+OpenWindow.document.write("<li><font color='#22225'>Funciones X, Y, T:</font><blockquote>Utiliza las variables X, Y, T cuando nececesites escribir las funciones X(x), Y(y), T(t). </blockquote></li>")
+
+OpenWindow.document.write("<li><font color='#22225'>Variables independientes x, y, t:</font><blockquote>Utiliza las variables x, y, t cuando nececesites escribir las variables independientes x, y, t. <BR> Recuerda que en este contexto x, X tienen significados distintos. x es una variable independiente, X es la función que depende de x. </blockquote></li>")
+
+OpenWindow.document.write("<li><font color='#222255'>Función u</font><blockquote>u es una abreviatura de u(x,t). Puedes utilizarla para la función temperatura de una varilla o desplazamiento de una cuerda</blockquote></li>")
+
+
+OpenWindow.document.write("<li><font color='#22225'>Función derivada X', Y', T':</font><blockquote>Utiliza dY cuando quieras escribir Y'. <BR>Utiliza dX para escribir X' <BR> Utiliza dT para escribir T'. </blockquote></li>")
+
+OpenWindow.document.write("<li><font color='#22225'>Derivadas parciales u_x, u_t, u_y:</font><blockquote>u_t es la función derivada parcial de u respecto a t<BR> u_x es la función derivada parcial de u respecto a x. <BR> u_y es la función derivada parcial respecto a y . </blockquote></li>")
+
+
+OpenWindow.document.write("</ul>")
+
+
+OpenWindow.document.write("</body>")
+OpenWindow.document.write("</html>")
+OpenWindow.document.close()
+self.name="main"
+if (window.focus) {OpenWindow.focus()}
+return false;
+}
+-->
+</script>
+END_HEADER_TEXT
+
+
+###############
+Context()->variables->add( L=>'Real');
+##############################################################
+#
+#  Setup
+#
+#
+$a=random(10,100,1);
+$sol=Compute("$a*L/2");
+
+##############################################################
+#
+#  Text
+#
+#
+  
+
+Context()->texStrings;
+BEGIN_TEXT
+$BR 
+Denótese por \(u(x, t)\) la temperatura de una barra en el punto \(x\) es el
+instante \(t\). Esta función satisface el problema de valores a la frontera
+
+$BR Ecuación de calor: \( a^2\frac{\partial^2 u}{\partial x^2}=\frac{\partial u}{\partial t} \)  
+$BR Condiciones de frontera: 
+$BR \(u_x(0,t)=0\)   ,    \(u_x(L,t)=0\)
+$BR Condiciones iniciales
+$BR \(u(x,0)=f(x)=$a x\),$PAR
+
+
+
+cuya solución está dada por
+\(u(x,t)=\frac{1}{L}\int_0^Lf(x),dx + \frac{2}{L}\sum_{n=1}^\infty [\int(f(x)\cos(\frac{n\pi x}{L}),dx]\cos(\frac{n\pi x}{L})e^{-(\frac{\alpha n \pi}{L})^2t}\)
+$PAR
+Se dice que una solución \(u(x, t)\) de la ecuación de calor \(u_t = \alpha ^2 u_{xx}\) es de
+régimen permanente si dicha solución \(u(x, t)\) no cambia con el tiempo.
+Determina si la temperatura de la barra tiende a una temperatura conforme pasa el tiempo. Si es así, indica cual es la
+temperatura de régimen permanente y justifica tu respuesta. 
+$BR Temperatura permanente \(u_p=\) \{ ans_rule(15) \} $PAR
+
+$BR \{ htmlLink("#","Help (Notación)","onClick='openhelpCustom1()';") \}
+
+END_TEXT
+Context()->normalStrings;
+
+##############################################################
+#
+#  Answers
+#
+#
+
+ANS( $sol->cmp() );
+
+ENDDOCUMENT();        

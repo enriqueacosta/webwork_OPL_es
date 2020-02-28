@@ -1,0 +1,95 @@
+##DESCRIPTION
+##  This problem is about to classify partial Differential Equations. Author 
+# nselem84@gmail.com
+##ENDDESCRIPTION
+# Author: Nelly Sélem GSoC<nselem84@gmail.com>
+
+DOCUMENT();
+
+loadMacros(
+"PGstandard.pl",
+"MathObjects.pl",
+"parserPopUp.pl",
+"unionTables.pl",
+);
+
+TEXT(beginproblem());
+
+###########################
+#  Setup
+#############################################################
+$a=random(2,4,1);
+$b=$a-1;
+$c=$a-$b;
+
+$no_lineal = PopUp(  ["?","Lineal","No lineal"],  "No lineal",);
+$ordinaria = PopUp(  ["?","Parcial","Ordinaria"],  "Ordinaria",);
+$lineal = PopUp(  ["?","Lineal","No lineal"],  "Lineal",);
+$parcial = PopUp(  ["?","Parcial","Ordinaria"],  "Parcial",);
+$orden_a = PopUp(  ["?","Orden $a","Orden $b","Orden $c"],  "Orden $a",);
+
+$Ecuacion_loa="\(u\frac{\partial^$a x}{\partial^$a u}+ \frac{\partial y}{\partial u}+ u = 0\)";
+$Ecuacion_nlpa="\(u\frac{\partial^$a u}{\partial^$b x \partial^$c y}+ \frac{\partial v}{\partial y}+ x = 0\)";
+####################################################################
+#  Main text
+#
+Context()->texStrings;
+#######################################################################
+BEGIN_TEXT
+Clasifica las siguientes ecuaciones:
+$BCENTER
+\{
+BeginTable().
+ AlignedRow(["Ecuacion","Tipo","Linealidad","Orden"]).
+  TableSpace(5,0).  AlignedRow(["$Ecuacion_loa",$ordinaria->menu(),$lineal->menu(),$orden_a->menu()]).
+  TableSpace(5,0).
+  AlignedRow(["$Ecuacion_nlpa",$parcial->menu(),$no_lineal->menu(),$orden_a->menu()]).
+  TableSpace(5,0).
+EndTable();
+\}
+$BR
+
+$ECENTER
+END_TEXT
+Context()->normalStrings;
+########################################################################
+#  Answer evaluation
+
+install_problem_grader(~~&std_problem_grader);
+
+$showPartialCorrectAnswers = 0;
+
+ANS( $ordinaria->cmp() ); ANS( $lineal->cmp() ); ANS( $orden_a->cmp() );
+ANS( $parcial->cmp() ); ANS( $no_lineal->cmp() ); ANS( $orden_a->cmp() );
+##############################################################################
+#  Solution
+
+Context()->texStrings;
+BEGIN_SOLUTION
+${PAR}SOLUTION:$PAR
+En la ecuacion $Ecuacion_loa las variables dependientes son x,y. La variable independiente es u. $PAR
+
+Es lineal porque x,y asi como todas sus derivadas respecto a u solo aparecen elevadas a la potencia uno y no estan multiplicadas por funciones que dependan de x o y.$PAR
+
+
+Es ordinaria porque tiene solo a u como variable independiente. $PAR
+
+
+Es de orden $a porque es el máximo número de veces que se deriva x. $PAR
+
+$PAR
+
+En la ecuacion $Ecuacion_nlpa la variable dependiente es u y las independientes x,y.
+$PAR
+Es no lineal porque la variable dependiente u aparece multipicando a una derivada parcial de u.$PAR
+
+Es parcial porque tiene dos variables independientes. $PAR
+
+Es de orden $a porque es el máximo número de veces que se deriva u. $BR
+
+
+END_SOLUTION
+COMMENT('MathObject version.');
+
+ENDDOCUMENT();
+    

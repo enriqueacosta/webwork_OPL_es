@@ -1,0 +1,104 @@
+##DESCRIPTION
+##  Complex integral
+##ENDDESCRIPTION
+
+## GSoC nselem84@gmail.com
+
+########################################################################
+DOCUMENT() ;
+loadMacros(
+	"PG.pl",
+	"PGbasicmacros.pl",
+	"PGchoicemacros.pl",
+	"PGanswermacros.pl",
+	"PGauxiliaryFunctions.pl",
+	"PGgraphmacros.pl",
+        "MathObjects.pl",
+        "unionTables.pl",
+) ;
+#sub i ();  #make i act like the imaginary unit.
+
+# Print problem number and point value (weight) for the problem
+TEXT(beginproblem());
+
+# Show which answers are correct and which ones are incorrect
+$showPartialCorrectAnswers = 1;
+
+##############################################################
+#
+#  Setup
+#
+#
+Context()->variables->add( i=>'Real',t=>'Real');
+
+$radio1=random(3,7,1); 
+
+
+$a1=non_zero_random(-7,-1,1);
+$b1=non_zero_random(-7,-1,1);
+
+$p1=Compute(" $a1 + $b1*i");
+
+$graph = init_graph(-8, -8, 8, 8,grid=>[16,16],axes=>[0,0]);
+$point1 = closed_circle(0, $radio1, 'red');
+$point2 = closed_circle(0,-$radio1,  'blue');
+$graph->stamps($point1,$point2);
+
+$f="y+z+cos(z)+$p1 e^z";
+$trayectoria="la mitad izquierda del círculo de radio $radio1";
+
+$x1 = Formula("$radio1*cos(t)");
+$y1 = Formula("$radio1*sin(t)");
+
+$g = new Fun( $x1->perlFunction, $y1->perlFunction, $graph );
+$g->domain(pi/2, 3*pi/2); $g->steps(90); $g->color('red'); $g->weight('2');
+
+
+# Etiquetas sobre la gráfica
+$graph->lb( new Label(0,$radio1-.5,$radio1,'red','center','middle'));
+
+$sol=Compute("$radio1^2*(-pi/2)+cos(3*pi/2)-cos(pi/2)+$p1*(exp(3*pi/2)-exp(pi/2))");
+##############################################################
+#
+#  Text
+#
+#
+
+BEGIN_TEXT
+\{
+ColumnTable(
+"
+$normae $BR
+
+\(\int_{\gamma} $f dz\) =".ans_rule." $BR
+donde \(\gamma\) es $trayectoria.
+$PAR
+
+"
+
+,
+$BCENTER.
+
+
+image( insertGraph($graph), width=>200, height=>200 ).
+$PAR.
+"Gráfica de un disco".
+$ECENTER
+,
+indent => 0, separation => 30, valign => "TOP"
+); 
+\}
+
+
+END_TEXT
+
+
+##############################################################
+#
+#  Answers
+#
+#
+
+ANS($sol->cmp());
+
+ENDDOCUMENT();        

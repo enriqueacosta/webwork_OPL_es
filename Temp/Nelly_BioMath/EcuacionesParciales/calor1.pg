@@ -1,0 +1,299 @@
+######################### ENGLISH ######################################
+
+# DESCRIPTION
+# Problem for Partial Differential Equations. Heat equation in one dimension. 
+# Author: 
+# ENDDESCRIPTION
+
+## GSoC nselem84@gmail.com
+
+
+DOCUMENT();
+
+loadMacros(
+ "PGstandard.pl",
+ "MathObjects.pl",
+ "PGchoicemacros.pl",
+ "PGgraphmacros.pl",
+);
+##############################################################################
+HEADER_TEXT(<<END_HEADER_TEXT);
+<script type="text/javascript">
+<!--
+function openhelpCustom1() {
+OpenWindow=window.open("","answer_format_help","width=550,height=550,status=0,toolbar=0,location=0,menubar=0,directories=0,resizeable=1,scrollbars=1");
+OpenWindow.document.write("<title>Notación conocida por WebWork para Ecuaciones diferenciales Parciales</title>")
+OpenWindow.document.write("<body bgcolor='#ffffff'>")
+OpenWindow.document.write("<center><h2>Ayuda con la notacion</h2></center>")
+
+OpenWindow.document.write("<center><h3>Constantes:</h3></center>")
+OpenWindow.document.write("<ul>")
+OpenWindow.document.write("<li><font color='#222255'>h</font><blockquote>Escribe h si necesitas una constante de proporcionalidad   </blockquote></li>")
+
+OpenWindow.document.write("<li><font color='#222255'>λ</font><blockquote>Escribe l cuando necesites introducir  λ</blockquote></li>")
+
+OpenWindow.document.write("<li><font color='#222255'>α</font><blockquote>Escribe a cuando necesites introducir α</blockquote></li>")
+
+OpenWindow.document.write("<li><font color='#22225'>L</font><blockquote>Utiliza L cuando quieras escribir la longitud de una varilla o el largo de una cuerda. </blockquote></li>")
+
+OpenWindow.document.write("<li><font color='#222255'>Parametros constantes:</font><blockquote>Utiliza las constantes A, B, C, D en ese orden cuando las funciones solución aparezcan multiplicadas por una constante. </blockquote></li>")
+OpenWindow.document.write("</ul>")
+
+OpenWindow.document.write("<center><h3>Variables:</h3></center>")
+OpenWindow.document.write("<ul>")
+OpenWindow.document.write("<li><font color='#22225'>Funciones X, Y, T:</font><blockquote>Utiliza las variables X, Y, T cuando nececesites escribir las funciones X(x), Y(y), T(t). </blockquote></li>")
+
+OpenWindow.document.write("<li><font color='#22225'>Variables independientes x, y, t:</font><blockquote>Utiliza las variables x, y, t cuando nececesites escribir las variables independientes x, y, t. <BR> Recuerda que en este contexto x, X tienen significados distintos. x es una variable independiente, X es la función que depende de x. </blockquote></li>")
+
+OpenWindow.document.write("<li><font color='#222255'>Función u</font><blockquote>u es una abreviatura de u(x,t). Puedes utilizarla para la función temperatura de una varilla o desplazamiento de una cuerda</blockquote></li>")
+
+
+OpenWindow.document.write("<li><font color='#22225'>Función derivada X', Y', T':</font><blockquote>Utiliza dY cuando quieras escribir Y'. <BR>Utiliza dX para escribir X' <BR> Utiliza dT para escribir T'. </blockquote></li>")
+
+OpenWindow.document.write("<li><font color='#22225'>Derivadas parciales u_x, u_t, u_y:</font><blockquote>u_t es la función derivada parcial de u respecto a t<BR> u_x es la función derivada parcial de u respecto a x. <BR> u_y es la función derivada parcial respecto a y . </blockquote></li>")
+
+OpenWindow.document.write("</ul>")
+OpenWindow.document.write("</body>")
+OpenWindow.document.write("</html>")
+OpenWindow.document.close()
+self.name="main"
+if (window.focus) {OpenWindow.focus()}
+return false;
+}
+-->
+</script>
+END_HEADER_TEXT
+###########################################################################
+Context("Numeric");
+Context()->flags->set( reduceConstants=>0 );
+Context()->variables->add(n=>'Real',k=>'Real',T=>'Real',dT=>'Real',t=>'Real',X=>'Real');
+$showPartialCorrectAnswers = 1;
+
+#######################################################################
+#                 Variables
+#######################################################################
+#
+
+$calor="\(k\frac{\partial^2 u}{\partial x^2}=\frac{\partial u}{\partial t}\)";
+$Objeto="una varilla";
+$Accion="se calienta";
+$Funcion="temperatura";
+
+$L=random(2,10,1); #Longitud de la varilla
+$a=random(2,10,1); 
+$b=random(2,10,1); 
+
+$Frontera1="con extremos que se mantienen a 0°";
+$Frontera2="vacio";
+$Inicial1="la función \(f(x)=-$a \sin(\frac{\pi x} {$L})\)";
+$Inicial=Formula("-$a*sin(pi*x/$L)");
+$Inicial2="vacio";
+
+$EDO=Formula("dT/(k*T)");
+
+$lambda_cero=Compute("0");
+$lambda_positiva=Compute("sin(n*pi*x/$L)");
+$lambda_negativa=Compute("0");
+$T_n=Compute("e^{-(k*n^2*pi^2*t)/($L*$L)}");
+$X_n=Compute("sin(n*pi*x/$L)");
+$sol=Compute("-$a*sin(pi*x/$L)*e^{-(k*pi^2*t)/($L*$L)}");
+
+$a0=Compute("1");$an=Compute("1");$bn=Compute("1");
+
+   ## Para la solución tenemos:
+	    $aint0 = "\frac{2}{\pi}\int_{0}^{\pi}\,$fRight\,dx = ". $a0->TeX;
+	    $aintn = "\frac{2}{\pi}\int_{0}^{\pi}\,$fRight\,\cos(n x)\,dx= " . 
+	    $an->TeX;
+	    $bintn = "\frac{2}{\pi}\int_{0}^{\pi}\,$fRight\,\sin(n x)\,dx= " . 
+            $bn->TeX;
+	
+	
+$an->{test_points} = [[1,1,1,1,1,1,1],[2,2,2,2,2,2,2],
+                     [3,3,3,3,3,3,3],[4,4,4,4,4,4,4],[5,5,5,5,5,5,5]];
+$bn->{test_points} =  [[1,1,1,1,1,1,1],[2,2,2,2,2,2,2],
+                     [3,3,3,3,3,3,3],[4,4,4,4,4,4,4],[5,5,5,5,5,5,5]];
+
+$lambda_positiva->{test_points} = [[1,1,1,1,1,1,1],[2,2,2,2,2,2,2],
+                     [3,3,3,3,3,3,3],[4,4,4,4,4,4,4],[5,5,5,5,5,5,5]];
+$T_n->{test_points} = [[1,1,1,1,1,1,1],[2,2,2,2,2,2,2],
+                     [3,3,3,3,3,3,3],[4,4,4,4,4,4,4],[5,5,5,5,5,5,5]];
+$X_n->{test_points} = [[1,1,1,1,1,1,1],[2,2,2,2,2,2,2],
+                     [3,3,3,3,3,3,3],[4,4,4,4,4,4,4],[5,5,5,5,5,5,5]];
+$sol->{test_points} = [[1,1,1,1,1,1,1],[2,2,2,2,2,2,2],
+                     [3,3,3,3,3,3,3],[4,4,4,4,4,4,4],[5,5,5,5,5,5,5]];
+
+#
+#
+###################################################################
+
+# Show which answers are correct and which ones are incorrect
+$showPartialCorrectAnswers = 1;
+
+
+
+#############################################################################
+#
+#  Text
+#
+#
+Context()->texStrings;
+BEGIN_TEXT
+
+Encuentra analíticamente la $Funcion \(u(x,t)\) de $Objeto de longitud \($L\) $Frontera1.
+$BR La $Funcion inicial de la varilla está dada por $Inicial1.
+$PAR
+
+Al utilizar la constante \(-\lambda\) en el método de variables separables para resolver la ecuación del calor: $calor, con k=1, se obtienen dos ecuaciones ordinarias:
+
+$BR EDO 1 .... \(\frac{X''}{X}=-\lambda\),
+.........  EDO2 ..... \(-\lambda=\)\{ ans_rule(15) \} $PAR
+
+Ahora, escribe las las distintas soluciones X que se obtienen después de aplicar las condiciones frontera homogeneas a los tres posibles valores \(\lambda\) en la EDO 1.
+
+$BR Si  \(\lambda=0\) Entonces \(X_n(x)=C_n\)\{ ans_rule(15) \} .
+$BR Si  \(\lambda=\alpha^2>0\) Entonces \(X_n(x)=D_n\)\{ ans_rule(15) \} .
+$BR Si  \(\lambda=-\alpha^2<0\) Entonces \(X_n(x)=F_n\)\{ ans_rule(15) \} .
+$PAR
+
+Con lo cual, una vez resuelta la EDO2 tenemos que una solución al problema sin considerar las condiciones iniciales es: $BR
+$BR \(u_n(x,t)= X_n(x)\times [T_n(t)]=A_n\) \{ ans_rule(15) \}\(\times [\)  \{ ans_rule(15) \}\(]\)     $PAR
+
+Después de aplicar el principio de superposición formamos una solución \(u(x,t)= \sum_{n=1}^\infty u_n(x,t)\).       $PAR
+
+Solo resta garantizar que la solución satisfaga las condiciones iniciales, es decir que \(u(x,0)=f(x)\). Utiliza esta información para calcular los coeficientes \(A_n\) y determinar completamente \(u(x,t)\).$PAR
+
+Así pues \(u(x,t)\) =  \{ ans_rule(15) \} .
+$PAR
+
+Si por las propiedades del material se estima que \(k=1.63\) utiliza la aplicación 3D de tu SAC (sistema de álgebra computarizado) favorito para trazar la gráfica de \(S_5(x,t)\). Es decir la sumatoria hasta \(n=5\). 
+
+$BR \{ htmlLink("#","Help (Notación)","onClick='openhelpCustom1()';") \}
+
+END_TEXT
+Context()->normalStrings;
+
+##############################################################
+#
+#  Answers
+#
+#
+$dos_acero=Compute("0");
+ANS( $EDO->cmp() );
+ANS( $lambda_cero->cmp() );
+ANS( $lambda_positiva->cmp() );
+ANS( $lambda_negativa->cmp() );
+ANS( $X_n->cmp() );
+ANS( $T_n->cmp() );
+ANS( $sol->cmp() );
+
+
+
+##############################################################
+#
+#  Answers
+#
+#
+
+Context()->texStrings;
+
+SOLUTION(EV3(<<'END_SOLUTION'));
+$PAR SOLUTION $PAR
+Debemos resolver el problema: $BR
+$calor $BR
+$Frontera1, 
+Y con condiciones inciales $BR $Inicial1 $PAR
+
+Es decir: 
+$calor $BR
+\(u(0,t)=0\), \(u($L,t)=0\), $BR
+y con $Inicial1 \(=u(x,0)\), $PAR
+
+$BBOLD
+$PAR 1. Resolvemos la ecuación parcial con variables separables para obtener dos EDO's. $BR
+$EBOLD
+De la ecuaciónc$calor $BR
+Si suponemos \(u(x,t)=X(x)T(t)\), entonces la ecuación queda: \(kX''T=XT'\) $BR
+si separamos las variables X y T obtenemos: \(\frac{X''}{X}=\frac{T'}{k T}\) $BR
+Como cada lado depende de distinta variable, tenemos que estos cocientes deben ser constantes. Es decir \(\frac{X''}{X}=\frac{T'}{k T}=-\lambda\)
+Con lo que obtenemos dos ecuaciones: $BR
+$BR EDO 1: \(X''+\lambda X =0\)
+$BR EDO 2: \(T'+k\lambda T =0\)
+
+$BBOLD
+$PAR 2. Resolvemos la ecuación con condiciones de frontera homogéneas.
+$EBOLD
+$BR Como \(X''+\lambda X=0\) es una ecuación lineal de orden dos, obtenemos primero las raíces algebráicas.
+$BR \(m^2+\lambda=0\)
+$BR \(m^2=-\lambda\)
+$BR \(m=\sqrt{-\lambda}\)
+$BR Con lo que obtenemos tres casos:
+$BR CASO 1: \(\lambda =0\) y entonces \(m_1=m_2=0\) y \(X(x)=A+Bx\)
+$BR CASO 2: \(\lambda =\alpha^2 >0\) y entonces \(m_1=\alpha i\), \(m_2=-\alpha i\),\(X(x)=Ccos(\alpha x)+ D\sin(\alpha x)\)
+$BR CASO 2: \(\lambda =-\alpha^2 <0\) y entonces \(m_1=\alpha\), \(m_2=-\alpha \),\(X(x)=Ecosh(\alpha x)+ F\sinh(\alpha x)\)
+
+Ahora evaluamos las condiciones de frontera homogeneas.
+$BR De\(u(0,t)=0\) se deduce que \(X(0)\timesT(t)\)=0, y entonces \(X(0)=0\)
+$BR Análogamente \(X($L)=0\).
+$BR Evaluando estas condiciones en cada uno de los casos, obtenemos:
+
+$BR CASO 1: Si \(\lambda =0\) entonces\(X(x)=0\)
+$BR CASO 2: Si \(\lambda =\alpha^2 >0\)  entonces \( D\sin(\alpha x)\) para \(\alpha = \frac{n \pi}{$L}\)
+$BR CASO 3: Si \(\lambda =-\alpha^2 <0\) entonces \(0\)
+
+$BBOLD
+$PAR 3. Encontramos las soluciones \(u_n(x,t)\) y proponemos \(u(x,t)\).$EBOLD
+Así pues, como ya hemos determinado que \(\lambda=\alpha^2\), resolvemos la ecuación
+$BR EDO 2: \(T'+k\alpha^2 T =0\)
+$BR Cuya solución es: \(Ge^{-k\alpha^2 t}=\(Ge^{-k(\frac{n \pi}{$L})^2 t}\)
+
+y entonces \(X_n(x)=A_n $X_n\) y \(T_n(t)=$T_n\) $BR
+con lo cual \(u_n(x,t)=Xn\times Tn=A_n $X_n $T_n\)
+$BBOLD
+
+$PAR Utilizando el principio de superposición, construimos una única solución:
+$BR \(u(x,t)=\sum_{n=1}^\infty A_n $X_n\times  $T_n\)
+
+$PAR 4. Utilizamos series de Fourier para determinar los coeficientes \(A_n, B_n\) para que nuestra solución \(u(x,t)\) satisfaga las condiciones iniciales. $BR
+$EBOLD
+1. Al evaluar \(t=0\) en la función \(u(x,t)\) obtenemos:
+
+$BR \(u(x,t)=\sum_{n=1}^\infty A_n $X_n \) 
+$PAR 
+2. Por otro lado las condiciones iniciales indican que \(u(x,0)=$Inicial\)
+$PAR
+
+3. Y finalmente, sabemos que la serie de Fourier de senos de $Inicial1 está dada por:
+$BR  \($Inicial=\sum_{n=1}^\infty b_n \sin(\frac{n\pi x}{$L}) \) 
+
+con lo cual deducimos: $BR
+  \($Inicial=\sum_{n=1}^\infty b_n \sin(\frac{n\pi x}{$L})=\sum_{n=1}^\infty A_n $X_n\), y entonces \(A_n=b_n\) por ser los correspondientes coeficientes de la serie de Fourier.
+$PAR
+
+
+$PAR
+En cambio para \( b_n = \frac{2}{$L}\int_{0}^{\pi} $Inicial\times \sin \frac{n\pi x}{$L}\,dx \) $BR tenemos que: $BR
+
+$BR
+\(A_1= b_1 = \frac{2}{$L}\int_{0}^{$L} $Inicial\times  \sin \frac{x\pi}{$L}, dx \)
+$BR
+\( A_2=b_2 = \frac{2}{$L}\int_{0}^{$L} $Inicial\times  \sin \frac{2 x\pi}{$L}, dx \)
+$BR
+y
+$BR
+\( A_3=b_3 = \frac{2}{$L}\int_{0}^{$L}$Inicial\times  \sin \frac{3 x\pi}{$L}, dx \)
+
+$PAR
+
+Entonces,
+\[ F_1= $f1, \]
+\[ F_2 = $f2, \]
+y
+\[ F_3 = $f3. \]
+
+
+END_SOLUTION
+Context()->normalStrings;
+
+
+ENDDOCUMENT();        
+

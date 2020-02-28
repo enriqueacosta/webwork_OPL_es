@@ -1,0 +1,101 @@
+# DESCRIPTION
+# Problem from Calculus, single variable, Hughes-Hallett et al., 4th ed.
+# WeBWorK problem written by Gavin LaRose, <glarose@umich.edu> and adapted by
+# Nelly Sélem GSoC <nselem84@gmail.com>
+# ENDDESCRIPTION
+
+## KEYWORDS('partial','calculus','integral', 'fourier', 'series', 'approximation')
+
+
+## DBsubject('Calculus')
+## DBchapter('Infinite Sequences and Series')
+## DBsection('Fourier Series')
+## Date('')
+
+DOCUMENT();
+
+loadMacros(
+"PGstandard.pl",
+"MathObjects.pl",
+"PGchoicemacros.pl",
+);
+
+Context("Numeric");
+Context()->flags->set( reduceConstants=>0 );
+Context()->variables->add( n=>'Real' );
+$showPartialCorrectAnswers = 1;
+
+$whichL = 0;
+$whichR = random(1,2,1);
+$a = random(2,25,1);
+
+@funcs = ( "0", "$a (x -\pi/2)", "-$a (x -\pi/2)" );
+
+    
+   $fLeft = $funcs[$whichL];
+    $fRight = $funcs[$whichR];
+    $ftex = "\begin{cases} $fLeft, & 0 < x \le \pi/2\cr $fRight, & \pi/2 < x \le \pi\end{cases}";
+
+	## en este caso ambos los an y los bn tendran contribuciones no cero
+	$a0 = Compute("$a*pi/4");
+	$an = Compute("$a*(1-cos(n*pi))/(2*pi*n^2)");
+	$bn = Compute("-$a/(2*n)");
+
+	## y si tenemos -x en la derecha multiplicamos los coeficientes por -1
+	if ( $whichR == 2 ) {
+	    $a0 = $a0*(-1);
+	    $an = $an*(-1);
+	    $bn = $bn*(-1);
+
+
+	 }
+   
+   ## Para la solución tenemos
+	    $aint0 = "\frac{2}{\pi}\int_{0}^{\pi}\,$fRight\,dx = ". $a0->TeX;
+	    $aintn = "\frac{2}{\pi}\int_{0}^{\pi}\,$fRight\,\cos(n x)\,dx= " . 
+	    $an->TeX;
+	    $bintn = "\frac{2}{\pi}\int_{0}^{\pi}\,$fRight\,\sin(n x)\,dx= " . 
+            $bn->TeX;
+	
+$an->{test_points} = [[1,1],[2,2],[3,3],[4,4],[5,5]];
+$bn->{test_points} = [[1,1],[2,2],[3,3],[4,4],[5,5]];
+
+Context()->texStrings;
+TEXT(beginproblem());
+BEGIN_TEXT
+
+Encuentra la \(n-\)sima suma de Fourier para la funcion
+\[ f(x) = $ftex, \]
+asumiendo que \(f(x)\) se extiende f como una función periodica con periodo 
+\( 2\pi \), simplemente duplicando su imagen (f no es par ni impar).
+$PAR
+\(F_k(x) = \frac{a_0}{2} + \sum_{n=1}^{k} a_n\,\cos(2 n x) + b_n\,\sin(2 n x) =\)
+$BR
+\{ ans_rule(15) \} \( + \sum_{n=1}^{k} \) \{ ans_rule(15) \} \(\cos(2 n x) + \)
+\{ ans_rule(15) \} \(\sin(2 n x)\).
+
+END_TEXT
+Context()->normalStrings;
+$acero_sobreDos=$a0/2;
+
+ANS( $acero_sobreDos->cmp() );
+ANS( $an->cmp() );
+ANS( $bn->cmp() );
+
+Context()->texStrings;
+SOLUTION(EV3(<<'END_SOLUTION'));
+$PAR SOLUTION $PAR
+
+para encontrar la \(k-\)sima suma de Fourier, necesitamos determinar \(a_0\) y los diferentes \(a_n\) y \(b_n\) (for \(1\le n\le k\)).  Estos son:
+\[ a_0 = 2*$aint0, \]
+\[ a_n = $aintn, \]
+y
+\[ b_n = $bintn. \]
+$PAR
+Entonces,
+\[ F_k = $a0 + \sum_{n=1}^k\, $an\,\cos(2 n x) + $bn\,\sin(2 n x). \]
+
+END_SOLUTION
+Context()->normalStrings;
+
+ENDDOCUMENT();

@@ -1,0 +1,163 @@
+##DESCRIPTION
+## This is a problem of non homogeneous partial differential  equations. 
+## ENDDESCRIPTION
+
+## GSoC nselem84@gmail.com
+
+########################################################################
+
+DOCUMENT();      
+
+loadMacros(
+   "PGstandard.pl",     # Standard macros for PG language
+   "MathObjects.pl",
+   #"source.pl",        # allows code to be displayed on certain sites.
+   #"PGcourse.pl",      # Customization file for the course
+);
+
+
+###############################################################################
+#   Notation Help Window Code
+#   Código para la Ventana de ayuda para la notación
+###############################################################################
+
+HEADER_TEXT(<<END_HEADER_TEXT);
+<script type="text/javascript">
+<!--
+function openhelpCustom1() {
+OpenWindow=window.open("","answer_format_help","width=550,height=550,status=0,toolbar=0,location=0,menubar=0,directories=0,resizeable=1,scrollbars=1");
+OpenWindow.document.write("<title>Notación utilizada por WebWork para Ecuaciones diferenciales Parciales</title>")
+OpenWindow.document.write("<body bgcolor='#ffffff'>")
+OpenWindow.document.write("<center><h2>Ayuda con la notacion</h2></center>")
+
+OpenWindow.document.write("<center><h3>Constantes:</h3></center>")
+OpenWindow.document.write("<ul>")
+OpenWindow.document.write("<li><font color='#222255'>alfa</font><blockquote>Escribe an si necesitas escribir α_n   </blockquote></li>")
+OpenWindow.document.write("</ul>")
+OpenWindow.document.write("</body>")
+OpenWindow.document.write("</html>")
+OpenWindow.document.close()
+self.name="main"
+if (window.focus) {OpenWindow.focus()}
+return false;
+}
+-->
+</script>
+END_HEADER_TEXT
+############################################################################
+#
+# Print problem number and point value (weight) for the problem
+   TEXT(beginproblem());
+# Show which answers are correct and which ones are incorrect
+$showPartialCorrectAnswers = 1;
+##########################################################################
+#  Setup
+#  Contexto / Variables
+###########################################
+Context()->variables->add(t=>'Real',an=>'Real',n=>'Real');
+
+            # Parameters/conditions
+            #Parámetros y condiciones iniciales y de frontera.
+$a=random(5,20,1); $b=random(1,5,1); 
+$h=random(1,5,1);  $f=Compute("$a x"); 
+  $A=random(2,8,1);  
+  $F=random(10,25,1);  
+  $E=random(21,35,1);  
+  $u0=random(21,35,1);  
+  $beta=random(21,35,1);  
+            
+                    # Soluciones /solutions
+$X_n=Compute("sin(an*x)"); 
+$T_n=Compute("cos(sqrt($A)*an*t)");
+$A_n=Compute("(-$F/$E)*((-4/an)*((sin(an*$a)-$a*an*cos($a*an))/(sin(2*$a*an)-2*$a*an)))");
+$a_n=Compute("(2*n-1)*pi/(2*$a)");
+$psi=Compute("$F*x/$E");
+
+	
+#####################################
+
+
+for($n=1;$n<=3;$n++){
+$coef[$n]=Compute("((2*$n-1)/2)*(pi/$a)"); ##Aproximación al primer alpha que da f(alpha)=0
+
+
+$A[$n]=Compute("(-$F/($E))*((-4/$coef[$n])*((sin($coef[$n]*$a)-$a*$coef[$n]*cos($a*$coef[$n]))/(sin(2*$a*$coef[$n])-2*$a*$coef[$n])))");
+
+}	
+
+$u1=Formula("$psi+$A[1]*sin($coef[1]*x)*cos(sqrt($A)*$coef[1]*t)");
+$u2=Formula("$u1+$A[2]*sin($coef[2]*x)*cos(sqrt($A)*$coef[2]*t)");
+$u3=Formula("$u2+$A[3]*sin($coef[3]*x)*cos(sqrt($A)*$coef[3]*t)");
+
+$A_n->{test_points} = [[1,1,1,1],[2,2,2,2],
+                     [3,3,3,3],[4,4,4,4],[5,5,5,5]];
+
+###########################################################################
+#  Text
+############################################################################
+
+Context()->texStrings;
+BEGIN_TEXT
+Resuelve el siguiente problema con valores en la frontera (PVF) aplicando tus conocimientos de series ortogonales.
+$BR Ecuación \( \frac{\partial^2 u}{\partial t^2}=$A \frac{\partial^2 u}{\partial x^2} \)  
+$BR Condiciones de frontera: 
+$BR \(u(0,t)=0\)   ,    \( $E\frac{\partial u}{\partial x} |_{x=$a}=$F\) , para \(0<x<$a\).
+
+$BR Condiciones iniciales
+$BR \(u(x,0)=0\),    \( \frac{\partial u}{\partial t}  |_{t=0}=0\) , para \(t>0\).
+$BR
+$BR $BBOLD Solución general $EBOLD $BR
+Escribe tu solución, sin evaluar todavía los valores propios \(\alpha_n\) en la forma: \(u(x,y)=\psi(x)+\sum_{n=1}^\infty  A_n X_n(x)\times T_n(t)\) $BR
+
+\(u(x,t)=\psi(x)+\sum_{n=1}^\infty  A_n\) \{ ans_rule(10) \} \(\times\)\{ ans_rule(10) \}. $BR
+
+Donde $BR
+\(\psi=\)\{ ans_rule(25) \} $PAR
+\(A_n=\)\{ ans_rule(25) \} $PAR
+donde \(\alpha_n=\)\{ ans_rule(25) \} 
+$BR $BBOLD Evaluación numérica $EBOLD
+
+$PAR Valores Propios:Obtén los valores propios de la ecuación.
+$BR En particular si \(n=1\) entonces \(\alpha_1\)=\{ ans_rule(7) \}.
+$BR En particular si \(n=2\) entonces \(\alpha_2\)=\{ ans_rule(7) \}.
+$BR En particular si \(n=3\) entonces \(\alpha_3\)=\{ ans_rule(7) \}. $PAR
+
+Con tu aproximaxion de \(\alpha_1\) determina \(A_1\). $BR
+\(A_1\)=\{ ans_rule(7) \} $PAR
+
+Asi que el primer término de la sumatoria es aproximadamente:
+$BR \(u_1(x,t)\approx\)\{ ans_rule(25) \}
+
+$BR Una mejor aproximación a \(u(x,t)\) es \(u_1+u_2+u_3\), es decir $BR 
+\(u(x,t)\approx\sum_{n=1}^3 u_n=\)\{ ans_rule(25) \}
+
+$PAR 
+\{ htmlLink("#","help (Ayuda para notacionWeBWork)","onClick='openhelpCustom1()';") \}
+
+Grafica \(u_1(x,t)\) en Máxima y sube tus resultados al moodle :)!!
+END_TEXT
+Context()->normalStrings;
+
+##############################################################
+#
+#  Answers
+#
+#
+ANS($X_n->cmp());
+ANS($T_n->cmp());
+ANS($psi->cmp());
+ANS($A_n->cmp());
+ANS($a_n->cmp());
+ANS( $coef[1]->cmp(tolType=>'absolute',
+               tolerance=>.01) );
+ANS( $coef[2]->cmp(tolType=>'absolute',
+               tolerance=>.01) );
+ANS( $coef[3]->cmp(tolType=>'absolute',
+               tolerance=>.01) );
+
+ANS( $A[1]->cmp(tolType=>'absolute',
+               tolerance=>.1) );
+ANS($u1->cmp());
+ANS($u3->cmp());
+
+ENDDOCUMENT();        

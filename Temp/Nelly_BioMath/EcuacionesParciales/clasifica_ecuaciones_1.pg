@@ -1,0 +1,93 @@
+##DESCRIPTION
+##  This problem is about to classify partial Differential Equations. Author 
+# nselem84@gmail.com
+##ENDDESCRIPTION
+
+# Author: Nelly Sélem GSoC<nselem84@gmail.com>
+###########################
+#  Initialization
+
+DOCUMENT();
+
+loadMacros(
+"PGstandard.pl",
+"MathObjects.pl",
+"parserPopUp.pl",
+"unionTables.pl",
+);
+
+TEXT(beginproblem());
+
+############################################################
+#  Setup
+#############################################################
+$a=random(2,4,1);
+$b=$a-1;
+$c=$a+1;
+
+$no_lineal = PopUp(  ["?","Lineal","No lineal"],  "No lineal",);
+$ordinaria = PopUp(  ["?","Parcial","Ordinaria"],  "Ordinaria",);
+$orden_1 = PopUp( ["?","Orden 1","Orden 2","Orden 3"],  "Orden 1",);
+$lineal = PopUp(  ["?","Lineal","No lineal"],  "Lineal",);
+$parcial = PopUp(  ["?","Parcial","Ordinaria"],  "Parcial",);
+$orden_a = PopUp(  ["?","Orden $a","Orden $b","Orden $c"],  "Orden $a",);
+
+$Ecuacion_nlo1="\((\frac{\partial u}{\partial t})^2+ u = t\)";
+$Ecuacion_lpa="\(\frac{\partial^$a u}{\partial x^$a}+\frac{\partial^$a u}{\partial x^$b \partial y}=x+y^2\)";
+
+####################################################################
+#  Main text
+#
+Context()->texStrings;
+#######################################################################
+BEGIN_TEXT
+Clasifica las siguientes ecuaciones:
+$BCENTER
+\{
+BeginTable().
+ AlignedRow(["Ecuacion","Tipo","Linealidad","Orden"]).
+  TableSpace(5,0).  AlignedRow(["$Ecuacion_nlo1",$ordinaria->menu(),$no_lineal->menu(),$orden_1->menu()]).
+  TableSpace(5,0).
+  AlignedRow(["$Ecuacion_lpa",$parcial->menu(),$lineal->menu(),$orden_a->menu()]).
+  TableSpace(5,0).
+EndTable();
+\}
+$BR
+
+$ECENTER
+END_TEXT
+Context()->normalStrings;
+########################################################################
+#  Answer evaluation
+
+install_problem_grader(~~&std_problem_grader);
+
+$showPartialCorrectAnswers = 0;
+
+ANS( $ordinaria->cmp() ); ANS( $no_lineal->cmp() ); ANS( $orden_1->cmp() );
+ANS( $parcial->cmp() ); ANS( $lineal->cmp() ); ANS( $orden_a->cmp() );
+##############################################################################
+#  Solution
+
+Context()->texStrings;
+BEGIN_SOLUTION
+${PAR}SOLUTION:$PAR
+La ecuacion $Ecuacion_nlo1 es no lineal porque tiene una derivada elevada al cuadrado. $BR
+
+Es ordinaria porque tiene solo una variable independiente: t. $BR
+
+Es de orden uno porque solo aparece la primera derivada. $BR
+
+$PAR
+La ecuacion $Ecuacion_lpa es lineal porque la variable dependiente u y todas sus derivadas presentes en la ecuacion estan elevadas a la primera potencia y no aparecen en ninguna otra funcion.
+
+Es parcial porque tiene dos variables independientes: x, y. $BR
+
+Es de orden $a porque el maximo orden de sus derivadas es $a. Esta notacion significa que derivamos u $a veces respecto a x:\(\frac{\partial^$a u}{\partial x^$a}\). $BR
+
+
+END_SOLUTION
+COMMENT('MathObject version.');
+
+ENDDOCUMENT();
+    

@@ -1,0 +1,127 @@
+######################### ENGLISH ######################################
+
+# DESCRIPTION
+# Problem for Partial Differential Equations. Laplace equation
+# Author: Nelly Sélem GSoC <nselem84@gmail.com>
+# ENDDESCRIPTION
+
+## KEYWORDS('partial','Laplace')
+
+## DBsubject('Partial Differential Equations')
+## DBchapter('Boundary Problems')
+## DBsection('Laplace equation')
+
+
+DOCUMENT();
+
+loadMacros(
+"PGstandard.pl",
+"MathObjects.pl",
+"PGchoicemacros.pl",
+   "PGgraphmacros.pl",
+
+);
+
+Context("Numeric");
+Context()->flags->set( reduceConstants=>0 );
+Context()->variables->add( n=>'Real',k=>'Real',Y=>'Real',dY=>'Real',y=>'Real',Y=>'Real');
+$showPartialCorrectAnswers = 1;
+
+########################################################
+#                 Variables
+########################################################
+#
+$laplace="\(\frac{\partial^2 u}{\partial x^2}+\frac{\partial^2 u}{\partial y^2}=0\)";
+
+$a=random(2,10,1); #largo en x de la placa
+$b=random(2,10,1); #largo en y de la placa
+$Objeto="una placa";
+$Accion="se calienta";
+$Funcion="la temperatura";
+$v=random(2,30,1); 
+
+
+
+$Frontera1="\( \frac{\partial u}{\partial x}  |_{x=0}=u(0,y)\)";
+$Frontera2="\(u(\pi,y)=$v\)";
+$Frontera3="\(u(x,0)=0\)";
+$Frontera4="\(u(x,\pi)=0\)";
+
+$A0=Compute("0");
+
+$Bn=Compute("-((2*cos(pi*n)-2)*$v)/(pi*n^2*cosh(pi*n)+pi*n*sinh(pi*n))");
+$An=Formula("n*$Bn");
+$EDO=Formula("dY/(k*Y)");
+$Xn1=Formula("n*x");
+$Xn2=Compute("sinh(n*x)");
+$Yn=Compute("sin(n*y)");
+
+#
+########################################################
+########################################################	
+	
+$An->{test_points} = [[1,1,1,1,1,1,1],[2,2,2,2,2,2,2],
+                     [3,3,3,3,3,3,3],[4,4,4,4,4,4,4],[5,5,5,5,5,5,5]];
+$Bn->{test_points} =  [[1,1,1,1,1,1,1],[2,2,2,2,2,2,2],
+                     [3,3,3,3,3,3,3],[4,4,4,4,4,4,4],[5,5,5,5,5,5,5]];
+
+
+# Show which answers are correct and which ones are incorrect
+$showPartialCorrectAnswers = 1;
+
+
+##############################################################
+#
+#  Text
+#
+#
+
+
+Context()->texStrings;
+BEGIN_TEXT
+a) Encuentra analíticamente $Funcion \(u(x,t)\) de $Objeto colocada sobre el rectángulo \(0\le x\le \pi,0\le y\le \pi\).
+$BR Dicha placa satisface las siguientes condiciones:$BR
+$Frontera1, $Frontera2. 
+$BR $Frontera3,$Frontera4.$PAR
+Al utilizar la constante \(-\lambda\) en el método de variables separables para resolver la ecuación del Laplace: $laplace, se obtienen dos ecuaciones ordinarias. Para resolver este problema, fija una de ellas como:
+
+\[\frac{X''}{X}=-\lambda,\]
+
+Después de resolver las EDOs y aplicar todas las condiciones de frontera homogéneas, aplica el principio de superposición para encontrar una solución de la forma: $PAR
+ \(u(x,y) = \sum_{n=1}^{\infty} [X_n(x)][ Y_n(y)]\)
+$PAR
+\(u(x,y)= \sum_{n=1}^{\infty} [\)\{ ans_rule(2) \} \( ]\times[ A_n \cosh(\) \{ ans_rule(5) \}\()+ B_n\) \{ ans_rule(15) \}\(]\) .
+$PAR
+
+Donde para satisfacer todas las condiciones, tenemos que :
+$BR \( A_n=\)\{ ans_rule(35) \} $PAR
+$BR \( B_n=\)\{ ans_rule(35) \} $PAR
+
+Si por las propiedades del material se estima que k=1.63 Utiliza la aplicación 3D de tu SAC (sistema de álgebra computarizado) favorito para trazar la gráfica de \(S_5(x,t)\). Es decir la sumatoria hasta \(n=5\). 
+$BR \{ htmlLink("#","Help (Notación)","onClick='openhelpCustom1()';") \}
+
+END_TEXT
+Context()->normalStrings;
+
+##############################################################
+#
+#  Answers
+#
+#
+ANS( $Yn->cmp() );
+ANS( $Xn1->cmp() );
+ANS( $Xn2->cmp() );
+ANS( $An->cmp() );
+ANS( $Bn->cmp() );
+
+
+
+############################################
+#
+#  Answers
+#
+#
+
+
+ENDDOCUMENT();        
+

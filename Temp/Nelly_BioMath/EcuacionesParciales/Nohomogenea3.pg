@@ -1,0 +1,99 @@
+##DESCRIPTION
+##  Orthogonal Series Problem. This is a problem for non homogeneous partial ##differential equations.
+## ENDDESCRIPTION
+
+## GSoC nselem84@gmail.com
+########################################################################
+
+########################################################################
+
+DOCUMENT();      
+
+loadMacros(
+   "PGstandard.pl",     # Standard macros for PG language
+   "MathObjects.pl",
+   #"source.pl",        # allows code to be displayed on certain sites.
+   #"PGcourse.pl",      # Customization file for the course
+);
+
+# Print problem number and point value (weight) for the problem
+TEXT(beginproblem());
+
+# Show which answers are correct and which ones are incorrect
+$showPartialCorrectAnswers = 1;
+
+##############################################################
+#
+#  Setup
+#
+#
+Context("Numeric");
+Context()->variables->add( n=>'Real',k=>'Real',t=>'Real');
+
+$L =random(2,15); $f =random(2,15);
+
+$EDO1=Compute("-n^2*pi^2/($L*$L)");
+$EDO2=Compute("-2*cos(t)*sin(t)*(1-cos(n*pi))/(n*pi)");
+
+$A=Compute("(cos(n*pi)-1)*$L^2/((n*pi)*(-4*$L^2+n^2*pi^2))");
+
+$C=Compute("((1-cos(n*pi))*(2*$f/(n*pi))-2*$A)*($L/(n*pi))");
+
+$u_h=Compute("$C*sin(n*pi*t/$L)");
+
+$u_p=Compute("$A*sin(2t)");
+
+$u_n=Compute("$u_h+$u_p");
+	
+$Func=Compute("sin(n*pi*x/$L)");
+	
+$u_n->{test_points} = [[1,1,1,1],[2,2,2,2],
+                     [3,3,3,3],[4,4,4,4],[5,5,5,5]];
+$EDO2->{test_points} = [[1,1,1,1],[2,2,2,2],
+                     [3,3,3,3],[4,4,4,4],[5,5,5,5]];
+##############################################################
+#
+#  Text
+#
+#
+
+Context()->texStrings;
+BEGIN_TEXT
+
+Plantea el sistema de ecuaciones ordinarias que resulta al hacer un cambio de variable en un problema no homogeneo con valores en la frontera. 
+
+
+$BR Ecuación del calor perturbado: \( \frac{\partial^2 u}{\partial x^2}+\cos(t)\sin(t)=\frac{\partial^2 u}{\partial t^2} \)  
+$BR Condiciones de frontera: 
+$BR \(u_x(0,t)=0\)   ,    \(u_x($L,t)=0\)
+$BR Condiciones iniciales
+$BR \(u(x,0)=0\) ,  \(u_t(x,0)=$f\) $BR
+
+$BR 
+$BR Cuáles son las funciones propias de la ecuación homogénea correspondiente.
+$BR Para resolver este problema primero necesitas plantear una ecuación ordinaria para \(u_n\) $BR
+\(u_n''(t)\)=  \{ ans_rule(15) \}\(u_n(t)+\)\{ ans_rule(15) \} $BR
+$BR Expresa la solución como \(u(x,t)=\sum_{n=1}^{\infty}[u_n(t)\times\)n-sima Función propia\(]\)
+ $BR Expresa la solución como \(u(x,t)=\sum_{n=1}^{\infty}[u_n(t)\times\)\{ ans_rule(15) \} \(]\) $PAR
+$BR Aplica las condiciones iniciales y obtén \(u_n(t)\).
+$BR \(u_n(t)=\)\{ ans_rule(25) \} 
+END_TEXT
+Context()->normalStrings;
+
+##############################################################
+#
+#  Answers
+#
+#
+
+
+ANS( $EDO1->cmp() );
+ANS( $EDO2->cmp() );
+ANS( $Func->cmp() );
+ANS( $u_n->cmp() );
+
+# relative tolerance --3.1412 is incorrect but 3.1413 is correct
+# default tolerance is .01 or one percent.
+
+
+ENDDOCUMENT();        

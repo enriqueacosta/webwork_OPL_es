@@ -1,0 +1,107 @@
+##DESCRIPTION
+##  Complex integral
+##ENDDESCRIPTION
+
+## GSoC nselem84@gmail.com
+########################################################################
+
+########################################################################
+DOCUMENT() ;
+loadMacros(
+	"PG.pl",
+	"PGbasicmacros.pl",
+	"PGchoicemacros.pl",
+	"PGanswermacros.pl",
+	"PGauxiliaryFunctions.pl",
+	"PGgraphmacros.pl",  
+        "MathObjects.pl",
+        "unionTables.pl",
+) ;
+#sub i ();  #make i act like the imaginary unit.
+
+# Print problem number and point value (weight) for the problem
+TEXT(beginproblem());
+
+# Show which answers are correct and which ones are incorrect
+$showPartialCorrectAnswers = 1;
+
+##############################################################
+#
+#  Setup
+#
+#
+
+Context()->variables->add( i=>'Real',t=>'Real');
+$f="\frac{e^z}{z^2}";
+
+
+$radio1=random(2,5,1); 
+
+$trayectoria="el círculo de radio $radio1";
+
+
+$graph = init_graph(-8, -8, 8, 8,grid=>[16,16],axes=>[0,0]);
+
+
+$x1 = Formula("$radio1*cos(t)");
+$y1 = Formula("$radio1*sin(t)");
+
+$g = new Fun( $x1->perlFunction, $y1->perlFunction, $graph );
+$g->domain(0,2*pi); $g->steps(90); $g->color('red'); $g->weight('2');
+
+
+# Etiquetas sobre la gráfica
+$graph->lb( new Label($radio1+.5,0,$radio1,'red','center','middle'));
+$graph->lb( new Label(0,$radio1-.5,$radio1,'red','center','middle'));
+
+# Etiquetas sobre la gráfica
+$graph->lb( new Label($radio2+.5,0,$radio2,'blue','center','middle'));
+$graph->lb( new Label(0,$radio2-.5,$radio2,'blue','center','middle'));
+
+$solr=Compute("0");
+$soli=Compute("2*pi");
+##############################################################
+#
+#  Text
+#
+#
+
+BEGIN_TEXT
+\{
+ColumnTable(
+"
+$normae $BR
+
+\(\int_{\gamma} $f dz\) =".ans_rule(5)."+".ans_rule(5)."\(i\)$BR
+donde \(\gamma\) es $trayectoria.
+$PAR
+
+"
+
+,
+$BCENTER.
+
+
+image( insertGraph($graph), width=>200, height=>200 ).
+$PAR.
+"Gráfica de un disco".
+$ECENTER
+,
+indent => 0, separation => 30, valign => "TOP"
+); 
+\}
+
+
+END_TEXT
+
+##############################################################
+#
+#  Answers
+#
+#
+
+ANS($solr->cmp());
+
+ANS($soli->cmp());
+
+ENDDOCUMENT();              

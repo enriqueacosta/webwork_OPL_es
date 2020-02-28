@@ -1,0 +1,68 @@
+## DESCRIPTION
+## Calculus # Author: Nelly Sélem GSoC<nselem84@gmail.com>
+## ENDDESCRIPTION
+
+#KEYWORDS('Derivatives')
+
+## DBsubject ('Calculus')
+## DBchapter ('Differentiation')
+## DBsection ('Differentiation Formulas')
+
+########################################
+# Spanish tag
+## DBsubject ('Calculo Diferencial e Integral')
+## DBchapter ('Diferenciacion')
+## DBsection ('Formulas de Diferenciacion')
+
+DOCUMENT();        # This should be the first executable line in the problem.
+                
+loadMacros(
+
+"PGstandard.pl",
+"MathObjects.pl",    
+"PGbasicmacros.pl",
+"PGanswermacros.pl",
+"PGauxiliaryFunctions.pl",
+"Parser.pl",
+"problemRandomize.pl", #ESTA ES PARA QUE EL PROBLEMA SE RECARGUE UNA VEZ CORRECT
+);
+
+ProblemRandomize(when=>"always",onlyAfterDue=>0);
+Context("Vector");
+Context()->variables->add(t=>"Real");
+
+TEXT(beginproblem());
+$showPartialCorrectAnswers = 0;
+
+
+$a8 = non_zero_random(2,15,1);
+$a9 = non_zero_random(2,15,1);
+$I8 = random(0,4,1);
+
+
+
+# MENU FUNCIONES
+
+
+@OtraVariable= (Formula("($a8*t^$a8+$a8)^{1/$a9}"),
+                Formula("$a8*tan(e^{-t})+t^{-2}"),
+                Formula("$a8*sqrt(t)+(sqrt(t))^{-1}"),
+                Formula("($a8*e^t)/t"),
+                Formula("(t^2)*csc($a8*t^3)"));
+
+$f8=$OtraVariable[$I8]; $Df8 = $f8->D;
+Context()->texStrings;
+
+BEGIN_TEXT
+
+INSTRUCCIONES: Escribe la derivada de la función que se te muestra. Para practicar, puedes obtener una nueva versión del problema pulsando el botón "get a new version".  
+$PAR Si \(f(t) = $f8\) entonces \(f'(t) =\)  \{ ans_rule(10)\}
+END_TEXT
+
+Context()->normalStrings;
+ANS($Df8->cmp());
+
+
+ENDDOCUMENT();        # This should be the last executable line in the problem.
+
+

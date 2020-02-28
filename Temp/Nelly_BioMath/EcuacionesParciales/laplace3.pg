@@ -1,0 +1,114 @@
+######################### ENGLISH ######################################
+
+# DESCRIPTION
+# Problem for Partial Differential Equations. Laplace equation
+# Author: Nelly Sélem GSoC <nselem84@gmail.com>
+# ENDDESCRIPTION
+
+## KEYWORDS('partial','Laplace')
+
+## DBsubject('Partial Differential Equations')
+## DBchapter('Boundary Problems')
+## DBsection('Laplace equation')
+
+
+DOCUMENT();
+
+loadMacros(
+"PGstandard.pl",
+"MathObjects.pl",
+"PGchoicemacros.pl",
+   "PGgraphmacros.pl",
+"unionTables.pl",
+
+);
+
+Context("Numeric");
+Context()->flags->set( reduceConstants=>0 );
+Context()->variables->add( n=>'Real',k=>'Real',Y=>'Real',dY=>'Real',y=>'Real',X=>'Real');
+$showPartialCorrectAnswers = 1;
+
+########################################################
+#                 Variables
+########################################################
+#
+$laplace="\(\frac{\partial^2 u}{\partial x^2}+\frac{\partial^2 u}{\partial y^2}=0\)";
+
+$Objeto="una placa";
+$Accion="se calienta";
+$Funcion="la temperatura";
+$a=random(2,10,1); #largo en x de la placa
+$b=random(2,10,1); #largo en y de la placa
+
+$Frontera1="\(u(0,y)=0\)";
+$Frontera2="\(u($a,y)=0\)";
+$Frontera3="\(u(x,0)=0\) ";
+$Frontera4="\(u(x,$b)=f(x)\)";
+
+$A0=Compute("0");
+$An=Formula("(2/($a*sinh(n*pi*$b/$a)))*sin(n*pi*x/$a)");
+$EDO=Formula("-dY/(k*Y)");
+$Xn=Formula("sin(n*pi*x/$a)");
+$Yn=Compute("sinh(n*pi*y/$a)");
+
+
+	
+	
+$An->{test_points} = [[1,1,1,1,1,1,1],[2,2,2,2,2,2,2],
+                     [3,3,3,3,3,3,3],[4,4,4,4,4,4,4],[5,5,5,5,5,5,5]];
+$bn->{test_points} =  [[1,1,1,1,1,1,1],[2,2,2,2,2,2,2],
+                     [3,3,3,3,3,3,3],[4,4,4,4,4,4,4],[5,5,5,5,5,5,5]];
+#
+
+# Show which answers are correct and which ones are incorrect
+$showPartialCorrectAnswers = 1;
+
+##############################################################
+#
+#  Text
+#
+#
+
+
+Context()->texStrings;
+BEGIN_TEXT
+Encuentra analíticamente $Funcion \(u(x,t)\) de $Objeto colocada sobre 
+$BR \(0\le x\le $a\), \(0\le y\le $b\). 
+$BR Que satisface las siguientes condiciones: 
+$BR $Frontera1,  $Frontera2.  
+$BR  $Frontera3, $Frontera4.$PAR
+
+Al utilizar la constante \(-\lambda\) en el método de variables separables para resolver la ecuación de Laplace: $laplace, se obtienen dos ecuaciones ordinarias:
+
+\[\frac{X''}{X}=-\lambda,\]
+
+Después de resolver las EDOs y aplicar todas las condiciones de frontera homogéneas, aplica el principio de superposición para encontrar una solución de la forma: $PAR
+ \(u(x,y) = u_0(x,y) + \sum_{n=1}^{\infty} A_n\,[X_n(x)]\times[Y_n(y)]\)
+$PAR
+\(u(x,y)=A_0 + \sum_{n=1}^{\infty} A_n[\) \{ ans_rule(15) \} \(]\times[\)\{ ans_rule(15) \}\(]\) .
+$PAR
+
+Donde para satisfacer todas las condiciones, tenemos que :
+$BR \( A_0=\) \{ ans_rule(5) \} $BR
+$BR \( A_n=\int_{0}^{$a} f(x)\) \{ ans_rule(35) \} \(dx\)$PAR
+
+
+Si por las propiedades del material se estima que k=1.63 Utiliza la aplicación 3D de tu SAC (sistema de álgebra computarizado) favorito para trazar la gráfica de \(S_5(x,t)\). Es decir la sumatoria hasta \(n=5\). 
+$BR \{ htmlLink("#","Help (Notación)","onClick='openhelpCustom1()';") \}
+
+END_TEXT
+Context()->normalStrings;
+
+##############################################################
+#
+#  Answers
+#
+#
+ANS( $Xn->cmp() );
+ANS( $Yn->cmp() );
+ANS( $A0->cmp() );
+ANS( $An->cmp() );
+############################################
+#
+ENDDOCUMENT();        
+

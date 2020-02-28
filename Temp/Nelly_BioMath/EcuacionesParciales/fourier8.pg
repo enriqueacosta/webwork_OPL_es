@@ -1,0 +1,156 @@
+# DESCRIPTION
+# Problem from Calculus, single variable, Hughes-Hallett et al., 4th ed.
+# WeBWorK problem written by Gavin LaRose, <glarose@umich.edu> and adapted by
+# Nelly Sélem GSoC <nselem84@gmail.com>
+# ENDDESCRIPTION
+
+## KEYWORDS('calculus','integral', 'fourier', 'series', 'approximation')
+
+
+DOCUMENT();
+
+loadMacros(
+"PGstandard.pl",
+"MathObjects.pl",
+"PGchoicemacros.pl",
+);
+
+Context("Numeric");
+Context()->flags->set( reduceConstants=>0 );
+Context()->variables->add( n=>'Real' );
+$showPartialCorrectAnswers = 1;
+
+$whichL = random(0,2);  ## la funcion de la izquierda es  0, x, or -x
+$whichR = random(0,2);  ## la funcion de la derecha es 0, x, or -x
+$whichL = random(1,2) if ( $whichL == 0 && $whichR == 0 );
+
+
+@funcs = ( "0", "x", "-x" );
+
+if ( $whichL == $whichR ) { ## entonces la funcion es o bien x o bien -x
+    $ftex = $funcs[$whichL];
+
+
+    ## En este caso todos los a_n son cero
+    $a0 = Compute("0");
+    $an = Compute("0");
+    ## y los b_n son
+    $bn = Compute("-2*cos(n*pi)/n");
+
+    $bn = $bn*(-1) if ( $whichL == 2 );
+
+    ## para la solucion, nosotros tenemos:
+    $aint0 = "\frac{1}{2\pi}\int_{-\pi}^{\pi}\,$ftex\,dx = 0";
+    $aintn = "\frac{1}{\pi}\int_{-\pi}^{\pi}\,$ftex\,\cos(n x)\,dx = 0";
+    $bintn = "\frac{1}{\pi}\int_{-\pi}^}{\pi}\,$ftex\,\sin(n x)\,dx = " . 
+	$bn->TeX;
+
+} else {
+    $fLeft = $funcs[$whichL];
+    $fRight = $funcs[$whichR];
+    $ftex = "\begin{cases} $fLeft, & -\pi < x \le 0\cr $fRight, & 0 < x \le \pi\end{cases}";
+
+    if ( $whichL == 0 || $whichR == 0 ) {
+	## en este caso ambos los a y los b tendran contribuciones no cero
+	$a0 = Compute("pi/4");
+	$an = Compute("(-1 + cos(n*pi))/(n^2*pi)");
+	$bn = Compute("-1*cos(n*pi)/n");
+
+	## y si tenemos -x en la derecha, o si estamos integrando x en un	##    un dominio negativo, multiplicamos esta por -1
+	if ( $whichR == 2 ) {
+	    $a0 = $a0*(-1);
+	    $an = $an*(-1);
+	    $bn = $bn*(-1);
+
+	} elsif ( $whichL == 1 ) {
+	    $a0 = $a0*(-1);
+	    $an = $an*(-1);
+	}
+
+	if ( $whichL == 0 ) {
+	    ## for the solution, we have
+	    $aint0 = "\frac{1}{2\pi}\int_{0}^{\pi}\,$fRight\,dx = " . $a0->TeX;
+	    $aintn = "\frac{1}{\pi}\int_{0}^{\pi}\,$fRight\,\cos(n x)\,dx = " . 
+		$an->TeX;
+	    $bintn = "\frac{1}{\pi}\int_{0}^{\pi}\,$fRight\,\sin(n x)\,dx = " . 
+		$bn->TeX;
+	} else {
+	    ## for the solution, we have
+	    $aint0 = "\frac{1}{2\pi}\int_{-\pi}^{0}\,$fLeft\,dx = " . $a0->TeX;
+	    $aintn = "\frac{1}{\pi}\int_{-\pi}^{0}\,$fLeft\,\cos(n x)\,dx = " . 
+		$an->TeX;
+	    $bintn = "\frac{1}{\pi}\int_{-\pi}^{0}\,$fLeft\,\sin(n x)\,dx = " . 
+		$bn->TeX;
+	}
+
+    } else {
+	## we know that we go from -x to x or vice versa; the case -x to
+	##    x is
+	$a0 = Compute("pi/2");
+	$an = Compute("2*(-1 + cos(n*pi))/(n^2*pi)");
+	$bn = Compute("0");
+
+	## then, if we went x to -x, we just have the negative of these
+	if ( $whichL == 1 ) {
+	    $a0 = $a0*(-1);
+	    $an = $an*(-1);
+	}
+
+	## and for the solution we have
+	$aint0 = "\frac{1}{2\pi}\int_{-\pi}^0\,$fLeft\,dx + " .
+	    "\frac{1}{2\pi}\int_0^{\pi}\,$fRight\,dx = " .
+	    $a0->TeX;
+	$aintn = "\frac{1}{\pi}\int_{-\pi}^0\,$fLeft\,\cos(n x)\,dx + " .
+	    "\frac{1}{\pi}\int_0^{\pi}\,$fRight\,\cos(N x)\,dx = " .
+	    $an->TeX;
+	$bintn = "\frac{1}{\pi}\int_{-\pi}^0\,$fLeft\,\sin(n x)\,dx + " .
+	    "\frac{1}{\pi}\int_0^{\pi}\,$fRight\,\sin(n x)\,dx = " .
+	    $bn->TeX;
+    }
+}
+# $a0 = $a0->reduce();
+# $an = $an->reduce();
+# $bn = $bn->reduce();
+
+$an->{test_points} = [[1,1],[2,2],[3,3],[4,4],[5,5]];
+$bn->{test_points} = [[1,1],[2,2],[3,3],[4,4],[5,5]];
+
+Context()->texStrings;
+TEXT(beginproblem());
+BEGIN_TEXT
+
+Encuentra la \(n-\)sima suma de Fourier para la funcion
+\[ f(x) = $ftex, \]
+asumiendo que \(f(x)\) es periodica con periodo 
+\( 2\pi \).
+$PAR
+\(F_k(x) = \frac{a_0}{2} + \sum_{n=1}^{k} a_n\,\cos(n x) + b_n\,\sin(n x) =\)
+$BR
+\{ ans_rule(15) \} \( + \sum_{n=1}^{k} \) \{ ans_rule(15) \} \(\cos(n x) + \)
+\{ ans_rule(15) \} \(\sin(n x)\).
+
+END_TEXT
+Context()->normalStrings;
+
+
+ANS( $a0->cmp() );
+ANS( $an->cmp() );
+ANS( $bn->cmp() );
+
+Context()->texStrings;
+SOLUTION(EV3(<<'END_SOLUTION'));
+$PAR SOLUTION $PAR
+
+para encontrar la \(k-\)sima suma de Fourier, necesitamos determinar \(a_0\) y los diferentes \(a_n\) y \(b_n\) (for \(1\le n\le k\)).  Estos son:
+\[ a_0 = 2*$aint0, \]
+\[ a_n = $aintn, \]
+y
+\[ b_n = $bintn. \]
+$PAR
+Entonces,
+\[ F_k = $a0 + \sum_{n=1}^k\, $an\,\cos(n x) + $bn\,\sin(n x). \]
+
+END_SOLUTION
+Context()->normalStrings;
+
+ENDDOCUMENT();

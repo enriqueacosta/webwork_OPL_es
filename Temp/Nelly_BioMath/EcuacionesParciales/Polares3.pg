@@ -1,0 +1,305 @@
+## DESCRIPTION
+## Partial Polar differential equations. This problem is about the temperature
+## of a disk. Autor  Nelly Sélem UPIIG nselem84@gmail.com
+## ENDDESCRIPTION
+
+## KEYWORDS('polar', 'Laplace','Partial','Differential','Equation')
+
+## DBsubject('Partial Differential Equations')
+## DBchapter('Polar, cylindrical and spherical coordinates')
+## DBsection('')
+## Date('01/11/2011')
+## Author('Nelly Sélem')
+## Institution('UPIIG IPN')
+## TitleText1('Differential equations with boundary value problems')
+## EditionText1('6')
+## AuthorText1('Dennis Zill,Michael R. Cullen ')
+## Section1('13.1')
+
+## Translation
+## DESCRIPTION
+## Ecuación diferencial parcial en coordenadas polares. En este problema se 
+## trata de modelar la temperatura de un disco. 
+## ENDDESCRIPTION
+## GSoC nselem84@gmail.com
+
+DOCUMENT();      
+##############################################
+############################################
+loadMacros(
+
+"PGchoicemacros.pl",
+"unionTables.pl",
+"PGstandard.pl",
+"MathObjects.pl",
+"PGgraphmacros.pl",
+"AnswerFormatHelp.pl",
+"unionTables.pl",
+
+);
+
+
+###############################################################################
+#   Notation Help Window Code
+#   Código para la Ventana de ayuda para la notación
+###############################################################################
+
+HEADER_TEXT(<<END_HEADER_TEXT);
+<script type="text/javascript">
+<!--
+function openhelpCustom1() {
+OpenWindow=window.open("","answer_format_help","width=550,height=550,status=0,toolbar=0,location=0,menubar=0,directories=0,resizeable=1,scrollbars=1");
+OpenWindow.document.write("<title>Notación utilizada por WebWork para Ecuaciones diferenciales Parciales</title>")
+OpenWindow.document.write("<body bgcolor='#ffffff'>")
+OpenWindow.document.write("<center><h2>Ayuda con la notacion</h2></center>")
+
+OpenWindow.document.write("<center><h3>Variables:</h3></center>")
+OpenWindow.document.write("<ul>")
+OpenWindow.document.write("<li><font color='#222255'>theta</font><blockquote>Escribe t si necesitas escribir θ   </blockquote></li>")
+OpenWindow.document.write("</ul>")
+OpenWindow.document.write("</body>")
+OpenWindow.document.write("</html>")
+OpenWindow.document.close()
+self.name="main"
+if (window.focus) {OpenWindow.focus()}
+return false;
+}
+-->
+</script>
+END_HEADER_TEXT
+
+
+TEXT(beginproblem());
+
+$refreshCachedImages = 1;
+
+Context("Numeric");
+Context()->flags->set( reduceConstants=>0 );
+Context()->variables->add( n=>'Real',r=>'Real',t=>'Real');
+$showPartialCorrectAnswers = 1;
+
+########################################################
+#                 Variables
+########################################################
+# set variables // variables del problema
+
+$laplace="\(\frac{\partial^2 u}{\partial x^2}+\frac{\partial^2 u}{\partial y^2}=0\)";
+
+$Objeto="una placa";
+$Accion="se calienta";
+$Funcion="la temperatura";
+
+$b=random(2,10,1);      #frontera
+$c1=random(6,12);       #radio del circulo
+$Frontera1 = "u($c1,\theta)= $b\theta";  
+
+####################################
+# Answer variables/ variables de respuestas
+
+$A0=Compute("0"); #coeficientes del coseno
+$An=Formula("0");
+
+$int=Compute("-pi*n*cos(pi*n)/(4*n^2)");
+$int1=Compute("-pi*1*cos(pi*1)/(4*1^2)");
+$int2=Compute("-pi*2*cos(pi*2)/(4*2^2)");
+
+$Bn=Formula("(4*$b/(pi*$c1^(2*n)))*$int"); #coeficientes del seno
+$B1=Formula("(4*$b/(pi*$c1^(2)))*$int1");
+$B2=Formula("(4*$b/(pi*$c1^(2*2)))*$int2");
+
+$Rn=Formula("r^(2*n)");  #funcion de r
+$R1=Formula("r^(2*1)");
+$R2=Formula("r^(2*2)");
+
+$Tn=Compute("sin(2*n*t)");  #funcion de theta
+$T1=Compute("sin(2*1*t)");
+$T2=Compute("sin(2*2*t)");
+
+$u=Compute("$Bn*$Rn*$Tn");  #solucion u 
+$u1=Compute("$B1*$T1*$R1");
+$u2=Compute("$u1+$B2*$T2*$R2"); #segunda aproximacion de u
+
+	### Método de comparacion de la respuesta del alumno
+        ## Evalua las formulas en las variables x,n,t,r
+        ## en los puntos indicados
+
+$u2->{test_points} = [[1,1,1,1],[2,2,2,2],
+                     [3,3,3,3],[4,4,4,4],[5,5,5,5]];	
+
+$Bn->{test_points} = [[1,1,1,1],[2,2,2,2],
+                     [3,3,3,3],[4,4,4,4],[5,5,5,5]];
+
+$u->{test_points} = [[1,1,1,1],[2,2,2,2],
+                     [3,3,3,3],[4,4,4,4],[5,5,5,5]];
+###########################################################################
+#
+#         Graficos // Graph
+##########################################################################
+
+Context()->texStrings;
+$gr = init_graph(-($c1+.5),-($c1+.5),($c1+.5),($c1+.5),axes=>[0,0],size=>[300,300]);
+
+$gr->new_color("lightblue", 198,217,253); # RGB
+$gr->new_color("darkblue",   77,137,249);
+
+#  If the polar curve is r1 = c1 , 
+#  x1 = r cos(t) = c1 cos(t)
+#  y1 = r sin(t) = c1 sin(t)
+
+$x1 = Formula("$c1*cos(t)"); $y1 = Formula("$c1*sin(t)");
+
+#Círculo 
+
+$f = new Fun( $x1->perlFunction, $y1->perlFunction, $gr );
+$f->domain(0,pi/2); $f->steps(90);
+$f->color('darkblue'); $f->weight('2');
+
+$f1 = Compute("0");
+
+#Lineas
+$x3 = Formula("t*sin(0)"); $y3 = Formula("t*cos(0)");
+
+$g = new Fun( $x3->perlFunction, $y3->perlFunction, $gr );
+$g->domain(0,$c1); $g->steps(90);
+$g->color('darkblue'); $g->weight('2');
+
+add_functions( $gr,
+	       "$f1 for t in <0,$c1> using color:darkblue and weight:2",
+	       );
+
+$gr->fillRegion([.5,.5,'lightblue']);
+
+#Etiquetas
+$gr->lb( new Label($c1-1,0,('u=0'),
+    'black','center','middle'));
+$gr->lb( new Label(-1,$c1-.5,('r = '),
+    'black','center','middle'));
+$gr->lb( new Label(0,$c1-.5,$c1,
+    'black','center','middle'));
+$gr->lb( new Label(0,$c1-2,('u=0'),
+    'black','center','middle'));
+
+
+##########################
+#  Main Text 
+
+Context()->texStrings;
+BEGIN_TEXT
+\{
+ColumnTable(
+"
+Determine la temperatura de estado estable \(u(r,\theta)\)  de la placa de un cuarto de círculo que se muestra en la figura. Esta placa además satisface la condición:$PAR
+\[$Frontera1\] $PAR 
+
+Al utilizar la constante \(\lambda\) en el método de variables separables para resolver la ecuación polar de Laplace, se obtienen dos ecuaciones ordinarias. Escoge una de ellas como
+                    \[-\frac{ \Theta''}{\Theta}=\lambda,\] $PAR
+
+Después de resolver las EDOs y aplicar todas las condiciones de frontera homogéneas, aplica el principio de superposición para encontrar una solución de la forma: $PAR
+ \(u(r,\theta) = u_0(r,\theta) + \sum_{n=1}^{\infty} A_n\,[R_n(r)]\times[\Theta_n(\theta)]+B_n\,[R_n(r)]\times[\Theta_n(\theta)]\)
+
+$BR Donde: $BR 
+\( A_n=\)".ans_rule(40)." $PAR
+
+\( B_n=\)".ans_rule(40)."$PAR"
+,
+$BCENTER.
+image( insertGraph($gr), width=>300, height=>300 ).
+$PAR.
+"Gráfica de un disco".
+$ECENTER
+,
+indent => 0, separation => 30, valign => "TOP"
+); 
+\}
+$PAR 
+\{ htmlLink("#","help (Notación)","onClick='openhelpCustom1()';") \}$BR
+
+Asi pues, el término general de la serie de \(u(r,\theta)\).$PAR
+\(u(r,\theta)=\sum_{n=1}^{\infty}\)\{ans_rule(60)\} $PAR
+
+Escribe la aproximación de \(u(r,\theta)\) que contiene los términos de la serie hasta \(n=2\).$PAR
+
+\(u(r,\theta)\approx u_2(r,\theta)=\)\{ans_rule(60)\} $PAR
+
+END_TEXT
+Context()->normalStrings;
+
+
+########################
+#  Answer Evaluation
+
+$showPartialCorrectAnswers = 1;
+
+##############################################################
+#
+#  Answers
+#
+#
+ANS( $An->cmp() );
+ANS( $Bn->cmp() );
+ANS( $u->cmp() );
+ANS( $u2->cmp() );
+##################################################
+##########################
+
+############################
+#  Solution
+
+Context()->texStrings;
+
+$strBnIntegral="\(\frac{2}{L}\int_0^{L}f(\theta)sin(\frac{n\pi\theta}{L}), d\theta\)";
+$strBnIntegral1="\(\frac{2}{\frac{\pi}{2}}\int_0^{\frac{\pi}{2}}f(\theta)sin(2n\theta), d\theta\)";
+$strBnIntegral2="\(\frac{4}{\pi}\int_0^{\frac{\pi}{2}}$b\theta\sin(2n\theta), d\theta\)";
+#########################################################################
+BEGIN_SOLUTION
+${PAR}SOLUTION:${PAR}
+Para resolver este problema se utiliza la ecuación polar de Laplace:
+\(\frac{\partial^2 u}{\partial r^2}+\frac{1}{r}\frac{\partial u}{\partial r}+\frac{1}{r^2}\frac{\partial^2 u}{\partial \theta^2}=0\). $PAR
+
+Al separar variables se obtienen las ecuaciones: $BR
+1) \(\Theta ''+\lambda \theta=0\) (Ecuación lineal de coeficientes constantes)
+2) \(r^2R''+rR'-\lambda R=0\) $BR (Ecuación de Cauchy Euler)
+$PAR
+
+Al resolver la primera ecuación, considerando que \(\Theta\) debe tener período \(2\pi\)  obtenemos dos posibilidades: $BR
+I. Cuando \(\lambda=0\): \(\Theta(\theta)=C_1\).$BR 
+II.Cuando \(\lambda=\alpha ^2\): \(\Theta(\theta)=C_2 \cos(\alpha\theta)+ C_3\sin(\alpha\theta) \). $BR
+Por la periodicidad obtenemos que los valores propios pueden ser \(\alpha=n\).
+
+$PAR
+Al considerar además que \(\Theta(0)=0\), \(\Theta(\frac{\pi}{2})=0\) obtenemos que: $BR
+I. \(C_1=0\) $BR
+II.\(\alpha=2n\) Es decir sólo funcionan los \(n\) tal que \(n\) es par. $BR
+
+ y entonces \(\lambda=(2n)^2\).
+$PAR
+
+$PAR
+Al resolver la segunda ecuación por el método de Cauchy-Euler, considerando que \(R(r)\) debe ser acotada, pues es una temperatura, se obtiene: $BR
+
+II.Cuando \(\lambda=(2n)^2\): \(R(r)=C_5 r^{2n} \). 
+
+$PAR
+Entonces, \(B_n=C_5C_3\) la solución u es: $BR
+\(u(r,\theta)={\displaystyle \sum_{n=1}^{\infty}r^{2n}B_{n}sin(2n\theta)} \)$BR
+$PAR
+Para calcular los coeficientes \(B_n\) evaluamos la condición de frontera: $PAR
+
+\(f( \theta)=u($c1,\theta)={\displaystyle \sum_{n=1}^{\infty}$c1^{2n}B_{n}sin(2n\theta)} \)$BR
+
+y la comparamos con su serie de Fourier:
+\(f( \theta)={\displaystyle \sum_{n=1}^{\infty} b_{n}sin(\frac{n\pi\theta}{\frac{\pi}{2}})} \) que es una serie de senos. $BR
+
+De ahi concluimos, considerando que \(f(\theta)=$Frontera1\) que: $BR
+
+$BR \(b_n=\)$strBnIntegral $PAR
+=$strBnIntegral1 $PAR
+=$strBnIntegral2 $PAR
+\(B_n=\frac{b_n}{$c1^{2n}}=$Bn\)
+
+END_SOLUTION
+Context()->normalStrings;
+
+COMMENT('MathObject version.');
+
+ENDDOCUMENT();

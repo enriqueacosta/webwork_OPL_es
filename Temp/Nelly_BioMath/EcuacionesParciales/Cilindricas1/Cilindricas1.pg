@@ -1,0 +1,158 @@
+## DESCRIPTION
+## Partial cylindrical differential equations. This problem is about the 
+## Bessel function, which is used in cylindrical equations.
+##   Autor  Nelly Sélem nselem84@gmail.com
+## ENDDESCRIPTION
+
+## GSoC nselem84@gmail.com
+
+## DESCRIPTION## Este problema es para introducir la serie de Bessel, que será ## usada en la solución de problemas cilíndricos.
+##   Autor  Nelly Sélem UPIIG nselem84@gmail.com
+## ENDDESCRIPTION
+
+
+
+DOCUMENT();
+
+loadMacros(
+"PGstandard.pl",
+"MathObjects.pl",
+"AnswerFormatHelp.pl",
+"PGgraphmacros.pl",
+"unionTables.pl",
+);
+
+TEXT(beginproblem());
+
+$refreshCachedImages = 1;
+
+
+##############################################
+#  Setup
+
+Context("Numeric");
+Context()->flags->set(tolerance=>0.0001, tolType=>"absolute");
+
+$a = random(.5,8,.5); # valor a evaluar
+$b = random(.5,8,.5); # valor a evaluar
+
+##################################################################
+# Funciones de Bessel orden 0 y orden 1
+####################################################################
+
+$FuncBessel="J_v(x)=\sum_{n=0}^{\infty}\frac{(-1)^n}{n!\Gamma(1+v+n)}(\frac{x}{2})^{2n+v}";
+
+sub Bessel_cero{
+  $equis=$_[0]; $suma=0;
+  for($n=0;$n<=60;$n++){
+           $sumando[$n]=Compute("($equis/2)^(2*$n)*(-1)^$n/($n!*$n!)");
+           $suma=$suma+$sumando[$n];
+                       }	
+  return ( $suma);
+  }
+
+
+
+sub Bessel_uno{
+  $equis=$_[0]; $suma=0;
+  for($n=0;$n<=60;$n++){
+           $sumando[$n]=Compute("($equis/2)^(2*$n+1)*(-1)^$n/($n!*($n+1)!)");
+           $suma=$suma+$sumando[$n];
+                       }	
+  return ( $suma);
+  }
+
+####################################################################
+### Los ceros/raíces de las funciones de Bessel
+#######################################################################
+
+@Raices0=(Compute("2.4048"),Compute("5.5201"),Compute("8.6537"),Compute("11.7915"),Compute("14.9309"));
+@Raices1=(Compute("0"),Compute("3.8317"),Compute("7.0156"),Compute("10.1735"),Compute("13.3237"));
+@nombres=("primera","segunda","tercera","cuarta","quinta");
+
+######################################################################
+##                         Respuestas/Answers
+################################################################
+
+$B0a=Bessel_cero($a); ## Evalua $a en Bessel orden 0
+$B1b=Bessel_uno($b);  ## Evalua $b en BEssel orden 1
+
+$B0n1=random(0,1); #Numero de Raiz de La funcion de Bessel 0
+$B1n1=random(0,1); #Numero de Raiz de La funcion de Bessel 1
+$B0n2=random(2,4);
+$B1n2=random(2,4);
+
+$B0r1=$Raices0[$B0n1];  ## Raíces de las funciones de Bessel
+$B0r2=$Raices0[$B0n2];
+$B1r1=$Raices1[$B1n1];
+$B1r2=$Raices1[$B1n2];
+
+####################################################################
+#  Main text
+#
+####################################################################
+
+Context()->texStrings;
+BEGIN_TEXT
+\{
+ColumnTable(
+" La función de Bessel de Orden \(v\) se define de la siguiente manera: 
+$PAR \($FuncBessel\), para \(x>0\)
+$PAR
+En la gráfica de la derecha puedes observar la función de Bessel de orden 0. Calcula los valores que se te piden. $PAR $BR
+
+
+(a) \( J_0($a) = \) " . 
+ans_rule(7).$SPACE.
+AnswerFormatHelp("numbers")." $PAR $BR
+
+(b) \( J_1($b) = \) " . 
+ans_rule(7).$SPACE.
+AnswerFormatHelp("numbers").
+"$PAR
+$BR
+(c) Escribe la $nombres[$B0n1] y la $nombres[$B0n2] raíz, mayor o igual que cero de \(J_0(x)\) $BR 
+\( J_0 \big( \) ".ans_rule(7)." \( \big) = 0 \). ".
+AnswerFormatHelp("numbers").
+
+"$PAR
+$BR
+(d) Escribe la $nombres[$B1n1] y la $nombres[$B1n2] raíz, mayor o igual que cero de \(J_1(x)\) 
+$BR
+\( J_1  \big( \) ".ans_rule(7)." \( \big) = 0 \). ".
+AnswerFormatHelp("numbers")
+
+,
+image( "Cilindricas1.png", width=>400, height=>400,tex_size=>700). 
+  
+$BR.$BCENTER.
+$BR.
+"Gráfica de la función de Bessel \( J_0(x) \)".
+$ECENTER
+,
+indent => 0, separation => 30, valign => "TOP"
+)
+\}
+END_TEXT
+Context()->normalStrings;
+
+
+###############################################
+#  Answer evaluation
+
+$showPartialCorrectAnswers = 1;
+
+ANS(List($B0a)->cmp()  );
+
+ANS(List($B1b)->cmp() );
+
+ANS(List($B0r1,$B0r2)->cmp() );
+
+ANS(List($B1r1,$B1r2)->cmp() );
+############################
+#  Solution
+
+
+COMMENT('MathObject version.');
+
+ENDDOCUMENT();

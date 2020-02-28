@@ -1,0 +1,185 @@
+## DESCRIPTION
+## Partial Polar differential equations. This problem is about the temperature
+## of a ring. Autor  Nelly Sélem UPIIG nselem84@gmail.com
+## ENDDESCRIPTION
+## GSoC nselem84@gmail.com
+
+DOCUMENT();      
+##############################################
+############################################
+loadMacros(
+
+"PGchoicemacros.pl",
+"unionTables.pl",
+"PGstandard.pl",
+"MathObjects.pl",
+"PGgraphmacros.pl",
+"AnswerFormatHelp.pl",
+"unionTables.pl",
+
+);
+
+
+###############################################################################
+#   Notation Help Window Code
+#   Código para la Ventana de ayuda para la notación
+###############################################################################
+
+HEADER_TEXT(<<END_HEADER_TEXT);
+<script type="text/javascript">
+<!--
+function openhelpCustom1() {
+OpenWindow=window.open("","answer_format_help","width=550,height=550,status=0,toolbar=0,location=0,menubar=0,directories=0,resizeable=1,scrollbars=1");
+OpenWindow.document.write("<title>Notación utilizada por WebWork para Ecuaciones diferenciales Parciales</title>")
+OpenWindow.document.write("<body bgcolor='#ffffff'>")
+OpenWindow.document.write("<center><h2>Ayuda con la notacion</h2></center>")
+
+OpenWindow.document.write("<center><h3>Variables:</h3></center>")
+OpenWindow.document.write("<ul>")
+OpenWindow.document.write("<li><font color='#222255'>theta</font><blockquote>Escribe t si necesitas escribir θ   </blockquote></li>")
+OpenWindow.document.write("</ul>")
+OpenWindow.document.write("</body>")
+OpenWindow.document.write("</html>")
+OpenWindow.document.close()
+self.name="main"
+if (window.focus) {OpenWindow.focus()}
+return false;
+}
+-->
+</script>
+END_HEADER_TEXT
+
+
+TEXT(beginproblem());
+
+$refreshCachedImages = 1;
+
+Context("Numeric");
+Context()->flags->set( reduceConstants=>0 );
+Context()->variables->add(r=>'Real',t=>'Real');
+$showPartialCorrectAnswers = 1;
+
+########################################################
+#                 Variables
+########################################################
+#
+
+$Objeto="una placa";
+$Accion="se calienta";
+$Funcion="la temperatura";
+$c1=random(2,5);
+$c2=random(6,12);
+$u1=random(2,5);
+$u2=random(6,12);
+
+
+$U=Formula("($u1*log(r/$c2)-$u2*log(r/$c1))/log($c1/$c2)");
+
+	
+$U->{test_points} = [[1,1,1],[2,2,2],[3,3,3],[4,4,4],[5,5,5]];
+
+
+Context()->texStrings;
+$gr = init_graph(-($c2+.1),-($c2+.1),($c2+.1),($c2+.1),axes=>[0,0],size=>[300,300]);
+
+$gr->new_color("lightgreen", 187, 255, 153); 
+$gr->new_color("darkgreen",    0, 208, 0);
+
+#  If the polar curve is r1 = c1 , r2=c2, then
+#      c1<c2
+#  x1 = r cos(t) = c1 cos(t)
+#  y1 = r sin(t) = c1 sin(t)
+#  x2 = r cos(t) = c2 cos(t)
+#  y2 = r sin(t) = c2 sin(t)
+#
+
+$x1 = Formula("$c1*cos(t)");
+$y1 = Formula("$c1*sin(t)");
+
+$x2 = Formula("$c2*cos(t)");
+$y2 = Formula("$c2*sin(t)");
+###########################################################################
+####
+#         Gráficas
+###########################################################################
+#
+#Círculo pequeño
+$f = new Fun( $x1->perlFunction, $y1->perlFunction, $gr );
+$f->domain(0,2*pi);
+$f->steps(90);
+$f->color('darkgreen');
+$f->weight('2');
+
+#Círculo grande
+$g = new Fun( $x2->perlFunction, $y2->perlFunction, $gr );
+$g->domain(0,2*pi);
+$g->steps(90);
+$g->color('darkgreen');
+$g->weight('2');
+$gr->fillRegion([$c1+.5,.5,'lightgreen']);
+
+#Etiquetas
+$gr->lb( new Label($c1,0,$c1,
+    'black','center','middle'));
+$gr->lb( new Label(.5,$c2-.5,$c2,
+    'black','center','middle'));
+
+$gr->lb( new Label($c1/sqrt(2),$c1/sqrt(2),('u = '),
+    'black','center','middle'));
+$gr->lb( new Label($c2/sqrt(2),$c2/sqrt(2),('u = '),
+    'black','center','middle'));
+
+$gr->lb( new Label($c1/sqrt(2)+1,$c1/sqrt(2), $u1,
+    'black','center','middle'));
+
+$gr->lb( new Label($c2/sqrt(2)+1,$c2/sqrt(2), $u2,
+    'black','center','middle'));
+
+
+
+##########################
+#  Main Text 
+
+Context()->texStrings;
+BEGIN_TEXT
+\{
+ColumnTable(
+"
+$PAR Encuentra la $Funcion \(u(r,\theta)\) de estado estable de $Objeto que tiene forma de un anillo. Las condiciones en la frontera de dicha placa se muestran en la figura.$PAR
+$BR 
+
+Sugerencia: Intenta una solución de la forma \(u(r,\theta)=v(r,\theta)+\psi(r)\) $PAR
+
+$BR
+
+\(u(r,\theta)= \) ".ans_rule(35)." 
+ $PAR ".htmlLink("#","help (Ayuda para notacionWeBWork)","onClick='openhelpCustom1()';").""
+,
+$BCENTER.
+image( insertGraph($gr), width=>300, height=>300 ).
+$PAR.
+"Gráfica de un disco".
+$ECENTER
+,
+indent => 0, separation => 30, valign => "TOP"
+); 
+\}
+$PAR 
+
+END_TEXT
+Context()->normalStrings;
+
+
+##############################################################
+#
+#  Answers
+#
+#
+$showPartialCorrectAnswers = 1;
+ANS( $U->cmp() );
+
+##################################################
+
+COMMENT('MathObject version.');
+
+ENDDOCUMENT();

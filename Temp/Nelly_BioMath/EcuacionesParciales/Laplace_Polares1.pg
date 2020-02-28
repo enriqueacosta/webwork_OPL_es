@@ -1,0 +1,204 @@
+##DESCRIPTION
+## EDP de Laplace en coordenadas polares. Solo version Virtual.
+##ENDDESCRIPTION
+
+## GSoC nselem84@gmail.com
+
+########################################################################
+
+DOCUMENT();      
+
+loadMacros(
+   "PGstandard.pl",     # Standard macros for PG language
+   "MathObjects.pl",
+   "PGchoicemacros.pl",
+   "unionTables.pl",
+"PGgraphmacros.pl",
+   #"source.pl",        # allows code to be displayed on certain sites.
+   #"PGcourse.pl",      # Customization file for the course
+);
+
+# Print problem number and point value (weight) for the problem
+TEXT(beginproblem());
+
+# Show which answers are correct and which ones are incorrect
+$showPartialCorrectAnswers = 0;
+
+##############################################################
+#
+#  Setup
+#
+#
+# $CF_T = new_multiple_choice();
+# $CF_T->qa("", "\( \)");
+# $CF_T->extra("\(  \)", "\(  \)");
+# $CF_T->makeLast("\(  \)");
+#
+#
+Context("Numeric");
+
+$pi = Real("pi");
+$a = random(2,9,1);
+
+$gr = init_graph(-($a+.1),-($a+.1),($a+.1),($a+.1),axes=>[0,0],size=>[300,300]);
+
+$gr->new_color("lightgreen", 220, 159, 225); 
+$gr->new_color("darkgreen",    83, 7, 89);
+
+
+$x1 = Formula("$a*cos(x)");
+$y1 = Formula("$a*sin(x)");
+
+##Gráficas
+###########################################################################
+#
+#Círculo pequeño
+$f = new Fun( $x1->perlFunction, $y1->perlFunction, $gr );
+$f->domain(0,2*pi);
+$f->steps(90);
+$f->color('darkgreen');
+$f->weight('2');
+$gr->fillRegion([$a-.5,.5,'lightgreen']);
+
+#Etiquetas
+$gr->lb( new Label($a-.2,-.2,$a,
+    'black','center','middle'));
+
+##################################################################
+# set up for a multiple choice problem.
+$CF_R = new_multiple_choice();
+$CF_R->qa("", "Ninguna");
+$CF_R->extra("\(R($a)=0\)", "\(R($a)=$a\)");
+$CF_R->makeLast("\(R($a)=\dfrac{\theta}{\Theta(\theta)}\)");
+
+$CF_T = new_multiple_choice();
+$CF_T->qa("", "\(\Theta(\theta)=\Theta(\theta+2\pi)\)");
+$CF_T->extra("Ninguna", "\( \Theta(\theta)=\theta \)");
+$CF_T->makeLast("\( \Theta(\theta)=2\pi \)");
+
+$EDOsR_0 = new_multiple_choice();
+$EDOsR_0->qa("", "\( R(r)=c_{1}+c_{2}\ln(r) \)");
+$EDOsR_0->extra("Ninguna", "\( R(r)=c_{1}r^{n}+c_{2}r^{-n} \)");
+
+$EDOsT_0 = new_multiple_choice();
+$EDOsT_0->qa("", "\( \Theta(\theta)=c_{1}+c_{2}\theta \)");
+$EDOsT_0->extra("\( \Theta(\theta)=c_{1}\cosh(\alpha\theta)+c_{2}\sinh(\alpha\theta) \)", "\( \Theta(\theta)=\Theta(\theta)=c_{1}\cos(\alpha\theta)+c_{2}\sin(\alpha\theta) \)");
+
+$EDOsR_n = new_multiple_choice();
+$EDOsR_n->qa("", "\( R(r)=c_{1}r^{n}+c_{2}r^{-n} \)");
+$EDOsR_n->extra("\( R(r)=c_{1}+c_{2}\ln(r) \)", "Ninguna");
+
+$EDOsT_n = new_multiple_choice();
+$EDOsT_n->qa("", "\( \Theta(\theta)=\Theta(\theta)=c_{1}\cos(\alpha\theta)+c_{2}\sin(\alpha\theta) \)");
+$EDOsT_n->extra("\( \Theta(\theta)=c_{1}+c_{2}\theta \)", "\( \Theta(\theta)=c_{1}\cosh(\alpha\theta)+c_{2}\sinh(\alpha\theta) \)");
+
+$lambda = new_multiple_choice();
+$lambda->qa("", "\( \lambda=0 \) y \( \lambda=n,\ n=1,2,\ldots \)");
+$lambda->extra("\( \lambda=n,\ n=1,2,\ldots \)", "\( \lambda=2n\pi,\ n=1,2,\ldots \)");
+$lambda->makeLast("\( \lambda=n\pi,\ n=1,2,\ldots \)");
+
+$u_xy = new_multiple_choice();
+$u_xy->qa("", "\( u(x,y)=A_{0}+{\displaystyle \sum_{n=1}^{\infty}r^{n}(A_{n}\cos(n\theta)+B_{n}\sin(n\theta))} \)");
+$u_xy->extra("\( u(x,y)={\displaystyle \sum_{n=1}^{\infty}r^{n}(A_{n}\cos(n\theta)+B_{n}\sin(n\theta))} \)", "\( u(x,y)=A_{0}+{\displaystyle \sum_{n=1}^{\infty}r^{n}(B_{n}\sin(n\theta))} \)");
+$u_xy->makeLast("\( u(x,y)=A_{0}+{\displaystyle \sum_{n=1}^{\infty} C_{n}r^{n}(\cos(n\theta)+\sin(n\theta))} \)");
+
+$AnBn = new_multiple_choice();
+$AnBn->qa("", "\( A_{0}=\dfrac{1}{2\pi}{\displaystyle \int_{0}^{2\pi}\theta}\: d\theta \),     \( A_{n}=\dfrac{1}{$a^{n}\pi}{\displaystyle \int_{0}^{2\pi}\theta\cos(n\theta)}\: d\theta \),    \( B_{n}=\dfrac{1}{$a^{n}\pi}{\displaystyle \int_{0}^{2\pi}\theta\sin(n\theta)}\: d\theta\)");
+
+$AnBn->extra("\( A_{0}=\dfrac{1}{2}{\displaystyle \int_{0}^{2\pi}\theta}\: d\theta \),    \( A_{n}=\dfrac{1}{2\pi}{\displaystyle \int_{0}^{2\pi}\theta\cos(n\theta)}\: d\theta \),     \( B_{n}=\dfrac{1}{2\pi}{\displaystyle \int_{0}^{2\pi}\theta\sin(n\theta)}\: d\theta \)", 
+
+             "\( A_{n}=\dfrac{1}{$a^{n}\pi}{\displaystyle \int_{0}^{2\pi}\cos(n\theta)}\: d\theta \),     \( B_{n}=\dfrac{1}{$a^{n}\pi}{\displaystyle \int_{0}^{2\pi}\sin(n\theta)}\: d\theta \)");
+
+
+##############################################################
+#
+#  Text
+#
+#
+
+Context()->texStrings;
+BEGIN_TEXT
+\{
+ColumnTable(
+"
+Determinar la temperatura de estado estable en una región como se
+muestra en la figura, con condición de frontera 
+\[
+u($a,\theta)=\theta
+\]
+Separando variables \(u(x,y)=R(r)\Theta(\theta)\),
+se obtienen las Ecuaciones Diferenciales Ordinarias  
+
+". begintable(2) ."
+". row("\(r^{2}R''+rR'-\lambda R=0\) $BR con condición de frontera:" , "\(\Theta''+\lambda\Theta=0\) con condición:" ) ."
+". row( $CF_R->print_a(),$CF_T->print_a()  ) ."
+". endtable() ."
+
+$PAR
+Las soluciones a las ecuaciones de \(R(r)\) y \(\Theta(\theta)\) para el caso \( \lambda=0 \) son:
+
+
+". begintable(2) ."
+". row( $EDOsR_0->print_a(),$EDOsT_0->print_a()  ) ."
+". endtable() ."
+
+
+$PAR
+Las soluciones a las ecuaciones de \(R(r)\) y \(\Theta(\theta)\) para el caso \( \lambda=\alpha^{2}>0 \) son:
+
+". begintable(2) ."
+". row( $EDOsR_n->print_a(),$EDOsT_n->print_a()  ) ."
+". endtable() ."
+
+
+$PAR
+Aplicando condiciones de frontera a las EDOs se obtienen los valores propios:
+". $lambda->print_q() ."
+". $lambda->print_a() ."
+
+$PAR
+Considerando la región del problema y las condiciones de frontera
+de las EDOs la solución de la Ecuacion Diferencial Parcial es:
+". $u_xy->print_q() ."
+". $u_xy->print_a() ."
+
+$PAR
+Donde los coeficientes están dados por:
+". $AnBn->print_q() ."
+". $AnBn->print_a() ."
+",
+$BCENTER.
+image( insertGraph($gr), width=>300, height=>300 ).
+$PAR.
+"Gráfica de un disco".
+$ECENTER
+,indent => 0, separation => 30, valign => "TOP"); 
+\}
+$PAR 
+
+END_TEXT
+Context()->normalStrings;
+ANS( radio_cmp( $CF_R->correct_ans() ) );
+ANS( radio_cmp( $CF_T->correct_ans() ) );
+ANS( radio_cmp( $EDOsR_0->correct_ans() ) );
+ANS( radio_cmp( $EDOsT_0->correct_ans() ) );
+ANS( radio_cmp( $EDOsR_n->correct_ans() ) );
+ANS( radio_cmp( $EDOsT_n->correct_ans() ) );
+ANS( radio_cmp( $lambda->correct_ans() ) );
+ANS( radio_cmp( $u_xy->correct_ans() ) );
+ANS( radio_cmp( $AnBn->correct_ans() ) );
+
+
+
+##############################################################
+#
+#  Answers
+#
+#
+
+
+# relative tolerance --3.1412 is incorrect but 3.1413 is correct
+# default tolerance is .01 or one percent.
+
+
+ENDDOCUMENT();   

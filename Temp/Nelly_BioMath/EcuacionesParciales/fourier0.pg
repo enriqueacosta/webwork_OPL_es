@@ -1,0 +1,104 @@
+# DESCRIPTION
+# Problem from Calculus, single variable, Hughes-Hallett et al., 4th ed.
+# WeBWorK problem written by Gavin LaRose, <glarose@umich.edu>
+# WeBWorK modified by Nelly Selem GSoC <nselem84@umich.edu>
+# ENDDESCRIPTION
+
+## KEYWORDS('calculus','integral', 'fourier', 'series', 'approximation')
+
+DOCUMENT();
+
+loadMacros(
+"PG.pl",
+"PGbasicmacros.pl",
+"PGchoicemacros.pl",
+"PGanswermacros.pl",
+"unionTables.pl",
+);
+
+TEXT(beginproblem());
+$ml = new_match_list();
+$ml->qa(
+"Cual es el equivalente a \(\cos(n\pi)\)?", "\((-1)^n\)",
+"Cual es el equivalente a \(\sin(n\pi)\)?",  "0",
+"Cual es el equivalente a \(\cos((2n+1)\pi)\)?", "\(-1\)",
+"Cual es el equivalente a \(\cos((2n+1)\frac{\pi}{2})\)?", "0",
+"Cual es el equivalente a \(\sin(\frac{(2n-1)\pi}{2})\)?", "\((-1)^{n+1}\)",
+);
+
+# use pop-up-lists
+$ml->rf_print_q(~~&pop_up_list_print_q);
+# you may need to add more letters D=>"D", etc. 
+$ml->ra_pop_up_list([No_answer=>"?",A=>"A",B=>"B",C=>"C",D=>"D",E=>"E",F=>"F"]);
+
+$ml->choose(4);
+
+$ml->extra("Infinito", "-infinito");
+$ml->choose_extra(2);
+  
+$ml->makeLast("Ninguna de las anteriores");
+BEGIN_TEXT
+
+\{ $ml->print_q() \}
+$BR
+\{ $ml->print_a() \}
+
+END_TEXT
+# no credit until all answers are correct
+install_problem_grader(~~&std_problem_grader);
+$showPartialCorrectAnswers = 0;
+
+ANS( str_cmp( $ml->ra_correct_ans ) );
+
+# the remainder of the code is included to
+#    provide a sensible solution for the
+#    student.
+
+# the answers to the questions that were
+#    asked, in order, are
+@correctAns = @{$ml->ra_correct_ans};
+
+# the following becomes necessary if we want
+#    to figure out what questions were asked
+#    so that we can give explanations for 
+#    them.  
+# it's useful to define an array of 
+#    explanations that correspond to the
+#    list of questions we might have asked
+@explanations = (
+"explanation for question 1",
+"explanation for question 2",
+"explanation for question 3"
+);
+
+# then find the questions that were asked
+@askedQuestions = ();
+foreach $q ( @{$ml->selected_q} ) {
+  $i = 0;
+  foreach $mq ( @{$ml->questions} ) {
+    if ( $q eq $mq ) {
+      push(@askedQuestions, $i);
+      last;
+    }
+    $i++;
+  } 
+}
+# now we know which questions were asked,
+#    and can print the corresponding 
+#    explanations for the solution
+#SOLUTION(EV3(<<'END_SOLUTION'));
+BEGIN_SOLUTION
+$PAR SOLUTION $PAR
+  
+The answer to the first question is
+$correctAns[0], because
+$explanations[$askedQuestions[0]].
+
+$PAR
+The answer to the second question is
+$correctAns[1], because
+explanations[$askedQuestions[1]].
+
+END_SOLUTION
+
+ENDDOCUMENT();

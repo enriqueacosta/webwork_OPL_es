@@ -1,0 +1,56 @@
+#DESCRIPTION
+# Formulas de drivadas. Differentiation Formulas. Autor nselem84@gmail.com
+#
+##ENDDESCRIPTION
+# Author: Nelly Sélem GSoC<nselem84@gmail.com>
+
+DOCUMENT();        # This should be the first executable line in the problem.
+                
+loadMacros(
+
+"PGstandard.pl",
+"MathObjects.pl",    
+"PGbasicmacros.pl",
+"PGanswermacros.pl",
+"PGauxiliaryFunctions.pl",
+"Parser.pl",
+"problemRandomize.pl", #ESTA ES PARA QUE EL PROBLEMA SE RECARGUE UNA VEZ CORRECT
+);
+
+ProblemRandomize(when=>"always",onlyAfterDue=>0);
+
+
+TEXT(beginproblem());
+$showPartialCorrectAnswers = 0;
+
+$a2 = non_zero_random(2,15,1);
+$a3 = non_zero_random(2,15,1);
+
+$I3 = random(0,4,1);
+
+
+
+# MENU FUNCIONES
+@BaseExponencial= (Formula("sqrt {(e^{-$a3*x})+1}"),
+                   Formula("$a2^{$a3*x^2+x^3}"),
+                   Formula("$a2^($a3 x)"),
+                   Formula("(e)^{cos($a3*x)}"),
+                   Formula("(e^x-e^{-x})/(e^x+e^{-x})"));
+
+$f3=$BaseExponencial[$I3]; $Df3 = $f3->D;
+
+Context()->texStrings;
+
+BEGIN_TEXT
+INSTRUCCIONES: Escribe la derivada de la función que se te muestra. Para practicar, puedes obtener una nueva versión del problema pulsando el botón "get a new version".  
+
+$PAR Si \(f(x) = $f3\) entonces \(f'(x) =\)  \{ ans_rule(10)\}
+END_TEXT
+
+Context()->normalStrings;
+ANS($Df3->cmp());
+
+
+ENDDOCUMENT();        # This should be the last executable line in the problem.
+
+

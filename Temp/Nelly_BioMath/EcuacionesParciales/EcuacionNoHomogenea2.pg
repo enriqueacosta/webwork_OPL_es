@@ -1,0 +1,91 @@
+##DESCRIPTION
+##  This is a problem of non homogeneous partial differential equations  . 
+## ENDDESCRIPTION
+
+## GSoC nselem84@gmail.com
+
+########################################################################
+
+DOCUMENT();      
+
+loadMacros(
+   "PGstandard.pl",     # Standard macros for PG language
+   "MathObjects.pl",
+   #"source.pl",        # allows code to be displayed on certain sites.
+   #"PGcourse.pl",      # Customization file for the course
+);
+
+# Print problem number and point value (weight) for the problem
+TEXT(beginproblem());
+
+# Show which answers are correct and which ones are incorrect
+$showPartialCorrectAnswers = 1;
+
+##############################################################
+#
+#  Setup
+#
+#
+Context("Numeric");
+Context()->variables->add( n=>'Real',k=>'Real',T=>'Real',dT=>'Real',t=>'Real',X=>'Real');
+$a =random(2,15);$L =random(2,15);
+
+$EDO2=Compute("-k*n^2*pi^2/($L*$L)");
+$EDO1=Compute("-2*e^(-$a*t)*cos(n*pi)*$L/(n*pi)");
+$Cn=Compute("-2*e^(-$a*t)*cos(n*pi)*$L/(n*pi)");
+$u_n=Compute("(2*cos(n*pi)*$L^3)*(-e^{-$a*t}+e^{(-k*n^2*pi^2/$L^2)*t})/(n*pi(-$a*$L^2+k*n^2*pi^2))");
+	
+$Func=Compute("sin(n*pi*x/$L)");
+	
+$u_n->{test_points} = [[1,1,1,1,1,1,1],[2,2,2,2,2,2,2],
+                     [3,3,3,3,3,3,3],[4,4,4,4,4,4,4],[5,5,5,5,5,5,5]];
+$EDO1->{test_points} = [[1,1,1,1,1,1,1],[2,2,2,2,2,2,2],
+                     [3,3,3,3,3,3,3],[4,4,4,4,4,4,4],[5,5,5,5,5,5,5]];
+$EDO2->{test_points} = [[1,1,1,1,1,1,1],[2,2,2,2,2,2,2],
+                     [3,3,3,3,3,3,3],[4,4,4,4,4,4,4],[5,5,5,5,5,5,5]];
+
+##############################################################
+#
+#  Text
+#
+#
+
+Context()->texStrings;
+BEGIN_TEXT
+
+Plantea el sistema de ecuaciones ordinarias que resulta al hacer un cambio de variable en un problema no homogeneo con valores en la frontera. 
+
+$BR Ecuación del calor perturbado: \( k\frac{\partial^2 u}{\partial x^2}+xe^{-$a t}=\frac{\partial u}{\partial t} \)  
+$BR Condiciones de frontera: 
+$BR \(u(0,t)=0\)   ,    \(u($L,t)=0\)
+$BR Condiciones iniciales
+$BR \(u(x,0)=0\) $BR
+
+$BR Por qué este es un problema no homogéneo?
+
+$BR Cuáles son las funciones propias de la ecuación homogénea correspondiente.
+$BR Para resolver este problema primero necesitas plantar una ecuación ordinaria para \(u_n\) $BR
+\(u_n'(t)\)=  \{ ans_rule(15) \}\(u_n(t)+\)\{ ans_rule(15) \} $BR
+$BR Expresa la solución como \(u(x,t)=\sum_{n=1}^{\infty}[u_n(t)\times\)n-sima Función propia\(]\)
+ $BR Expresa la solución como \(u(x,t)=\sum_{n=1}^{\infty}[u_n(t)\times\)\{ ans_rule(15) \} \(]\)
+$BR donde \(u_n(t)=\)\{ ans_rule(15) \} 
+END_TEXT
+Context()->normalStrings;
+
+##############################################################
+#
+#  Answers
+#
+#
+
+
+ANS( $EDO2->cmp() );
+ANS( $EDO1->cmp() );
+ANS( $Func->cmp() );
+ANS( $u_n->cmp() );
+
+# relative tolerance --3.1412 is incorrect but 3.1413 is correct
+# default tolerance is .01 or one percent.
+
+
+ENDDOCUMENT();        

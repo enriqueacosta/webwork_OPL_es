@@ -1,0 +1,91 @@
+##DESCRIPTION
+##  This is a problem of non homogeneous partial differential equations  . 
+## ENDDESCRIPTION
+
+## GSoC nselem84@gmail.com
+########################################################################
+
+DOCUMENT();      
+
+loadMacros(
+   "PGstandard.pl",     # Standard macros for PG language
+   "MathObjects.pl",
+);
+
+# Print problem number and point value (weight) for the problem
+TEXT(beginproblem());
+# Show which answers are correct and which ones are incorrect
+$showPartialCorrectAnswers = 1;
+
+
+##############################################################
+#
+#  Setup /Variables
+#
+##############################################################
+Context("Numeric");
+Context()->variables->add( n=>'Real',k=>'Real',t=>'Real',X=>'Real');
+
+$L =random(2,15);   $h =random(2,15);
+$u0 =random(2,15);  $f =random(15,30);
+
+##############################################################
+#            Solutions/ soluciones
+##############################################################
+
+$C2=Compute("0");
+$C1=Compute("-$u0/sinh(sqrt($h)/k*$L)");
+$psi=Compute("$C1*sinh(sqrt($h)/k*x)+$u0");
+$X_n=Compute("sin(n*pi*x/$L)");
+$T_n=Compute("e^{-($h+k^2*n^2*pi^2/$L^2)*t}");
+$A_n=Compute("($f-$psi)*sin(n*pi*x/$L)*2/$L");
+$A_n->{test_points} = [[1,1,1,1,1],[2,2,2,2,2],
+                     [3,3,3,3,3],[4,4,4,4,4],[5,5,5,5,5]];
+$psi->{test_points} = [[1,1,1,1,1],[2,2,2,2,2],
+                     [3,3,3,3,3],[4,4,4,4,4],[5,5,5,5,5]];
+
+##############################################################
+#
+#  Text
+#
+#####################################################################
+
+Context()->texStrings;
+BEGIN_TEXT
+
+
+$BR Resuelve el problema: \( k^2 \frac{\partial^2 u}{\partial x^2}-$h(u-$u0)=\frac{\partial u}{\partial t} \)  
+$BR Con condiciones de frontera: 
+$BR \(u(0,t)=$u0\)   ,    \(u($L,t)=0\)
+$BR y condiciones iniciales
+$BR \(u(x,0)=$f\) $BR
+$BR
+
+$BR Hint: Para resolver este problema primero necesitas plantear el cambio de variable
+$BR \(u(x,t)=\psi(x)+v(x,t)\) $BR
+
+$BR Obtén una solución de la forma: \(u(x,t)=\psi(x)+\sum_{n=1}^{\infty}A_n X_n(x)T_n(t)\)
+$BR Donde:
+$BR \(\psi(x)\)=\{ ans_rule(15) \} 
+$BR \(A_n(t)=\int_0^$L\)\{ ans_rule(15) \} \(dx\)
+$BR \(X_n(x)\)=  \{ ans_rule(15) \}
+$BR\(T_n(t)=\)\{ ans_rule(15) \} $BR
+
+END_TEXT
+Context()->normalStrings;
+
+##############################################################
+#
+#  Answers
+#
+#
+
+
+ANS( $psi->cmp() );
+ANS( $A_n->cmp() );
+ANS( $X_n->cmp() );
+ANS( $T_n->cmp() );
+
+
+
+ENDDOCUMENT();        

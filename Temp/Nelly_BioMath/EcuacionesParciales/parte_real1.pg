@@ -1,0 +1,61 @@
+## DESCRIPTION
+## Calculus GSoC modification nselem84@gmail.com
+## ENDDESCRIPTION
+
+## KEYWORDS ('complex','imaginary','polar coordinates')
+## Tagged by cmd6a 4/20/06
+
+## DBsubject('Calculus')
+## DBchapter('Complex Variables')
+## DBsection('Complex Numbers')
+## Date('')
+## Author('')
+## Institution('Rochester')
+## TitleText1('Complex Analysis')
+## EditionText1('3')
+## AuthorText1('Saff, Snider')
+## Section1('1.4')
+## Problem1('')
+
+## KEYWORDS ('compleja','imaginaria')
+
+## DBsubject('Calculo')
+## DBchapter('Variables Compleja')
+## DBsection('Funciones Analiticas')
+## Translate ('Nelly Sélem')
+
+DOCUMENT();        # This should be the first executable line in the problem.
+
+loadMacros(
+"PG.pl",
+"PGbasicmacros.pl",
+"PGchoicemacros.pl",
+"PGanswermacros.pl",
+"PGauxiliaryFunctions.pl",
+"PGcomplexmacros.pl"
+);
+
+TEXT(beginproblem());
+$showPartialCorrectAnswers = 1;
+
+$d = random(2,9,1);
+$e = random(2,9,1);
+$f = random(2,9,1);
+$g = random(2,9,1);
+
+BEGIN_TEXT
+
+Si \( \displaystyle f(x)=\frac{e^{z}-e^{- z}}{2i}\) $PAR
+Encuentra la parte real de \(f\) y evalúala donde se te pide $BR
+$PAR \(Re(f($d i))=\) \{ans_rule(15)\} 
+END_TEXT	
+
+$a = new Complex();
+$a = (exp($d*i)-exp(- $d*i))/(2*i);
+
+
+ANS(num_cmp( $a -> Re ));
+
+
+ENDDOCUMENT();        # This should be the last executable line in the problem.
+

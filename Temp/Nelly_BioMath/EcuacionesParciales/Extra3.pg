@@ -1,0 +1,126 @@
+##DESCRIPTION
+## Boundary values of the heat equation.
+##ENDDESCRIPTION
+
+##KEYWORDS('heat', 'equation')
+## GSoC nselem84@gmail.com
+########################################################################
+      DOCUMENT();        # This should be the first executable line in the problem.
+
+    loadMacros(
+      "PGstandard.pl",
+      "parserPopUp.pl",
+      "PGchoicemacros.pl",
+      "parametrosEcuaciones.pl"
+    );
+###############################################################################
+    TEXT(beginproblem);
+
+ 
+$mc = new_checkbox_multiple_choice();
+
+$mc -> qa ("Selecciona la ecuacion que modela el problema", 
+      "\( \displaystyle a^2\frac{\partial^2 u }{\partial x^2}=
+        \frac{\partial^2 u }{\partial t^2} \) $BR");
+
+$mc -> extra(
+"\(\displaystyle k\frac{\partial^2 u }{\partial x^2}=
+  \frac{\partial u }  {\partial t}\) $BR",
+
+"\( \displaystyle \frac{\partial^2 u }{\partial x^2} + 
+\frac{\partial^2 u }{\partial y^2} = 0\) $BR",);
+#__________________________________________________________________________
+
+  $fun_u = PopUp(  ["?","u","u_t","u_x"],"u",);
+  $par_x= PopUp(  ["?","u","u_t","u_x"],"u_x",);
+  $par_t= PopUp(  ["?","u","u_t","u_x"],"u_t",);
+ 
+#_______________________________________________________________________   
+
+    $u0 = random(90,150,10);    $u1 = random(2,34,1);    
+    $a=random(20,70,20);
+    $L = random(2,45,1);   $K = random(0,1,1);
+    @Extremo=("izquierdo","derecho");
+    @ReExtremo=("0","$L");
+    $ele=Formula("L");
+    $te=Formula("t");
+    $equis=Formula("x");
+    $efe=Formula("(sin($u1*x)/L)");
+#_______________________________________________________________________
+
+
+
+####################################################################
+
+Context()->texStrings();    
+
+$fuerza = Formula("h*(u-$a)");
+
+$mc1 = new_checkbox_multiple_choice();
+
+$mc1 -> qa ("Selecciona la ecuacion que modela el problema", 
+
+
+"\( \displaystyle k\frac{\partial^2 u }{\partial x^2}+ F=\frac{\partial u }{\partial t} \) $BR",);
+
+$mc1 -> extra(
+"\( \displaystyle c^2\frac{\partial^2 u }{\partial x^2}+F = \frac{\partial^2 u }{\partial t^2} \) $BR ",
+
+"\( \displaystyle \frac{\partial^2 u }{\partial x^2} + \frac{\partial^2 u }{\partial y^2} +F = 0\) $BR",);
+#__________________________________________________________________________
+
+
+
+
+####################################################################
+Context()->texStrings();    
+BEGIN_TEXT
+
+$PAR
+
+Una varilla de longitud \($L\) coincide con el intervalo \(I=[0,$L]\) sobre
+el eje \(x\). En dicha varilla hay transferencia de calor desde la superficie lateral hacia los alrededores. Establece la ecuación que modela este problema así como los valores en la frontera de la temperatura \(u\left(x,t\right)\). $PAR
+
+
+\{ $mc1 -> print_q() \}$BR\{ $mc1 -> print_a() \}  
+
+Si se sabe que la temperatura ambiente es \($a\) grados y que el intercambio de calor es proporcional a la diferencia de temperaturas, con una constante de proporcionalidad \(h\), $BR
+ ¿Cómo se describe el intercambio de calor matemáticamente?$BR
+ F=\{ ans_rule(6) \} . $PAR
+
+Ademas, se sabe que en un inicio la temperatura inicial es $u0
+en todo punto y que el extremo $Extremo[$K] está aislado.
+
+$PAR
+Condicion inicial:\{$fun_u->menu() \}(\{ ans_rule(1) \} ,
+                  \{ ans_rule(1) \} )=(\{ ans_rule(3) \} ).
+$PAR $PAR
+
+
+Condicion de Frontera: \{$par_x->menu() \}(\{ ans_rule(1) \} ,
+                   \{ ans_rule(1) \} )=(\{ ans_rule(3) \} ).
+$PAR
+
+END_TEXT
+
+ 
+ANS( checkbox_cmp( $mc1->correct_ans() ) );
+ANS( $fuerza->cmp() );
+
+
+ANS( $fun_u->cmp() ); 
+ANS($equis->cmp()) ; ANS(num_cmp(0));ANS(num_cmp($u0));
+
+
+
+ANS( $par_x->cmp() ); 
+ANS(num_cmp($ReExtremo[$K])); ANS($te->cmp()) ; ANS(num_cmp(0));
+
+
+##############################################
+######################################################
+    ENDDOCUMENT();        # This should be the last executable line in the problem.
+
+
+      
+

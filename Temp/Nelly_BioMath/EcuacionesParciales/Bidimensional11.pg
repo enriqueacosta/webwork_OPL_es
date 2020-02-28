@@ -1,0 +1,102 @@
+## GSoC nselem84@gmail.com
+
+########################################################################
+
+DOCUMENT();
+
+loadMacros(
+"PGstandard.pl",
+"MathObjects.pl",
+"PGchoicemacros.pl",
+   "PGgraphmacros.pl",
+
+);
+   TEXT(beginproblem());
+Context("Numeric");
+Context()->flags->set( reduceConstants=>0 );
+Context()->variables->add( n=>'Real',m=>'Real',t=>'Real',y=>'Real');
+$showPartialCorrectAnswers = 1;
+
+########################################################
+#                   Variables
+########################################################
+#           Problema y condiciones iniciales
+#######################################################################
+
+$L=random(2,10,1); #Longitud de la varilla
+$a=random(2,10,1); #largo en x de la placa
+$b=random(2,10,1); #largo en y de la placa
+$A=random(2,10,1); #parámetro onda
+
+$onda="\($A^2(\frac{\partial^2 u}{\partial x^2}+\frac{\partial^2 u}{\partial y^2})=\frac{\partial^2 u}{\partial t^2}\)";
+
+$Frontera1="\(u(0,y,t)=0\)";
+$Frontera2="\(u($a,y,t)=0\)";
+$Frontera3="\(u(x,0,t)=0\)";
+$Frontera4="\(u(x,$b,t)=0\)";
+$Inicial1="\(u(x,y,0)=xy(x-$a)(y-$b)\) ";
+$Inicial2="\(\left \frac{\partial u}{\partial t} \right |_{t=0}=0\)";
+
+#########################################################################
+#       soluciones
+#########################################################################
+
+$T_n=Compute("cos($A*sqrt(n^2*pi^2/$a^2+m^2*pi^2/$b^2)*t)");
+$Y_n=Compute("sin(m*pi*y/$b)");
+$X_n=Compute("sin(n*pi*x/$a)");
+$A_nm=Compute("(4/($a*$b))*(xy(x-$a)(y-$b))$X_n*$Y_n");
+
+#	
+$A_nm->{test_points} = [[1,1,1,1,1],[2,2,2,2,2],
+                     [3,3,3,3,3],[4,4,4,4,4],[5,5,5,5,5]];
+
+#
+#
+######################################################################
+# Show which answers are correct and which ones are incorrect
+$showPartialCorrectAnswers = 1;
+
+##############################################################
+#
+#  Text
+#
+###################################################################
+Context()->texStrings;
+BEGIN_TEXT
+
+Resuelve la ecuación bidimensional de onda $onda 
+$BR con las siguientes condiciones:
+$BR $Frontera1, $Frontera2 
+$BR $Frontera3, $Frontera4 
+$BR $Inicial1,  $Inicial2.$PAR
+
+$BR Al utilizar las constantes \(-\lambda\), \(-\mu\) en el método de variables, se obtendrán tres ecuaciones ordinarias. Escoge dos de ellas como: $PAR
+ \(\frac{X''}{X}=-\lambda\) , \(\frac{Y''}{Y}=-\mu\)$PAR
+
+Resolviendo estas ecuaciones y aplicando las condiciones homogéneas se obtienen las soluciones: $BR
+
+\(X_n(x)=B_n\)\{ ans_rule(15) \} $BR
+\(Y_m(y)=C_n\)\{ ans_rule(15) \} $BR
+\(T_{n,m}(t)=D_n\)\{ ans_rule(15) \} $PAR
+
+Con estas funciones se obtiene una solución de la forma:
+$BR  \(u(x,t) = \sum_{m=1}^{\infty}\sum_{n=1}^{\infty} A_{n,m}\,[X_n(x)]\times[Y_n(y)]\times[T_n(t)]\)
+$PAR
+
+Finalmente, obtén el valor de \( A_{n,m}\)aplicando la condición inicial no homogénea. $BR
+\( A_{n,m}=\int_0^$a \int_0^$b\) \{ ans_rule(35) \}\(dy dx\) $PAR
+
+END_TEXT
+Context()->normalStrings;
+
+##############################################################
+#
+#  Answers
+#
+#
+ANS( $X_n->cmp() );
+ANS( $Y_n->cmp() );
+ANS( $T_n->cmp() );
+ANS( $A_nm->cmp() );
+
+ENDDOCUMENT();        

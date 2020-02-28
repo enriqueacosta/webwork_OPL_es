@@ -1,0 +1,58 @@
+#DESCRIPTION
+# Formulas de drivadas. Differentiation Formulas. Autor nselem84@gmail.com
+#
+##ENDDESCRIPTION
+# Author: Nelly Sélem GSoC<nselem84@gmail.com>
+
+DOCUMENT();        # This should be the first executable line in the problem.
+                
+loadMacros(
+
+"PGstandard.pl",
+"MathObjects.pl",    
+"PGbasicmacros.pl",
+"PGanswermacros.pl",
+"PGauxiliaryFunctions.pl",
+"Parser.pl",
+"problemRandomize.pl", #ESTA ES PARA QUE EL PROBLEMA SE RECARGUE UNA VEZ CORRECT
+);
+
+ProblemRandomize(when=>"always",onlyAfterDue=>0);
+
+
+
+TEXT(beginproblem());
+$showPartialCorrectAnswers = 0;
+
+
+$a6 = non_zero_random(2,15,1);
+$a7 = non_zero_random(2,15,1);
+$I6 = random(0,4,1);
+
+
+
+# MENU FUNCIONES
+
+@Cocientes= (Formula("((x^{3/2})/2-$a6)/(x^2+$a7)"),
+             Formula("(x^3-1)/(1-x^2)"),
+             Formula("(x-$a6)/(x^2-$a7)"),
+             Formula("(cos($a6*x)+x^{-1})/x^2"),
+             Formula("(x-$a6)/(x^2-$a7*$a7)"));
+
+$f6=$Cocientes[$I6]; $Df6 = $f6->D;
+
+Context()->texStrings;
+
+BEGIN_TEXT
+INSTRUCCIONES: Escribe la derivada de la función que se te muestra. Para practicar, puedes obtener una nueva versión del problema pulsando el botón "get a new version".  
+$PAR Si \(f(x) = $f6\) entonces \(f'(x) =\)  \{ ans_rule(10)\}
+
+END_TEXT
+
+Context()->normalStrings;
+ANS($Df6->cmp());
+
+
+ENDDOCUMENT();        # This should be the last executable line in the problem.
+
+

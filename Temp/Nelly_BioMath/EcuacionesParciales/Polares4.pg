@@ -1,0 +1,303 @@
+## DESCRIPTION
+## Partial Polar differential equations. This problem is about the temperature
+## of a ring. 
+## ENDDESCRIPTION
+
+## GSoC nselem84@gmail.com
+
+DOCUMENT();      
+##############################################
+############################################
+loadMacros(
+
+"PGchoicemacros.pl",
+"unionTables.pl",
+"PGstandard.pl",
+"MathObjects.pl",
+"PGgraphmacros.pl",
+"AnswerFormatHelp.pl",
+"unionTables.pl",
+
+);
+
+
+###############################################################################
+#   Notation Help Window Code
+#   Código para la Ventana de ayuda para la notación
+###############################################################################
+
+HEADER_TEXT(<<END_HEADER_TEXT);
+<script type="text/javascript">
+<!--
+function openhelpCustom1() {
+OpenWindow=window.open("","answer_format_help","width=550,height=550,status=0,toolbar=0,location=0,menubar=0,directories=0,resizeable=1,scrollbars=1");
+OpenWindow.document.write("<title>Notación utilizada por WebWork para Ecuaciones diferenciales Parciales</title>")
+OpenWindow.document.write("<body bgcolor='#ffffff'>")
+OpenWindow.document.write("<center><h2>Ayuda con la notacion</h2></center>")
+
+OpenWindow.document.write("<center><h3>Variables:</h3></center>")
+OpenWindow.document.write("<ul>")
+OpenWindow.document.write("<li><font color='#222255'>theta</font><blockquote>Escribe t si necesitas escribir θ   </blockquote></li>")
+OpenWindow.document.write("</ul>")
+OpenWindow.document.write("</body>")
+OpenWindow.document.write("</html>")
+OpenWindow.document.close()
+self.name="main"
+if (window.focus) {OpenWindow.focus()}
+return false;
+}
+-->
+</script>
+END_HEADER_TEXT
+
+
+TEXT(beginproblem());
+
+$refreshCachedImages = 1;
+
+Context("Numeric");
+Context()->flags->set( reduceConstants=>0 );
+Context()->variables->add( n=>'Real',r=>'Real',t=>'Real');
+$showPartialCorrectAnswers = 1;
+
+########################################################
+#                 Variables
+########################################################
+#
+$laplace="\(\frac{\partial^2 u}{\partial x^2}+\frac{\partial^2 u}{\partial y^2}=0\)";
+
+$Objeto="una placa";
+$Accion="se calienta";
+$Funcion="la temperatura";
+
+$a=random(2,10,1);  
+$c1=random(2,5);    #radio chico
+$c2=random(6,12);   #radio grande
+$Frontera1 = "u($c1,\theta)= $a\theta "; #condicion de frontera
+
+######################################################
+# answer variables// variables solucion
+
+$int0=Compute("2*pi^2*$a");
+$inta=Compute("($a*cos(2*pi*n)-$a)/n^2");
+$intb=Compute("-2*pi*$a*n*cos(2*pi*n)/n^2");
+
+$intb1=Compute("-2*pi*$a*1*cos(2*pi*1)/1^2");
+$intb2=Compute("-2*pi*$a*2*cos(2*pi*2)/2^2");
+
+$A0=Compute("(1/(2*log($c1/$c2)))*(1/pi)*$int0");
+$An=Formula("0");
+
+$Bn=Formula("(1/($c1^n - $c2^{2n}$c1^{-n}))*(1/pi)*$intb");
+$B1=Formula("(1/($c1^1 - $c2^{2*1}$c1^{-1}))*(1/pi)*$intb1");
+$B2=Formula("(1/($c1^2 - $c2^{2*2}$c1^{-2}))*(1/pi)*$intb2");
+
+
+$R0=Formula("ln(r/$c2)");
+$Rn=Formula("r^n - $c2^{2n}r^{-n}");
+$R1=Formula("r^1 - $c2^{2*1}r^{-1}");
+$R2=Formula("r^2 - $c2^{2*2}r^{-2}");
+
+$Tna1=Compute("cos(1*t)");
+$Tna2=Compute("cos(2*t)");
+$Tnb1=Compute("sin(1*t)");
+$Tnb2=Compute("sin(2*t)");
+	
+$u0=Compute("$A0*$R0");
+$u1=Compute("$u0+$B1*$R1*$Tnb1");
+$u2=Compute("$u1+$B2*$R2*$Tnb2");
+
+$u0->{test_points} = [[1,1,1,1],[2,2,2,2],
+                     [3,3,3,3],[4,4,4,4],[5,5,5,5]];
+$u1->{test_points} = [[1,1,1,1],[2,2,2,2],
+                     [3,3,3,3],[4,4,4,4],[5,5,5,5]];
+$u2->{test_points} = [[1,1,1,1],[2,2,2,2],
+                     [3,3,3,3],[4,4,4,4],[5,5,5,5]];
+
+Context()->texStrings;
+
+#########################################################################
+##  Gráficos  // Graph
+#
+
+$gr = init_graph(-($c2+.1),-($c2+.1),($c2+.1),($c2+.1),axes=>[0,0],size=>[300,300]);
+
+$gr->new_color("lightred",  255,127,127);
+$gr->new_color("darkred",   255, 55, 55);
+
+#  If the polar curve is r1 = c1 , r2=c2, then
+#      c1<c2
+#  x1 = r cos(t) = c1 cos(t)
+#  y1 = r sin(t) = c1 sin(t)
+#  x2 = r cos(t) = c2 cos(t)
+#  y2 = r sin(t) = c2 sin(t)
+#
+
+$x1 = Formula("$c1*cos(t)");
+$y1 = Formula("$c1*sin(t)");
+
+$x2 = Formula("$c2*cos(t)");
+$y2 = Formula("$c2*sin(t)");
+
+#Círculo pequeño
+$f = new Fun( $x1->perlFunction, $y1->perlFunction, $gr );
+$f->domain(0,2*pi); $f->steps(90);
+$f->color('darkred'); $f->weight('2');
+
+#Círculo grande
+$g = new Fun( $x2->perlFunction, $y2->perlFunction, $gr );
+$g->domain(0,2*pi); $g->steps(90);
+$g->color('darkred'); $g->weight('2');
+$gr->fillRegion([$c1+.5,0,'lightred']);
+
+#Etiquetas
+$gr->lb( new Label($c1,0,$c1,
+    'black','center','middle'));
+$gr->lb( new Label(0,$c2-.5,$c2,
+    'black','center','middle'));
+
+$gr->lb( new Label($c2/sqrt(2),$c2/sqrt(2),('u=0'),
+    'black','center','middle'));
+
+####################################################################
+#  Main Text 
+#
+
+Context()->texStrings;
+BEGIN_TEXT
+\{
+ColumnTable(
+"
+Encuentra analíticamente $Funcion \(u(r,\theta)\) de $Objeto que tiene forma de un anillo como el que se muestra en la figura. Considera que las condiciones de frontera son las siguientes:
+\[$Frontera1\] $PAR 
+
+Al utilizar la constante \(\lambda\) en el método de variables separables para resolver la ecuación polar de Laplace, se obtienen dos ecuaciones ordinarias. Escoge una de ellas se escoge como
+                    \[-\frac{ \Theta''}{\Theta}=\lambda,\] $PAR
+
+Después de resolver las EDOs y aplicar todas las condiciones de frontera homogéneas, aplica el principio de superposición para encontrar una solución de la forma: $PAR
+ \(u(r,\theta) = u_0(r,\theta) + \sum_{n=1}^{\infty} A_n\,[R_n(r)]\times[\Theta_{1,n}(\theta)]+B_n\,[R_n(r)]\times[\Theta_{2,n}(\theta)]\)
+$PAR
+\(u_0(r,\theta)=\) ".ans_rule(20).""
+,
+$BCENTER.
+image( insertGraph($gr), width=>300, height=>300 ).
+$PAR.
+"Gráfica de un disco".
+$ECENTER
+,
+indent => 0, separation => 30, valign => "TOP"
+); 
+\}
+$PAR 
+\{ htmlLink("#","help (Notación)","onClick='openhelpCustom1()';") \}$BR
+
+\(u_1(r,\theta)=\)\{ans_rule(60)\}$BR
+
+\(u_2(r,\theta)=\)\{ans_rule(60)\}$PAR
+END_TEXT
+Context()->normalStrings;
+
+
+########################
+#  Answer Evaluation
+
+$showPartialCorrectAnswers = 1;
+
+##############################################################
+#
+#  Answers
+#
+#
+
+ANS( $u0->cmp() );
+ANS( $u1->cmp() );
+ANS( $u2->cmp() );
+##################################################
+##########################
+
+############################
+#  Solution
+
+Context()->texStrings;
+$strA0Integral="\(\frac{2}{L}\int_0^{2\pi}f(\theta), d\theta\)";
+$strA0Integral1="\(\frac{2}{2\pi}\int_0^{2\pi}$a\theta, d\theta+\int_{\pi}^{2\pi}\pi-$a\theta, d\theta)\)";
+$strA0Integral1="\(\frac{2}{2\pi}\int_0^{2\pi}$a\theta, d\theta\)";
+
+$strAnIntegral="\(\frac{2}{L}\int_0^{L}f(\theta)cos(\frac{2n\pi\theta}{L}), d\theta\)";
+$strAnIntegral1="\(\frac{2}{2\pi}\int_0^{2\pi}f(\theta)cos(n\theta), d\theta\)";
+$strAnIntegral2="\(\frac{1}{\pi}\int_0^{2\pi}$a\theta\cos(n\theta) d\theta\)";
+
+$strBnIntegral="\(\frac{2}{L}\int_0^{L}f(\theta)sin(\frac{2n\pi\theta}{L}), d\theta\)";
+$strBnIntegral1="\(\frac{2}{2\pi}\int_0^{2\pi}f(\theta)sin(n\theta), d\theta\)";
+$strBnIntegral2="\(\frac{1}{\pi}\int_0^{2\pi}$a\theta\sin(n\theta), d\theta\)";
+#########################################################################
+BEGIN_SOLUTION
+${PAR}SOLUTION:${PAR}
+Para resolver este problema se utiliza la ecuación polar de Laplace:
+\(\frac{\partial^2 u}{\partial r^2}+\frac{1}{r}\frac{\partial u}{\partial r}+\frac{1}{r^2}\frac{\partial^2 u}{\partial \theta^2}=0\). $PAR
+
+Al separar variables se obtienen las ecuaciones: $BR
+1) \(\Theta ''+\lambda \theta=0\) (Ecuación lineal de coeficientes constantes)$BR
+2) \(r^2R''+rR'-\lambda R=0\)  (Ecuación de Cauchy Euler)
+$PAR
+
+Al resolver la primera ecuación, considerando que \(\Theta\) debe tener período \(2\pi\) obtenemos dos posibilidades: $BR
+I. Cuando \(\lambda=0\): \(\Theta(\theta)=C_1\).$BR 
+II.Cuando \(\lambda=\alpha ^2\): \(\Theta(\theta)=C_2 \cos(\alpha\theta)+ C_3\sin(\alpha\theta) \). 
+Por la periodicidad obtenemos que los valores propios son \(\alpha=n\), y entonces \(\lambda=n^2\).
+$PAR
+
+$PAR
+Al resolver la segunda ecuación, se obtienen las soluciones: $BR
+I. Cuando \(\lambda=0\): \(R(r)=C_4+C_5ln(r)\).$BR 
+II.Cuando \(\lambda=n ^2\): \(R(r)=C_6 r^n +C_7 r^{-n} \). $BR
+
+Puesto que el anillo no contiene al cero, ambas soluciones son aceptables. 
+$PAR
+
+Ahora debemos aplicar la condición homogenea \(u($c2,0)=0\). $BR
+
+de (I)  se obtiene \(C_4=-C_5ln($c2)\), y entonces \(R(r)=C_5(ln(r)-ln($c2))   \)
+$BR
+de (II) se obtiene \(C_7=-C_6 $c2^{2n}\), y entonces \(R(r)=C_6 (r^n - $c2^{2n}r^{-n} )\). 
+$PAR
+
+Entonces, haciendo \(A_0=C_1C_5\) y \(A_n=C_6C_2\), \(B_n=C_6C_3\) la solución u es: $BR
+\(u(r,\theta)=A_{0}$R0+{\displaystyle \sum_{n=1}^{\infty} ($Rn)(A_{n}cos(n\theta)+B_{n}sin(n\theta))} \)$BR
+$PAR  
+Para calcular los coeficientes \(A_0, A_n, B_n\) evaluamos \(u(r,\theta)\) en la frontera: $PAR
+
+\(u($c1,\theta)=\(A_{0}ln($c1/$c2)+{\displaystyle \sum_{n=1}^{\infty}($c1^n - $c2^{2n}$c1^{-n} )(A_{n}cos(n\theta)+B_{n}sin(n\theta))} \)$BR
+
+y la comparamos con su serie de Fourier:
+\(f( \theta)=\frac{a_{0}}{2}+{\displaystyle \sum_{n=1}^{\infty} a_{n}cos(n\theta)+ b_{n}sin(n\theta)} \) $BR
+que es una serie completa en un intervalo no simétrico. En este problema la condición de frontera dice que \(f(\theta)=$a\theta\).$PAR
+
+Concluimos que $BR
+\(A_0ln($c1/$c2)=\frac{a_0}{2}\) , \(($c1^n - $c2^{2n}$c1^{-n} )A_n=a_n\) , \(($c1^n - $c2^{2n}$c1^{-n} )B_n=b_n\) $BR $PAR
+
+$BR\(a_0=\) $strA0Integral $PAR
+=$strA0Integral1 $PAR
+=$strA0Integral2 \($A0\) $PAR
+
+$BR \(a_n=\) $strAnIntegral $PAR
+=$strAnIntegral1 $PAR
+=$strAnIntegral2 $PAR
+\(A_n=\frac{a_n}{$c1^n - $c2^{2n}$c1^{-n} }=$An=0\)$PAR
+
+$BR \(b_n=\)$strBnIntegral $PAR
+=$strBnIntegral1 $PAR
+=$strBnIntegral2 $PAR
+\(B_n=\frac{b_n}{$c1^n - $c2^{2n}$c1^{-n}}=$Bn\) $PAR
+
+\(u_0=$u0\) $BR
+\(u_1=$u1\) $BR
+\(u_2=$u2\) $BR
+
+END_SOLUTION
+Context()->normalStrings;
+
+
+COMMENT('MathObject version.');
+
+ENDDOCUMENT();

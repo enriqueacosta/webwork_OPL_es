@@ -1,0 +1,134 @@
+# DESCRIPTION
+# Problem from Calculus, single variable, Fourier extension for non periodic 
+# signals (Functions defined over non simetric intervals).
+# WeBWorK problem written by Gavin LaRose, adapted by Nelly 
+# Selem <glarose@umich.edu>,<nselemm@cimat.mx>
+# Even and uneven extensions. GSoC
+# ENDDESCRIPTION
+
+## KEYWORDS('calculus','integral', 'fourier', 'series', 'approximation')
+
+
+DOCUMENT();
+
+loadMacros(
+"PGstandard.pl",
+"MathObjects.pl",
+"PGchoicemacros.pl",
+);
+
+Context("Numeric");
+Context()->flags->set( reduceConstants=>0 );
+Context()->variables->add( n=>'Real' );
+$showPartialCorrectAnswers = 1;
+
+$whichL = random(0,1);  ## la funcion de la izquierda es ax, o -ax
+$whichR = random(0,1);  ## la funcion de la derecha es ax, or -ax
+$a = random(1,25,1); 
+
+@funcs = ( "$a x", "-$a x" );
+
+if ( $whichL == $whichR ) { ## entonces la funcion es o bien x o bien -x
+    # si f es x entre 0 y pi, la extenderemos como x entre -pi y 0
+    # Como f es impar los coeficientes son los mismos que en el 
+    # intervalo simetrico [-pi,pi].
+    
+    $ftex = "\begin{cases} $funcs[$whichR], & 0 < x \le \pi\end {cases}";
+    $ftex2="como función impar.";
+ 
+    # En este caso todos los a_n son cero
+    $a0 = Compute("0");
+    $an = Compute("0");
+
+    ## y los b_n son
+    $bn = Compute("-$a*2*cos(n*pi)/n");
+
+    # si f es -x entre 0 y pi, la extenderemos como -x entre -pi y 0
+    # y calculamos el negativo de bn
+
+    $bn = $bn*(-1) if ( $whichL == 1 );
+
+    ## para la solucion, tenemos:
+    $aint0 = "\frac{1}{2\pi}\int_{-\pi}^{\pi}\,$ftex\,dx = 0";
+    $aintn = "\frac{1}{\pi}\int_{-\pi}^{\pi}\,$ftex\,\cos(n x)\,dx = 0";
+    $bintn = "\frac{1}{\pi}\int_{-\pi}^}{\pi}\,$ftex\,\sin(n x)\,dx = " . 
+	$bn->TeX;
+
+} else {
+    $fLeft = $funcs[$whichL];
+    $fRight = $funcs[$whichR];
+    $ftex = "\begin{cases} $fRight, & 0 < x \le \pi\end{cases}";
+
+  
+	## si vamos de -ax hacia ax o viceversa f es una funcion par; 
+        ##el caso -ax hacia ax es
+        $ftex2="como función par.";
+
+	$a0 = Compute("$a*pi/2");
+	$an = Compute("2*$a*(-1 + cos(n*pi))/(n^2*pi)");
+	$bn = Compute("0");
+
+	## si vamos de x a -x, simplemente tomamos el negativo
+	if ( $whichL == 0 ) {
+	    $a0 = $a0*(-1);
+	    $an = $an*(-1);
+	}
+
+	## Y para la solución tenemos
+	$aint0 = "\frac{1}{2\pi}\int_{-\pi}^0\,$fLeft\,dx + " .
+	    "\frac{1}{2\pi}\int_0^{\pi}\,$fRight\,dx = " .
+	    $a0->TeX;
+	$aintn = "\frac{1}{\pi}\int_{-\pi}^0\,$fLeft\,\cos(n x)\,dx + " .
+	    "\frac{1}{\pi}\int_0^{\pi}\,$fRight\,\cos(N x)\,dx = " .
+	    $an->TeX;
+	$bintn = "\frac{1}{\pi}\int_{-\pi}^0\,$fLeft\,\sin(n x)\,dx + " .
+	    "\frac{1}{\pi}\int_0^{\pi}\,$fRight\,\sin(n x)\,dx = " .
+	    $bn->TeX;
+    
+}
+# $a0 = $a0->reduce();
+# $an = $an->reduce();
+# $bn = $bn->reduce();
+
+$an->{test_points} = [[1,1],[2,2],[3,3],[4,4],[5,5]];
+$bn->{test_points} = [[1,1],[2,2],[3,3],[4,4],[5,5]];
+
+Context()->texStrings;
+TEXT(beginproblem());
+BEGIN_TEXT
+
+Encuentra la \(n-\)sima suma de Fourier para la funcion
+\[ f(x) = $ftex, \]
+
+extendiendo a \(f(x)\) $ftex2
+$PAR
+\(F_k(x) = \frac{a_0}{2} + \sum_{n=1}^{k} a_n\,\cos(n x) + b_n\,\sin(n x) =\)
+$BR
+\{ ans_rule(15) \} \( + \sum_{n=1}^{k} \) \{ ans_rule(15) \} \(\cos(n x) + \)
+\{ ans_rule(15) \} \(\sin(n x)\).
+
+END_TEXT
+Context()->normalStrings;
+
+
+ANS( $a0->cmp() );
+ANS( $an->cmp() );
+ANS( $bn->cmp() );
+
+Context()->texStrings;
+SOLUTION(EV3(<<'END_SOLUTION'));
+$PAR SOLUTION $PAR
+
+Para encontrar la \(k-\)sima suma de Fourier, necesitamos determinar \(a_0\) y los diferentes \(a_n\) y \(b_n\) (for \(1\le n\le k\)).  Estos son:
+\[ a_0 = 2*$aint0, \]
+\[ a_n = $aintn, \]
+y
+\[ b_n = $bintn. \]
+$PAR
+Entonces,
+\[ F_k = $a0 + \sum_{n=1}^k\, $an\,\cos(n x) + $bn\,\sin(n x). \]
+
+END_SOLUTION
+Context()->normalStrings;
+
+ENDDOCUMENT();

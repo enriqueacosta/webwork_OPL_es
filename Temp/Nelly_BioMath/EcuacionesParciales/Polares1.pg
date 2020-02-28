@@ -1,0 +1,275 @@
+## DESCRIPTION
+## Partial Polar differential equations. This problem is about the temperature
+## of a disk. Autor  Nelly Sélem  nselem84@gmail.com
+## ENDDESCRIPTION
+## GSoC nselem84@gmail.com
+
+DOCUMENT();      
+##############################################
+############################################
+loadMacros(
+
+"PGchoicemacros.pl",
+"unionTables.pl",
+"PGstandard.pl",
+"MathObjects.pl",
+"PGgraphmacros.pl",
+"AnswerFormatHelp.pl",
+"unionTables.pl",
+
+);
+
+
+###############################################################################
+#   Notation Help Window Code
+#   Código para la Ventana de ayuda para la notación
+###############################################################################
+###############################################################################
+HEADER_TEXT(<<END_HEADER_TEXT);
+<script type="text/javascript">
+<!--
+function openhelpCustom1() {
+OpenWindow=window.open("","answer_format_help","width=550,height=550,status=0,toolbar=0,location=0,menubar=0,directories=0,resizeable=1,scrollbars=1");
+OpenWindow.document.write("<title>Notación utilizada por WebWork para Ecuaciones diferenciales Parciales</title>")
+OpenWindow.document.write("<body bgcolor='#ffffff'>")
+OpenWindow.document.write("<center><h2>Ayuda con la notacion</h2></center>")
+
+OpenWindow.document.write("<center><h3>Variables:</h3></center>")
+OpenWindow.document.write("<ul>")
+OpenWindow.document.write("<li><font color='#222255'>theta</font><blockquote>Escribe t si necesitas escribir θ   </blockquote></li>")
+OpenWindow.document.write("</ul>")
+OpenWindow.document.write("<ul>")
+OpenWindow.document.write("<li><font color='#222255'>Constantes</font><blockquote>En este problema las constantes A_n se asocian a los cosenos, y las constantes B_n a las funciones seno o seno hiperbólico según corresponda.  </blockquote></li>")
+OpenWindow.document.write("</ul>")
+OpenWindow.document.write("</body>")
+OpenWindow.document.write("</html>")
+OpenWindow.document.close()
+self.name="main"
+if (window.focus) {OpenWindow.focus()}
+return false;
+}
+-->
+</script>
+END_HEADER_TEXT
+###########################################################################
+####          FIN CODIGO VENTANA EMERGENTE
+###########################################################################
+
+
+TEXT(beginproblem());
+
+$refreshCachedImages = 1;
+
+Context()->flags->set( reduceConstants=>0 );
+Context()->variables->add( n=>'Real',r=>'Real',R=>'Real',t=>'Real');
+$showPartialCorrectAnswers = 1;
+
+########################################################
+#                 Variables setup
+########################################################
+#
+
+$Objeto="una placa";
+$Funcion="la temperatura";
+
+$a=random(2,10,1); #parámetro de frontera (border parameter)
+$c1=random(6,12);  #radio del círculo (radius)
+
+$Frontera1 = "u($c1,\theta)=\begin{cases} $a\theta & 0 \le \theta < \pi\cr \pi-$a\theta & \pi \le \theta < 2\pi\end{cases}";
+
+
+################################################################################
+#          Variables solución
+################################################################################
+
+$Rn=Formula("r^n");
+$Tn1=Compute("cos(n*t)");
+$Tn2=Compute("sin(n*t)");
+
+$Rn->{test_points} = [[1,1,1,1,1],[2,2,2,2,2],
+                     [3,3,3,3,3],[4,4,4,4,4],[5,5,5,5,5]];
+
+
+$A0Integral1=Compute("pi^2*$a/2");
+$A0Integral2=Compute("-(3*pi^2*$a-2*pi^2)/2");
+$A0=Compute("(1/(2*pi))*($A0Integral1+$A0Integral2)");
+
+$AnIntegral1=Formula("$a*((pi*n*sin(pi*n)+cos(pi*n))/n^2-1/n^2)");
+$AnIntegral2=Formula("(-$a*cos(2*pi*n)+$a*cos(pi*n))/n^2");
+$An=Compute("(1/($c1^n*pi))*($AnIntegral1+$AnIntegral2)");
+
+$BnIntegral1=Formula("($a*(sin(pi*n)-pi*n*cos(pi*n)))/n^2");
+$BnIntegral2=Formula("-((pi-2*pi*$a)*n*cos(2*pi*n)+(pi*$a-pi)*n*cos(pi*n))/n^2");
+$Bn=Compute("(1/($c1^n*pi))*($BnIntegral1+$BnIntegral2)");
+
+$An->{test_points} = [[1,1,1,1,1],[2,2,2,2,2],
+                     [3,3,3,3,3],[4,4,4,4,4],[5,5,5,5,5]];
+
+$Bn->{test_points} = [[1,1,1,1,1],[2,2,2,2,2],
+                     [3,3,3,3,3],[4,4,4,4,4],[5,5,5,5,5]];
+
+
+################################################################################
+#
+#   Gráficas 
+#############################################################################
+Context()->texStrings;
+
+$gr = init_graph(-($c1+.5),-($c1+.5),($c1+.5),($c1+.5),axes=>[0,0],size=>[300,300]);
+
+$gr->new_color("lightorange",  255,204,127);
+$gr->new_color("darkorange",   255, 153, 0);
+
+#  If the polar curve is r1 = c1 
+#  x1 = r cos(t) = c1 cos(t)
+#  y1 = r sin(t) = c1 sin(t)
+
+$x1 = Formula("$c1*cos(t)");
+$y1 = Formula("$c1*sin(t)");
+
+$f = new Fun( $x1->perlFunction, $y1->perlFunction, $gr );
+$f->domain(0,2*pi); $f->steps(90); $f->color('darkorange'); $f->weight('2');
+$gr->fillRegion([.5,.5,'lightorange']);
+
+# Etiquetas sobre la gráfica
+$gr->lb( new Label($c1,0,$c1,'black','center','middle'));
+$gr->lb( new Label(0,$c1-.5,$c1,'black','center','middle'));
+
+#############################################################################
+#  Main Text 
+#############################################################################
+
+Context()->texStrings;
+BEGIN_TEXT
+\{
+ColumnTable(
+"
+Encuentra analíticamente $Funcion \(u(r,\theta)\) de $Objeto que tiene forma de un anillo como el que se muestra en la figura. Considera que las condiciones de frontera son las siguientes:
+\[$Frontera1\] $PAR 
+
+Al utilizar la constante \(\lambda\) en el método de variables separables para resolver la ecuación polar de Laplace, se obtienen dos ecuaciones ordinarias. Escoge una de ellas como
+                    \[-\frac{ \Theta''}{\Theta}=\lambda,\] $PAR
+
+Después de resolver las EDOs y aplicar todas las condiciones de frontera homogéneas, aplica el principio de superposición para encontrar una solución de la forma: $PAR $BR
+
+ \(u(r,\theta) = u_0(r,\theta) + \sum_{n=1}^{\infty} A_n\,[R_n(r)]\times[\Theta_n(\theta)]+B_n\,[R_n(r)]\times[\Theta_n(\theta)]\)"
+
+,
+$BCENTER.
+
+image( insertGraph($gr), width=>300, height=>300 ).
+$PAR.
+"Gráfica de un disco".
+$ECENTER
+,
+indent => 0, separation => 30, valign => "TOP"
+); 
+\}
+
+$PAR 
+\(u(r,\theta)= 
+ A_0 + \sum_{n=1}^{\infty} A_n[\)\{ans_rule(5)\} \(]\times[\)
+\{ans_rule(10)\}]+
+     \( B_n[\)\{ans_rule(5)\}\(]\times[\) \{ans_rule(10)\}\(]\)
+$PAR
+
+Donde para satisfacer todas las condiciones, tenemos que :
+$BR \( A_0=\)\{ans_rule(5)\}$PAR
+ \( A_n=\)\{ans_rule(60)\} $PAR
+\( B_n=\)\{ans_rule(60)\}$PAR
+
+\{ htmlLink("#","help (Ayuda para notacionWeBWork)","onClick='openhelpCustom1()';") \}
+
+END_TEXT
+Context()->normalStrings;
+
+
+####################################################################
+#  Answer Evaluation
+
+$showPartialCorrectAnswers = 1;
+
+######################################################################
+#
+#  Answers
+#
+#########################################################################
+
+ANS( $Rn->cmp() );
+ANS( $Tn1->cmp() );
+ANS( $Rn->cmp() );
+ANS( $Tn2->cmp() );
+ANS( $A0->cmp() );
+ANS( $An->cmp() );
+ANS( $Bn->cmp() );
+
+#########################################################################
+#  Solution
+#########################################################################
+
+Context()->texStrings;
+$strA0Integral="\(\frac{1}{2}\frac{2}{L}\int_0^{2\pi}f(\theta), d\theta\)";
+$strA0Integral1="\(\frac{1}{2}(\frac{2}{2\pi}\int_0^{\pi}$a\theta, d\theta+\int_{\pi}^{2\pi}\pi-$a\theta, d\theta)\)";
+$strA0Integral1="\(\frac{1}{2\pi}\int_0^{\pi}$a\theta, d\theta+\int_{\pi}^{2\pi}\pi-$a\theta, d\theta\)";
+$strAnIntegral="\(\frac{2}{L}\int_0^{L}f(\theta)cos(\frac{2n\pi\theta}{L}), d\theta\)";
+$strBnIntegral="\(\frac{2}{L}\int_0^{L}f(\theta)sin(\frac{2n\pi\theta}{L}), d\theta\)";
+$strAnIntegral1="\(\frac{2}{2\pi}\int_0^{2\pi}f(\theta)cos(n\theta), d\theta\)";
+$strBnIntegral1="\(\frac{2}{2\pi}\int_0^{2\pi}f(\theta)sin(n\theta), d\theta\)";
+$strAnIntegral2="\(\frac{1}{\pi}(\int_0^{\pi}$a\theta\cos(n\theta) d\theta+\int_{\pi}^{2\pi}(\pi-$a\theta)\cos(n\theta) d\theta)\)";
+$strBnIntegral2="\(\frac{1}{\pi}(\int_0^{\pi}$a\theta\sin(n\theta), d\theta+\int_{\pi}^{2\pi}(\pi-$a\theta)\sin(n\theta), d\theta)\)";
+#########################################################################
+BEGIN_SOLUTION
+${PAR}SOLUTION:${PAR}
+Para resolver este problema se utiliza la ecuación polar de Laplace:
+\(\frac{\partial^2 u}{\partial r^2}+\frac{1}{r}\frac{\partial u}{\partial r}+\frac{1}{r^2}\frac{\partial^2 u}{\partial \theta^2}=0\). $PAR
+
+Al separar variables se obtienen las ecuaciones: $BR
+1) \(\Theta ''+\lambda \theta=0\) (Ecuación lineal de coeficientes constantes)
+2) \(r^2R''+rR'-\lambda R=0\) $BR (Ecuación de Cauchy Euler)
+$PAR
+
+Al resolver la primera ecuación, considerando que \(\Theta\) debe tener período \(2\pi\) obtenemos dos posibilidades: $BR
+I. Cuando \(\lambda=0\): \(\Theta(\theta)=C_1\).$BR 
+II.Cuando \(\lambda=\alpha ^2\): \(\Theta(\theta)=C_2 \cos(\alpha\theta)+ C_3\sin(\alpha\theta) \). 
+Por la periodicidad obtenemos que los valores propios son \(\alpha=n\), y entonces \(\lambda=n^2\).
+$PAR
+
+$PAR
+Al resolver la segunda ecuación, considerando que \(R(r)\) debe ser acotada, pues es una temperatura, se obtiene: $BR
+I. Cuando \(\lambda=0\): \(R(r)=C_4\).$BR 
+II.Cuando \(\lambda=n ^2\): \(R(r)=C_5 r^n \). 
+
+$PAR
+Entonces, haciendo \(A_0=C_1C_4\) y \(A_n=C_5C_2\), \(B_n=C_5C_3\) la solución u es: $BR
+\(u(r,\theta)=A_{0}+{\displaystyle \sum_{n=1}^{\infty}r^{n}(A_{n}cos(n\theta)+B_{n}sin(n\theta))} \)$BR
+$PAR
+Para calcular los coeficientes \(A_0, A_n, B_n\) evaluamos la condición de frontera: $PAR
+
+\(f( \theta)=u($c1,\theta)=A_{0}+{\displaystyle \sum_{n=1}^{\infty}$c1^{n}(A_{n}cos(n\theta)+B_{n}sin(n\theta))} \)$BR
+
+y la comparamos con su serie de Fourier:
+\(f( \theta)=\frac{a_{0}}{2}+{\displaystyle \sum_{n=1}^{\infty} a_{n}cos(n\theta)+ b_{n}sin(n\theta)} \) que es una serie completa en un intervalo no simétrico. $BR
+
+De ahi concluimos que $BR
+\(A_0=\frac{a_0}{2}\) , \(A_n=\frac{a_n}{$c1^n}\) , \(B_n=\frac{b_n}{$c1^n}\) $BR $PAR
+
+$BR\(A_0=\) $strA0Integral $PAR
+=$strA0Integral1 $PAR
+=$strA0Integral2 $A0 $PAR
+
+$BR \(a_n=\) $strAnIntegral $PAR
+=$strAnIntegral1 $PAR
+=$strAnIntegral2 $PAR
+\(A_n=\frac{a_n}{$c1^n}=$An\)$PAR
+
+$BR \(b_n=\)$strBnIntegral $PAR
+=$strBnIntegral1 $PAR
+=$strBnIntegral2 $PAR
+\(B_n=\frac{b_n}{$c1^n}=$Bn\)
+
+END_SOLUTION
+Context()->normalStrings;
+
+COMMENT('MathObject version.');
+
+ENDDOCUMENT();

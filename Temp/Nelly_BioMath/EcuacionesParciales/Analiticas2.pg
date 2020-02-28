@@ -1,0 +1,87 @@
+## GSoC nselem84@gmail.com
+DOCUMENT();        # This should be the first executable line in the problem.
+
+loadMacros(
+"PG.pl",
+"PGbasicmacros.pl",
+"PGchoicemacros.pl",
+"PGanswermacros.pl",
+"PGauxiliaryFunctions.pl",
+"PGcomplexmacros.pl",
+"MathObjects.pl", 
+"PGchoicemacros.pl",
+);
+Context()->variables->add( y=>'Real');
+TEXT(beginproblem());
+
+$a = random( 2, 5, 1);
+$b = random( 2, 5, 1);
+$c = random( 2, 5, 1);
+$d = random( 1, 5, 1);
+
+$f = random( 2, 5, 1);
+$g = random( 2, 5, 1);
+$h = random( 2, 5, 1);
+$j = random( 1, 5, 1);
+
+$k = random( 2, 5, 1);
+
+BEGIN_TEXT
+
+Escribe  \( h(z)\ =$f Im(z)*e^{i*Re(z)}\)  en la forma: \(w\ =\ u(x,y)\ +\ iv(x,y)\) :$PAR
+
+$PAR\(F(z)=\) \{ans_rule(30)\} 
+\(+i\)\{ans_rule(30)\}$PAR 
+$PAR Calcula las siguientes derivadas y decide si la función es analítica: 
+
+$BR \( \frac{\partial u}{\partial x}=\)  \{ans_rule(30)\} \( \frac{\partial v}{\partial y}= \) \{ans_rule(30)\}$PAR 
+
+\( \frac{\partial u}{\partial y}=\) \{ans_rule(30)\} \( -\frac{\partial v}{\partial x}= \) \{ans_rule(30)\}
+$PAR $BR
+
+
+END_TEXT	
+
+
+$u2 = Formula("$f*y*cos(x)");
+$v2 =Formula("$f*y*sin(x)");
+
+$u2x = $u2->D('x');
+$u2y = $u2->D('y');
+$v2x = $v2->D('x');
+$menosv2x =Formula("-1*$v2x");
+$v2y = $v2->D('y');
+
+$showPartialCorrectAnswers = 0;
+
+ANS(fun_cmp( $u2, var => [ 'x', 'y' ] ));
+ANS(fun_cmp( $v2, var => [ 'x', 'y' ] ));
+
+ANS(fun_cmp( $u2x, var => [ 'x', 'y' ] ));
+ANS(fun_cmp( $v2y, var => [ 'x', 'y' ] ));
+
+ANS(fun_cmp( $u2y, var => [ 'x', 'y' ] ));
+ANS(fun_cmp( $menosv2x, var => [ 'x', 'y' ] ));
+
+###################################################################
+$mc = new_multiple_choice();
+$mc->qa(
+"$PAR ¿Es analítica la función?", 
+"No analítica"
+);
+$mc->extra(
+"Analítica",
+);
+
+BEGIN_TEXT
+\{ $mc->print_q() \}
+$BR
+\{ $mc->print_a() \}
+END_TEXT
+
+
+ANS( radio_cmp( $mc->correct_ans() ) );
+
+
+ENDDOCUMENT();        # This should be the last executable line in the problem.
+

@@ -1,0 +1,181 @@
+# DESCRIPTION
+# Problem from Calculus, single variable, Hughes-Hallett et al., 4th ed.
+# WeBWorK problem written by Gavin LaRose, <glarose@umich.edu> 
+# adapted by  Nelly Selem <nselem84@gmail.com> GSoC
+# ENDDESCRIPTION
+
+## KEYWORDS('calculus','integral', 'fourier', 'series', 'approximation')
+DOCUMENT();
+
+loadMacros(
+"PGstandard.pl",
+"MathObjects.pl",
+"PGchoicemacros.pl",
+"PGgraphmacros.pl",
+);
+
+Context("Numeric");
+Context()->flags->set( reduceConstants=>0 );
+$showPartialCorrectAnswers = 1;
+
+
+$whichF = random(1,4,1);
+if ( $whichF == 1 ) {
+    ## Entonces graficamos
+   $ftex = "\begin{cases}1 & 0 \le x < \pi\end{cases}";
+    @f = ( "-1 for x in <-3.1415,0> using color:red and weight:1",
+	   "1 for x in <0,3.1415> using color:blue and weight:1" );
+
+    @n = ( 1, 3, 5);
+    @b = ( "{4\over \pi}", "{4\over 3\pi}","{4\over 5\pi}" );
+    $f1 = Compute("0 + (4/pi)*sin(x)");
+    $f2 = Compute("0 + (4/pi)*sin(x) + 0*sin(2*x) + (4/(3*pi))*sin(3*x)");
+    $f3 = Compute("(4/pi)*sin(x) + (4/(3*pi))*sin(3*x)+ (4/(5*pi))*sin(5*x)");
+
+    ## algunas variables para la solución
+    @bint = ( "",
+	      "\int_0^{\pi}\,\sin(x)\,dx",
+	      "\int_0^{\pi}\,\sin(3x)\,dx",
+	      "\int_0^{\pi}\,\sin(5x)\,dx" );
+
+} elsif ( $whichF == 2 ) {
+    ##El negativo de ellos
+$ftex = "\begin{cases}-1 & 0 \le x < \pi\end{cases}";
+
+    @f = ( "1 for x in <-3.1415,0> using color:red and weight:1",
+	   "-1 for x in <0,3.1415> using color:blue and weight:1" );
+
+    @n = ( 1, 3, 5);
+    @b = ( "-{4\over \pi}", "-{4\over 3\pi}","-{4\over 5\pi}" );
+    $f1 = Compute("0 - (4/pi)*sin(x)");
+    $f2 = Compute("0 - (4/pi)*sin(x) + 0*sin(2*x) - (4/(3*pi))*sin(3*x)");
+    $f3 = Compute("-(4/pi)*sin(x)- (4/(3*pi))*sin(3*x)- (4/(5*pi))*sin(5*x)");
+
+    ## algunas variables para la solución
+    @bint = ( "",
+	      "\int_0^{\pi}\,-\sin(x)\,dx",
+	      "\int_0^{\pi}\,-\sin(4x)\,dx",
+	      "\int_0^{\pi}\,-\sin(5x)\,dx" );
+
+} elsif ( $whichF == 3 ) {
+    ## El equivalente 
+      $ftex = "\begin{cases} 1 & 0 \le x < \pi/2 \cr -1 & \pi/2 \le x < \pi\end{cases}";
+
+    @f = ( "1 for x in <-3.1415,-1.5708> using color:red and weight:2",
+            "-1 for x in <-1.5708,0> using color:red and weight:2",
+	   "1 for x in <0,1.5708> using color:blue and weight:2",
+	   "-1 for x in <1.5708,3.1415> using color:blue and weight:2" );
+
+    @b = ( "{8\over 2\pi}", "{8\over 6\pi}","{8\over 10\pi}" );
+    @n = ( 2,6,10 );
+    $f1 = Compute("0 + (4/pi)*sin(2*x)");
+    $f2 = Compute("0 + (4/pi)*sin(2*x)+ (8/(6*pi))*sin(6*x)");
+    $f3 = Compute("0 + (4/pi)*sin(2*x)+ (8/(6*pi))*sin(6*x)+(8/(10*pi))*sin(10*x)");
+
+
+    ## algunas variables para la solución
+    @bint = ( "",
+	          "\int_{0}^{\pi/2}\,\sin(x)\,dx + " .
+	          "\int_{pi/2}^{\pi}\,-\sin(x)\,dx",
+	          "\int_{0}^{\pi/2}\,\sin(6x)\,dx + " .
+	          "\int_{pi/2}^{\pi}\,-\sin(6x)\,dx",
+	          "\int_{0}^{\pi/2}\,\sin(10x)\,dx + " .
+	          "\int_{pi/2}^{\pi}\,-\sin(10x)\,dx" );
+
+} elsif ( $whichF == 4 ) {
+    ## El negativo de ellos
+    $ftex = "\begin{cases} -1 & 0 \le x < \pi/2 \cr 1 & \pi/2 \le x < \pi\end{cases}";
+
+    @f = ( "-1 for x in <-3.1415,-1.5708> using color:red and weight:2",
+	   "1 for x in <-1.5708,0> using color:red and weight:2",
+	   "-1 for x in <0,1.5708> using color:blue and weight:2",
+	   "1 for x in <1.5708,3.1415> using color:blue and weight:2" );
+
+
+    @b = ( "-{4\over \pi}", "-{4*2\over 6\pi}","-{4*2\over 10\pi}" );
+    @n = ( 2,6,10 );
+    $f1 = Compute("0 - (4/pi)*sin(2*x)");
+    $f2 = Compute("0 - (4/pi)*sin(2*x)- (8/(6*pi))*sin(6*x)");
+    $f3 = Compute("0 - (4/pi)*sin(2*x)- (8/(6*pi))*sin(6*x)-(8/(10*pi))*sin(10*x)");
+
+    ## Algunas variables para la solucion
+    @bint = ( "",
+	          "\int_{0}^{\pi/2}\,\sin(x)\,dx + " .
+	          "\int_{pi/2}^{\pi}\,-\sin(x)\,dx",
+	          "\int_{0}^{\pi/2}\,\sin(6x)\,dx + " .
+	          "\int_{pi/2}^{\pi}\,-\sin(6x)\,dx",
+	          "\int_{0}^{\pi/2}\,\sin(10x)\,dx + " .
+	          "\int_{pi/2}^{\pi}\,-\sin(10x)\,dx" );
+}
+
+TEXT(beginproblem());
+Context()->texStrings;
+BEGIN_TEXT
+
+Para la siguiente función encuentra los primeros 3 términos no cero de su serie de senos de Fourier.
+\[ f(x) = $ftex \]$BR
+
+$PAR
+Aproximación con un término significativo $BR \( F_{$n[0]}(x) = \) \{ ans_rule(35) \}
+$BR
+Aproximación con dos términos significativos $BR \( F_{$n[1]}(x) = \) \{ ans_rule(35) \}
+$BR
+Aproximación con tres términos significativos $BR \( F_{$n[2]}(x) = \) \{ ans_rule(35) \}
+$PAR
+Usando un SAC grafica la función y sus tres primeras aproximaciones para ver como se ajustan paulatinamente a \(f(x)\).
+
+END_TEXT
+Context()->normalStrings;
+
+ANS( $f1->cmp() );
+ANS( $f2->cmp() );
+ANS( $f3->cmp() );
+
+$sgr = init_graph(-3.1415,-1.25,3.1415,1.25,axes=>[0,0],ticks=>[2,2],
+		  size=>[250,250]);
+add_functions( $sgr, @f,
+	       "$f1 for x in <-3.1415,3.1415> using color:black and weight:1",
+	       "$f2 for x in <-3.1415,3.1415> using color:black and weight:1",
+	       "$f3 for x in <-3.1415,3.1415> using color:black and weight:1" );
+
+Context()->texStrings;
+SOLUTION(EV3(<<'END_SOLUTION'));
+$PAR SOLUTION $PAR
+
+Para encontrar las aproximaciones de Fourier de senos necesitamos los coeficientes: $BR
+\( a_0 = a_n= 0. \) porque f la estamos aproximando como una función impar.
+
+$PAR
+En cambio para \( b_n = \frac{2}{\pi}\int_{0}^{\pi} f(x)\sin \frac{n\pi x}{\pi}\,dx \) $BR tenemos que: $BR
+
+$BR
+\( b_$n[0] = \frac{2}{\pi}\int_{0}^{\pi} f(x)\sin $n[0] x\,dx = 
+   \frac{2}{\pi}\left( $bint[1] \right) = $b[0], \)
+$BR
+\( b_$n[1] = \frac{2}{\pi}\int_{0}^{\pi} f(x)\sin $n[1] x\,dx = 
+   \frac{2}{\pi}\left( $bint[1] \right) = $b[1], \)
+$BR
+y
+$BR
+\( b_$n[2] = \frac{2}{\pi}\int_{0}^{\pi} f(x)\sin $n[2]x\,dx = 
+   \frac{2}{\pi}\left( $bint[1] \right) = $b[2]. \)
+
+$PAR
+Entonces,
+\[ F_{$n[0]} = $f1, \]
+\[ F_{$n[1]} = $f2, \]
+y
+\[ F_{$n[2]} = $f3. \]
+
+$PAR
+Las funciones se observan graficadas en el siguiente esquema, que muestra a f en azul y a sus sucesivas aproximaciones en negro.$BR
+$BCENTER
+\{ image( insertGraph($sgr), tex_size=>250, height=>250, width=>250,
+          extra_html_tags=>'alt="Grafica de la función f y de sus primeras' .
+          'tres aproximaciones de Fourier."' ) \}
+$ECENTER
+
+END_SOLUTION
+Context()->normalStrings;
+
+ENDDOCUMENT();
