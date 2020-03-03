@@ -91,7 +91,7 @@ $BR
 ¿Cuáles son las unidades de $c? \{ $unitsC->menu() \}
 $PAR
 
-${BITALIC}(Asegurate de pensar con claridad en palabras los significados de cada uno de l enunciados en términos del cantidades de helado y dinero.)$EITALIC
+${BITALIC}(Asegurate de pensar con claridad en palabras los significados de cada uno de los enunciados en términos del cantidades de helado y dinero.)$EITALIC
 
 END_TEXT
 Context()->normalStrings;
@@ -106,7 +106,7 @@ $ext = 'avo';
 
 Context()->texStrings;
 SOLUTION(EV3(<<'END_SOLUTION'));
-$PAR SOLUTION $PAR
+$PAR SOLUCIÓN $PAR
 
 ${BBOLD}(a)$EBOLD
 La expresión \(f($a) = $b\) significa que cuesta $b dólares producir $a galones de helado.
