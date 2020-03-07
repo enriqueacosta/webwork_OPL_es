@@ -5,7 +5,7 @@
 Si ya se ha creado una [tarea-- FALTA LINK](link), se puede crear un problema en banco de la siguiente manera:
 
 ## Agregar un problema del OPL en inglés a una tarea.
-
+∗  Abajo, selecciona "new version"
 *  Arriba a la derecha vas a ver un mensaje como `The file '[TMPL]/Library/Michigan/Chap14Sec1/Q13.pg' is protected!` pues no puedes editar el problema del OPL. Debes hacer un copia asi
 ∗  Abajo, selecciona "new version"
 ∗  Elige la opción "Replace current problem: ..." (que está seleccionado por defecto)
