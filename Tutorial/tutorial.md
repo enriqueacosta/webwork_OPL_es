@@ -3,7 +3,7 @@
 ## Crear un problema en blanco
 Si ya se ha creado una [tarea-- FALTA LINK](link), se puede crear un problema en banco de la siguiente manera:
 
-*  Ir al *editor de tareas*.
+*  Ir al *editor de tareas* en el menú.
 *  Ingresar a la página de detalles de la tarea.
 *  Al final de la página seleccionar `Agregar blank problem template(s) to end of homework set`
 *  Guardar los cambios.
@@ -34,7 +34,17 @@ Para ver vistas previas, seleciona "View-->Take action" abajo (view está selecc
 
 ## Agregar un problema del OPL en inglés a una tarea sin editarlo.
 
-ESCRIBIR
+*  Ir al *Explorador de problemas* en el menú.
+*  Seleccionar `Subject`, `Chapter`, `Section` (en ese orden, cada selección habilita la lista siguiente).
+
+Va a salir un mensaje como `There are 20 matching WeBWorK problems`. 
+
+*  Presionar `view problems` para ver estos 20 problemas (esot puede tomar un tiempo, pues son cargados de una gran base de datos).
+
+Esto va a cargar todos los problemas y cada uno tiene un botón `Agregar` para poder agregarlo a una tarea.
+
+*  Seleccionar la tarea a la que se van a agregar los problemas en la parte superior de la página `Add problems to Target Set:`. También se puede crear una nueva tarea desde esta misma página con el botón y campo justo debajo.
+*  Presionar `Agregar` con los problemas que se quieran agregar. Cada vez que se agreguen va a aparecer un mensaje verde en la parte superior derecha.
 
 ## Hacer ediciones a un problema agregado del OPL (volverlo propio)
 
@@ -48,12 +58,7 @@ ESCRIBIR
 
 # Traducir un problema dentro de la plataforma de WeBWork
 
-## Traducir un problema propio (por ejemplo, creado a partir de un `blankProblem.pg`:
+## Traducir un problema propio (por ejemplo, creado a partir de un `blankProblem.pg`):
 
 ## Traducir un problema del OPL en inglés
-
-
-
-
-   *  Si es un problema de OPL en inglés:
-      
+ 
