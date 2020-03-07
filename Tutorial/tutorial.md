@@ -2,7 +2,7 @@
 
 ## Crear un problema en blanco
 
-Si ya se ha creado una [tarea](link), se puede crear un problema en banco de la siguiente manera:
+Si ya se ha creado una [tarea-- FALTA LINK](link), se puede crear un problema en banco de la siguiente manera:
 
 ## Agregar un problema del OPL en inglés a una tarea.
 
