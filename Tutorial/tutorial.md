@@ -18,7 +18,7 @@ The file '[TMPL]/settest/blankProblem.pg' is a blank problem!
 To edit this text you must use the 'NewVersion' action below to save it to another file.
 ```
 
-Seguir estas instrucciones seleccionando `NewVersion`, el nombre del archivo que se le quiere dar, por ejemplo `MiPrimerProblema.pg`. Dejar la opción `Replace current problem: ...` seleccionada y presionar el botón `Ejecutar`.
+Seguir estas instrucciones seleccionando `NewVersion` en la parte de abajo de la página y eligiendo el nombre del archivo que se le quiere dar, por ejemplo `MiPrimerProblema.pg`. Dejar la opción `Replace current problem: ...` seleccionada y presionar el botón `Ejecutar`.
 
 Va a salir un mensaje verde arriba que dice algo como:
 ```
@@ -27,22 +27,33 @@ The source file for 'set test / problem 16 has been changed from '[TMPL]/settest
 ```
 Esto indica que se creó el problema correctamente.
 
-## Agregar un problema del OPL en inglés a una tarea.
-*  Arriba a la derecha vas a ver un mensaje como `The file '[TMPL]/Library/Michigan/Chap14Sec1/Q13.pg' is protected!` pues no puedes editar el problema del OPL. Debes hacer un copia asi
-*  Abajo, selecciona "new version"
-*  Elige la opción "Replace current problem: ..." (que está seleccionado por defecto)
-*  Click en "take action"
-*  Ahora te va a salir un mensaje verde arriba a la derecha que dice algo como: `Saved to file '[TMPL]/local/Library/Michigan/Chap14Sec1/Q13.pg'` ... eso quiere decir que ta tienes tu propia copia para editar. 
+## Editar un problema
 
+Para ver vistas previas, seleciona "View-->Take action" abajo (view está seleccionado por defecto). 
+*  Si quieres guardar tu trabajo, selecciona: "Update-->Take Action".
+
+## Agregar un problema del OPL en inglés a una tarea sin editarlo.
+
+ESCRIBIR
+
+## Hacer ediciones a un problema agregado del OPL (volverlo propio)
+
+*  Ir a la página de un problema particular que se haya agregado a alguna tarea.
+*  Selecciona "Edit3" justo debajo de la caja azul del problema. Eso abre una nueva ventana con el editor. 
+*  Arriba a la derecha vas a ver un mensaje como `The file '[TMPL]/Library/Michigan/Chap14Sec1/Q13.pg' is protected!` pues no puedes editar el problema del OPL. Debes hacer un copia propia así:
+   -  Abajo, selecciona "new version"
+   -  Elige la opción "Replace current problem: ..." (que está seleccionado por defecto)
+   -  Click en "take action"
+   -  Ahora te va a salir un mensaje verde arriba a la derecha que dice algo como: `Saved to file '[TMPL]/local/Library/Michigan/Chap14Sec1/Q13.pg'` ... eso quiere decir que ta tienes tu propia copia para editar. 
 
 # Traducir un problema dentro de la plataforma de WeBWork
 
-## Traducir un problema desde la interfaz de WW:
+## Traducir un problema propio (por ejemplo, creado a partir de un `blankProblem.pg`:
 
-*  Ve a la página de un problema particular que se haya agregado a alguna tarea.
-*  Selecciona "Edit3" justo debajo de la caja azul del problema. 
-*  Eso abre una nueva ventana con el editor. 
+## Traducir un problema del OPL en inglés
+
+
+
+
    *  Si es un problema de OPL en inglés:
       
-*  Ajusta todo lo que quieras en el editor de texto. Para ver vistas previas, seleciona "View-->Take action" abajo (view está seleccionado por defecto). 
-*  Si quieres guardar tu trabajo, selecciona: "Update-->Take Action".
