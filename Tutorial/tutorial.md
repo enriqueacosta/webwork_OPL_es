@@ -4,6 +4,15 @@
 
 Si ya se ha creado una [tarea-- FALTA LINK](link), se puede crear un problema en banco de la siguiente manera:
 
+*  Ir al *editor de tareas*.
+*  Ingresar a la página de detalles de la tarea.
+*  Al final de la página seleccionar `Agregar blank problem template(s) to end of homework set`
+*  Guardar los cambios.
+
+Esto va a crear un problema al final de la tarea (aparece como el útlimo problema) con archivo `blankProblem.pg`. 
+
+*  Seleccionar `Editar problema` (ícono de lápiz)
+
 ## Agregar un problema del OPL en inglés a una tarea.
 *  Arriba a la derecha vas a ver un mensaje como `The file '[TMPL]/Library/Michigan/Chap14Sec1/Q13.pg' is protected!` pues no puedes editar el problema del OPL. Debes hacer un copia asi
 *  Abajo, selecciona "new version"
