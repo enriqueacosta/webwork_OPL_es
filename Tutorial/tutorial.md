@@ -6,10 +6,11 @@ Si ya se ha creado una [tarea-- FALTA LINK](link), se puede crear un problema en
 
 ## Agregar un problema del OPL en inglés a una tarea.
 
-*  Arriba a la derecha vas a ver un mensaje como "The file '[TMPL]/Library/Michigan/Chap14Sec1/Q13.pg' is protected!" pues no puedes editar el problema del OPL. Debes hacer un copia así: 
-∗ Abajo, selecciona "new version" 
-∗ Elige la opción "Replace current problem: ..." (que está seleccionado por defecto) 
-∗ Click en "take action" 
+*  Arriba a la derecha vas a ver un mensaje como "The file '[TMPL]/Library/Michigan/Chap14Sec1/Q13.pg' is protected!" pues no puedes editar el problema del OPL. Debes hacer un copia así:
+
+∗ Abajo, selecciona "new version"
+∗ Elige la opción "Replace current problem: ..." (que está seleccionado por defecto)
+∗ Click en "take action"
 ∗ Ahora te va a salir un mensaje verde arriba a la derecha que dice algo como: Saved to file '[TMPL]/local/Library/Michigan/Chap14Sec1/Q13.pg' ... eso quiere decir que ta tienes tu propia copia para editar. 
 
 
