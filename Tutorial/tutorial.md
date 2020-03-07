@@ -3,10 +3,8 @@
 ## Crear un problema en blanco
 Si ya se ha creado una [tarea-- FALTA LINK](link), se puede crear un problema en banco de la siguiente manera:
 
-*  Ir al *editor de tareas* en el menú.
-*  Ingresar a la página de detalles de la tarea.
-*  Al final de la página seleccionar `Agregar blank problem template(s) to end of homework set`
-*  Guardar los cambios.
+*  Ir al *editor de tareas* en el menú de la izquierda e ingresar a la página de detalles de la tarea a la que se quiere agregar el problema en blanco.
+*  Al final de la página seleccionar `Agregar blank problem template(s) to end of homework set` y presionar `Guardar los cambios`.
 
 Esto va a crear un problema al final de la tarea (aparece como el último problema) con archivo `blankProblem.pg`. 
 
