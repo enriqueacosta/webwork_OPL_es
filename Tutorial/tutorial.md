@@ -1,7 +1,6 @@
 # Agregar un problema a una tarea (en blanco, o del OPL en inglés)
 
 ## Crear un problema en blanco
-
 Si ya se ha creado una [tarea-- FALTA LINK](link), se puede crear un problema en banco de la siguiente manera:
 
 *  Ir al *editor de tareas*.
@@ -9,9 +8,24 @@ Si ya se ha creado una [tarea-- FALTA LINK](link), se puede crear un problema en
 *  Al final de la página seleccionar `Agregar blank problem template(s) to end of homework set`
 *  Guardar los cambios.
 
-Esto va a crear un problema al final de la tarea (aparece como el útlimo problema) con archivo `blankProblem.pg`. 
+Esto va a crear un problema al final de la tarea (aparece como el último problema) con archivo `blankProblem.pg`. 
 
-*  Seleccionar `Editar problema` (ícono de lápiz)
+*  Seleccionar `Editar problema` (ícono de lápiz) o, otra forma, seleccionar `Ver problema` y en la página en la que ser carga el problema seleccionar `Edit3` justo debajo del recuadro gris que contiene el problema.
+
+Esto carga el editor, pero va a aparecer in mensaje de alerta arriba a la derecha que dice algo como 
+```
+The file '[TMPL]/settest/blankProblem.pg' is a blank problem!
+To edit this text you must use the 'NewVersion' action below to save it to another file.
+```
+
+Seguir estas instrucciones seleccionando `NewVersion`, el nombre del archivo que se le quiere dar, por ejemplo `MiPrimerProblema.pg`. Dejar la opción `Replace current problem: ...` seleccionada y presionar el botón `Ejecutar`.
+
+Va a salir un mensaje verde arriba que dice algo como:
+```
+Saved to file '[TMPL]/settest/MiPrimerProblema.pg'
+The source file for 'set test / problem 16 has been changed from '[TMPL]/settest/blankProblem.pg' to '[TMPL]/settest/MiPrimerProblema.pg'
+```
+Esto indica que se creó el problema correctamente.
 
 ## Agregar un problema del OPL en inglés a una tarea.
 *  Arriba a la derecha vas a ver un mensaje como `The file '[TMPL]/Library/Michigan/Chap14Sec1/Q13.pg' is protected!` pues no puedes editar el problema del OPL. Debes hacer un copia asi
