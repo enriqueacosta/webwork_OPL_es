@@ -8,9 +8,9 @@ Si ya se ha creado una [tarea-- FALTA LINK](link), se puede crear un problema en
 
 Esto va a crear un problema al final de la tarea (aparece como el último problema) con archivo `blankProblem.pg`. 
 
-*  Seleccionar `Editar problema` (ícono de lápiz) o, otra forma, seleccionar `Ver problema` y en la página en la que ser carga el problema seleccionar `Edit3` justo debajo del recuadro gris que contiene el problema.
+*  Seleccionar `Editar problema` (ícono de lápiz). Alternativamente,  seleccionar `Ver problema` y en la página en la que ser carga el problema seleccionar `Edit3` justo debajo del recuadro gris que contiene el problema.
 
-Esto carga el editor, pero va a aparecer in mensaje de alerta arriba a la derecha que dice algo como 
+Esto carga el editor, pero va a aparecer in mensaje de alerta arriba a la derecha de la página que dice algo como 
 ```
 The file '[TMPL]/settest/blankProblem.pg' is a blank problem!
 To edit this text you must use the 'NewVersion' action below to save it to another file.
@@ -27,10 +27,10 @@ Esto indica que se creó el problema correctamente.
 
 ## Editar un problema
 
-Para ver vistas previas, seleciona "View-->Take action" abajo (view está seleccionado por defecto). 
+Para ver vistas previas, seleccionar "View-->Take action" abajo (view está seleccionado por defecto). 
 *  Si quieres guardar tu trabajo, selecciona: "Update-->Take Action".
 
-## Agregar un problema del OPL en inglés a una tarea sin editarlo.
+## Agregar un problema del OPL en inglés a una tarea (sin editarlo).
 
 *  Ir al *Explorador de problemas* en el menú.
 *  Seleccionar `Subject`, `Chapter`, `Section` (en ese orden, cada selección habilita la lista siguiente).
