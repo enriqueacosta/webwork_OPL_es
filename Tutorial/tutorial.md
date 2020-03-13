@@ -1,3 +1,21 @@
+# Ajustes básicos a un curso modelo ya montado.
+
+## Cambiar la visibilidad y fecha de entrega de una tarea
+Ir al *editor de tareas* en el menú de la izquierda e ingresar
+
+COMPLETAR
+
+## Agregar/cambiar los estudiantes que tienen una tarea asignada
+*  Ir al *editor de tareas* en el menú de la izquierda.
+*  En la fila de la tarea a la que quiere cambiar asignaciones:
+   -  Hacer click en el link de la columna `tr: Edit Assigned Users`. Esto te lleva a la página *Usuarios a los que se ha asignado la tarea XXX*.
+   -  Hacer cambios en la columna `Asignado(s)` 
+   -  Presionar el botón `Guardar` para guardar los cambios.
+
+## Agregar estudiantes
+Ir al *editor de tareas* en el menú de la izquierda, selecionar `Agregar`  y selecionar el número de estudiantes.
+
+
 # Agregar un problema a una tarea (en blanco, o del OPL en inglés)
 
 ## Crear un problema en blanco
