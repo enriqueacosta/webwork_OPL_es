@@ -1,0 +1,81 @@
+DOCUMENT();
+
+loadMacros(
+  "PGstandard.pl",
+  "PGchoicemacros.pl",
+  "PGgraphmacros.pl",
+  "freemanMacros.pl",
+  "Parser.pl",
+  "PGcourse.pl"
+);
+
+## Traducción Grupo LEMA www.grupolema.org
+## DBsubject(Calculus - single variable)
+## DBchapter(Applications of differentiation)
+## DBsection(Indeterminate forms and L'Hopital's rule)
+## Institution(W.H.Freeman)
+## Author(JustAsk!)
+## Level(2)
+## TitleText1('Calculus: Early Transcendentals')
+## AuthorText1('Rogawski')
+## EditionText1('2')
+## Section1('4.5')
+## Problem1('22')
+## KEYWORDS('calculus', 'derivatives', 'limits', 'Lhopitals rule')
+
+
+
+## Show partial correct answers
+$showPartialCorrectAnswers = 0;
+
+TEXT(beginproblem());
+
+$a=random(2,14,1);
+$b=random(2,14,1);
+$c=random(2,14,1);
+$d=random(2,14,1);
+
+BEGIN_TEXT
+\{ textbook_ref_exact("Rogawski ET 2e", "4.5","22") \}$BR
+Usa la regla de l'Hôpital (posiblemente más de una vez) para evaluar el siguiente límite: $BR
+\( \lim\limits_{x\to \infty}(\frac{$a x^3+$b x^2}{$c x^3-$d})= \) \{ ans_rule() \} $BR
+Si la respuesta es igual a \(\infty\) o \(-\infty\), escribe INF o -INF respectivamente.
+END_TEXT
+
+
+$a3=3* $a;
+$b2=2* $b;
+$c3=3* $c;
+
+$a3_2=2* $a3;
+$c3_2=2* $c3;
+
+$ac= Real($a / $c);
+
+SOLUTION(EV3(<<'END_SOLUTION'));
+$PAR$BBOLD SOLUCIÓN:$EBOLD 
+$PAR
+
+Las funciones del numerador y el denominador son diferenciables y el límite es una forma indeterminada de tipo \(\frac{\infty}{\infty}\), entonces usamos la regla de l'Hôpital: $PAR
+
+\( \lim\limits_{x \to \infty}(\frac{$a x^3+$b x^2}{$c x^3-$d})= \lim\limits_{x \to \infty} \frac{$a3 x^2 + $b2 x}{$c3 x^2}\) $PAR
+
+
+Si usamos de nuevo la regla de l'Hôpital, obtenemos: $PAR
+
+\( \lim\limits_{x \to \infty} \frac{$a3 x^2 + $b2 x}{$c3 x^2} = \lim\limits_{x \to \infty} \frac{$a3_2 x + $b2}{$c3_2 x}\) $PAR
+
+Si usamos de nuevo la regla de l'Hôpital, obtenemos: $PAR
+
+\(\lim\limits_{x \to \infty} \frac{$a3_2 x + $b2}{$c3_2 x}\) \(= \lim\limits_{x \to \infty} \frac{$a3_2}{$c3_2}= $ac\) $PAR
+
+$PAR
+
+Nota: $BR
+Podemos obtener la misma respuesta si identificamos los coeficientes de las máximas potencias del numerador y el denominador (\( $a \) y \( $c \) respectivamente) y escribimos el cociente entre ellas, concluyendo que el límite es igual a \(\frac{$a}{$c}\).
+
+END_SOLUTION
+
+ANS(num_cmp($a/$c,strings=>["INF","-INF"]));
+
+ENDDOCUMENT();

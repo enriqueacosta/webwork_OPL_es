@@ -1,0 +1,49 @@
+## Traducción Grupo LEMA www.grupolema.org
+## DBsubject(Calculus - single variable)
+## DBchapter(Applications of differentiation)
+## DBsection(Indeterminate forms and L'Hopital's rule)
+## Institution(UCSB)
+## MLT(Indeterminate-ProductWithTrig)
+## MLTleader(1)
+## Level(3)
+## TitleText1('Calculus: Early Transcendentals')
+## AuthorText1('Stewart')
+## EditionText1('5')
+## Section1('4.4')
+## Problem1('39')
+## KEYWORDS('L'Hospital','Indeterminate','Limit')
+
+DOCUMENT();
+
+loadMacros(
+  "PGstandard.pl",
+  "PGchoicemacros.pl",
+  "PGcourse.pl"
+);
+
+TEXT(&beginproblem);
+$showPartialCorrectAnswers = 1;
+$a=random(1,10,1);
+$b=random(1,10,1);
+while($b==$a) {$b=random(1,10,1)};
+$c=random(1,10,1)*random(-1,1,2);
+
+# Insert problem text between the $PAR, and space for the
+# answer, like this   \(y =\) \{ans_rule(50)\}
+# just before the END_TEXT.
+
+BEGIN_TEXT
+
+$PAR
+
+Calcula el siguiente límite usando la regla de l'Hôpital si se puede. Escribe $BBOLD -INF $EBOLD si tu respuesta es \(-\infty\), escribe $BBOLD INF $EBOLD si tu respuesta es \(\infty\) y escribe $BBOLD NE $EBOLD si el límite no existe ni tiende a infinito o menos infinito.
+
+$PAR
+
+\(\lim\limits_{x\rightarrow 0} $c \cot ($a x) \sin ($b x)=\) \{ans_rule(20)\}
+
+END_TEXT
+
+ANS(std_num_str_cmp($c*$b/$a,["INF","-INF","NE"]));
+
+ENDDOCUMENT();

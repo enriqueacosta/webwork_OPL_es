@@ -1,0 +1,53 @@
+## Traducción Grupo LEMA www.grupolema.org
+## DBsubject(Calculus - single variable)
+## DBchapter(Applications of differentiation)
+## DBsection(Indeterminate forms and L'Hopital's rule)
+## Institution(UCSB)
+## MLT(Indeterminate-PolyDivPoly)
+## MLTleader(1)
+## MO(1)
+## Level(2)
+## TitleText1('Calculus: Early Transcendentals')
+## AuthorText1('Stewart')
+## EditionText1('5')
+## Section1('4.4')
+## Problem1('6')
+## KEYWORDS('L'Hospital','Indeterminate','Limit')
+
+DOCUMENT();
+
+loadMacros(
+  "PGstandard.pl",
+  "MathObjects.pl",
+  "PGcourse.pl"
+);
+
+TEXT(beginproblem());
+$showPartialCorrectAnswers = 1;
+
+Context('Numeric');
+
+do {
+	$a = non_zero_random(-10, 10);
+	$b = non_zero_random(-10, 10);
+} until ($a**2 - $b**2);
+
+$s = $a + $b; $p= $a*$b; $d = $a - $b;
+$f = Formula("(x - $a)/(x^2 - $s*x + $p)")->reduce;
+$limit = Compute("1/$d");
+
+Context()->texStrings;
+BEGIN_TEXT
+Calcula el siguiente límite (Ayuda:\{ helpLink(limit) \}) usando la regla de l'Hôpital si se puede. Escribe $BBOLD -INF $EBOLD si tu respuesta es \(-\infty\), escribe $BBOLD INF $EBOLD si tu respuesta es \(\infty\) y escribe $BBOLD NE $EBOLD si el límite no existe ni tiende a infinito o menos infinito.
+$BR $BR
+\(\displaystyle \lim_{x \to $a} $f = \)
+\{ ans_rule(5) \}.
+END_TEXT
+Context()->normalStrings;
+
+# esta es la vieja ANS($limit->cmp);
+
+$answer = $limit;
+ANS(num_cmp($answer,tol=>0,tolType=>"absolute",strings=>["-INF","INF","NE","inf","-inf","minf","infinito","-infinito","minfinito"]));
+
+ENDDOCUMENT();

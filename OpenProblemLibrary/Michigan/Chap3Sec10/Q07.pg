@@ -1,0 +1,244 @@
+# Traducción Grupo LEMA www.grupolema.org
+# DESCRIPTION
+# Problem from Calculus, single variable, Hughes-Hallett et al., 4th ed.
+# WeBWorK problem written by Gavin LaRose, <glarose@umich.edu>
+
+## Tagged by glr 12/16/08
+
+## DBsubject(Calculus - single variable)
+## DBchapter(Applications of differentiation)
+## DBsection(Mean value theorem)
+## Institution(University of Michigan)
+## Author(Gavin LaRose)
+## Level(3)
+## MO(1)
+## TitleText1('Calculus')
+## TitleText2('Calculus')
+## TitleText3('Calculus')
+## TitleText4('Calculus')
+## AuthorText1('Hughes-Hallett')
+## AuthorText2('Hughes-Hallett')
+## AuthorText3('Hughes-Hallett')
+## AuthorText4('Hughes-Hallett')
+## EditionText1('4')
+## EditionText2('5')
+## EditionText3('6')
+## EditionText4('7')
+## Section1('3.10')
+## Section2('3.10')
+## Section3('3.10')
+## Section4('3.10')
+## Problem1('7')
+## Problem2('7')
+## Problem3('6')
+## Problem4('6')
+## KEYWORDS('calculus','derivative','mean value theorem','theory')
+
+## Textbook tags
+## HHChapter1('Short-Cuts to Differentiation')
+## HHChapter2('Short-Cuts to Differentiation')
+
+
+DOCUMENT();
+
+loadMacros(
+  "PGstandard.pl",
+  "MathObjects.pl",
+  "PGchoicemacros.pl",
+  "PGgraphmacros.pl",
+  "parserPopUp.pl",
+  "PGcourse.pl"
+);
+
+Context("Numeric");
+
+$showPartialCorrectAnswers = 0;
+
+$gr = init_graph(-1,-1,5,4,axes=>[0,0],grid=>[6,5],size=>[350,350]);
+$gr->lb('reset');
+$gr->moveTo(1,-0.15);    $gr->lineTo(1,0.15,'black');
+$gr->moveTo(4,-0.15);    $gr->lineTo(4,0.15,'black');
+$gr->lb( new Label(1,-0.17,"a","black","top","center") );
+$gr->lb( new Label(4,-0.17,"b","black","top","center") );
+
+$whichF = random(1,4,1);
+if ( $whichF == 1 ) {
+    add_functions($gr,
+		  "2*(x-1) for x in <1,2.5> using color:blue and weight:2");
+    add_functions($gr,
+		  "-2*x+8 for x in <2.5,4> using color:blue and weight:2");
+
+    ## for this function, we want to put a dashes at the midpoint
+    ##    between 1 and 4, and between the endpoints and that point
+    $gr->moveTo(1.75,-0.15); $gr->lineTo(1.75,0.15,'black');
+    $gr->lb( new Label(1.75,-0.17,"m","black","top","center") );
+    $gr->moveTo(2.5,-0.15);  $gr->lineTo(2.5,0.15,'black');
+    $gr->lb( new Label(2.5,-0.17,"n","black","top","center") );
+    $gr->moveTo(3.25,-0.15); $gr->lineTo(3.25,0.15,'black');
+    $gr->lb( new Label(3.25,-0.17,"p","black","top","center") );
+
+    $hypot = PopUp(["?","sí","no"],"no");
+    $concl = PopUp(["?","sí","no"],"no");
+    $cvalu = PopUp(["?","c=m","c=n","c=p","no existe dicho punto"],
+		   "no existe dicho punto");
+
+    $descr = "gráfica de una función lineal a trozos de (a,0) a (n,3) " .
+        "a (b,0).  m es la coordenada x en la mitad entre a y n, y " .
+	"x=p en la mitad entre n y b.";
+
+    $hypotconcl = "Para que la función cumpla con las hipótesis del Teorema del valor medio," .
+        "esta debe ser continua en \(a\le x\le b\) y " .
+	"diferenciable en \(a < x < b\). Esta función no es" .
+	"diferenciable en \(x=n\), por lo que no cumple con todas" .
+	"las hipótesis.";
+
+    $conclconcl = "Para que se cumpla la conclusión del Teorema del valor medio, " .
+        "debe existir un punto entre \(x=a\) y \(x=b\) en el cual la " .
+	"pendiente de la función es igual a \(\displaystyle\frac{f(b) - " .
+	"f(a)}{b-a}\), que en este caso es igual a cero. No hay ningún punto " .
+	"para el cual esto es verdadero, por lo que esta función no satisface la " .
+	"conclusión del teorema.";
+
+
+} elsif ( $whichF == 2 ) {
+    add_functions($gr, "1.5*(x-1)*(4-x) for x in <1,4> using color:blue " .
+		  "and weight:2");
+
+    ## for this function, we want to put dashes at the midpoint
+    ##    between 1 and 4, and between the endpoints and that point
+    $gr->moveTo(1.75,-0.15); $gr->lineTo(1.75,0.15,'black');
+    $gr->lb( new Label(1.75,-0.17,"m","black","top","center") );
+    $gr->moveTo(2.5,-0.15);  $gr->lineTo(2.5,0.15,'black');
+    $gr->lb( new Label(2.5,-0.17,"n","black","top","center") );
+    $gr->moveTo(3.25,-0.15); $gr->lineTo(3.25,0.15,'black');
+    $gr->lb( new Label(3.25,-0.17,"p","black","top","center") );
+
+    $hypot = PopUp(["?","sí","no"],"sí");
+    $concl = PopUp(["?","sí","no"],"sí");
+    $cvalu = PopUp(["?","c=m","c=n","c=p","no existe dicho punto"], "c=n");
+
+    $descr = "graph of a downward opening parabolic function with roots " .
+        "(a,0) and (b,0).  x=n is the midpoint between x=a and x=b, x=m " .
+	"is midway between a and n, and x=p is midway between n and b.";
+
+    $hypotconcl = "Para que la función cumpla con las hipótesis del Teorema del valor medio," .
+        "esta debe ser continua en \(a\le x\le b\) y " .
+	"diferenciable en \(a < x < b\). Esta función es suave" .
+	"para todos estos valores de \(x\), así que cumple con las hipótesis.";
+
+    
+    $conclconcl = "Dado que esta función cumple con las hipótesis del Teorema del valor medio, " .
+        "debe existir un punto entre \(x=a\) y \(x=b\) en el cual la " .
+	"pendiente de la función es igual a \(\displaystyle\frac{f(b) - " .
+	"f(a)}{b-a}\), que en este caso es igual a cero. The point \(x=n\) " .
+	"es un punto en el que la pendiente es igual a cero. ";
+
+} elsif ( $whichF == 3 ) {
+    ## this function starts at (1,0), ends at (4,2), and has slope
+    ##    1/2 at x=2.66.  at x=3.125, the slope is zero.
+    add_functions($gr, "-8*x^2/15 + 10*x/3 - 14/5 for x in <1,4> using " .
+		  "color:blue and weight:2");
+
+    ## for this function, we want to put dashes at the x=1.25, 3.125,
+    ##    and 3.56
+    $gr->moveTo(2.66,-0.15);  $gr->lineTo(2.66,0.15,'black');
+    $gr->lb( new Label(2.66,-0.17,"m","black","top","center") );
+    $gr->moveTo(3.125,-0.15);  $gr->lineTo(3.125,0.15,'black');
+    $gr->lb( new Label(3.125,-0.17,"n","black","top","center") );
+    $gr->moveTo(3.56,-0.15);  $gr->lineTo(3.56,0.15,'black');
+    $gr->lb( new Label(3.56,-0.17,"p","black","top","center") );
+
+    $hypot = PopUp(["?","sí","no"],"sí");
+    $concl = PopUp(["?","sí","no"],"sí");
+    $cvalu = PopUp(["?","c=m","c=n","c=p","no existe dicho punto"], "c=m");
+
+    $descr = "graph of a concave down function starting at (a,0) and " .
+        "ending at (b,2).  its maximum is at (n,2.5), x=m is to the " .
+	"left of x=n, and x=p is to the right.";
+
+    $hypotconcl = "Para que la función cumpla con las hipótesis del Teorema del valor medio," .
+        "esta debe ser continua en \(a\le x\le b\) y " .
+	"diferenciable en \(a < x < b\). Esta función es suave" .
+	"para todos estos valores de \(x\), así que cumple con las hipótesis.";
+
+    $conclconcl = "Dado que esta función cumple con las hipótesis del " .
+        "Teorema del valor medio, también debe cumplir con la conclusión.  " .
+	"Para que se cumpla la conclusión del Teorema del valor medio, " .
+        "debe existir un punto entre \(x=a\) y \(x=b\) en el cual la " .
+	"pendiente de la función es igual a \(\displaystyle\frac{f(b) - " .
+	"f(a)}{b-a}\), que en este caso es un número pequeño y positivo. El" .
+	" punto \(x=m\) es un punto que cumple con esto.";
+
+} else {
+    ## finally, plot a piecewise function that satisfies the conclusions
+    add_functions($gr, "2*(x-1) for x in <1,2> using color:blue and weight:2",
+		  "0.5*(x-1)+1.5 for x in <2,3> using color:blue and weight:2",
+		  "-1*(x-3)+2.5 for x in <3,4> using color:blue " .
+		      "and weight:2");
+
+    ## here we put in labels for each piece of the function
+    $gr->moveTo(1.5,-0.15);  $gr->lineTo(1.5,0.15,'black');
+    $gr->lb( new Label(1.5,-0.17,"m","black","top","center") );
+    $gr->moveTo(2.5,-0.15);  $gr->lineTo(2.5,0.15,'black');
+    $gr->lb( new Label(2.5,-0.17,"n","black","top","center") );
+    $gr->moveTo(3.5,-0.15);  $gr->lineTo(3.5,0.15,'black');
+    $gr->lb( new Label(3.5,-0.17,"p","black","top","center") );
+
+    $hypot = PopUp(["?","sí","no"],"no");
+    $concl = PopUp(["?","sí","no"],"sí");
+    $cvalu = PopUp(["?","c=m","c=n","c=p","no existe dicho punto"], "c=n");
+
+    $descr = "graph of a piecewise linear function from on the interval " .
+        "[a,b].  let L=(b-a)/3.  the function extends from (a,0) to " .
+	"(a+L,2) to (a+2L,2.5) to (b,1.5).  x=m is between x=a and x=a+L, " .
+        "x=n beween x=a+L and x=a+2L, and x=p between x=a+2L and x=b.";
+
+    $hypotconcl = "Para que la función cumpla con las hipótesis del Teorema del valor medio, " .
+        "la función debe ser continua en \(a\le x\le b\) y " .
+	"diferenciable en \(a < x < b\). Esta función no es " .
+	"diferenciable en los dos extremos, entonces la función no " .
+	"cunmple todas las hipótesis.";
+
+    $conclconcl = "Para que se cumpla la conclusión del Teorema del valor medio, " .
+        "debe existir un punto entre \(x=a\) y \(x=b\) en el cual la " .
+	"pendiente de la función es igual a \(\displaystyle\frac{f(b) - " .
+	"f(a)}{b-a}\), que en este caso es un número pequeño positivo.  " .
+	"El punto \(x=n\) cumple con esta condición.";
+}
+
+TEXT(beginproblem());
+Context()->texStrings;
+BEGIN_TEXT
+
+Considera la función cuya gráfica se muestra abajo.
+$BCENTER
+\{ image( insertGraph($gr), tex_size=>350, height=>350, width=>350,
+	  extra_html_tags=>'alt="' . $descr . '"' ) \}
+$ECENTER
+$PAR
+¿Cumple esta función con todas las hipótesis del Teorema del valor medio en el intervalo \( [a,b] \)?  \{ $hypot->menu() \}
+$PAR
+¿Cumple esta función con la conclusión?  \{ $concl->menu() \}
+$PAR
+¿En qué punto \(c\) vale que \(\displaystyle f'(c) = \frac{f(b)-f(a)}{b-a}\)?
+\{ $cvalu->menu() \}
+
+END_TEXT
+Context()->normalStrings;
+
+ANS($hypot->cmp() );
+ANS($concl->cmp() );
+ANS($cvalu->cmp() );
+
+Context()->texStrings;
+SOLUTION(EV3(<<'END_SOLUTION'));
+$hypotconcl
+$PAR
+$conclconcl
+
+END_SOLUTION
+Context()->normalStrings;
+
+
+;
+ENDDOCUMENT();

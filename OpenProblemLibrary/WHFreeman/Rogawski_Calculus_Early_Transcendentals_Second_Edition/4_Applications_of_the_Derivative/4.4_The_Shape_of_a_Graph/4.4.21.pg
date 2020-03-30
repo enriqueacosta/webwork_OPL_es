@@ -1,0 +1,122 @@
+# Traducción Grupo LEMA www.grupolema.org
+## DBsubject(Calculus - single variable)
+## DBchapter(Applications of differentiation)
+## DBsection(Concavity and points of inflection)
+## Institution(W.H.Freeman)
+## Author(Ned W. Hummel)
+## Level(3)
+## MO(1)
+## TitleText1('Calculus: Early Transcendentals')
+## AuthorText1('Rogawski')
+## EditionText1('2')
+## Section1('4.4')
+## Problem1('21')
+## KEYWORDS('calculus','derivatives','inflection points', 'concavity')
+
+DOCUMENT();
+
+loadMacros(
+  "PGstandard.pl",
+  "MathObjects.pl",
+  "freemanMacros.pl",
+  "PGgraphmacros.pl",
+  "PGcourse.pl"
+);
+
+
+# This is our macro file that provides the textbook_ref_exact() and
+
+
+
+TEXT(beginproblem());
+
+@label_increase_decrease = qw(? Increasing Decreasing);
+################# Setting up the problem goes here.
+### Book
+
+$a = random(4,6);
+$b = random(12,15);
+
+$inflection_points = List($a,$b);
+$concave_down = Interval('(',$a,$b,')');
+
+do {  @x_vals = (random(0,2),$a,random(8,10),$b,random(17,20));
+      @y_vals = (0,random(3,10),0,-random(5,12,1),0);
+      @yp_vals= (random(1,2.5,.1),0,-random(0.4,2.5,.1),0,random(1,3.5,.1));
+   } until ( (3*$y_vals[1]-$yp_vals[0]*($x_vals[1]-$x_vals[0]))*$yp_vals[0] > 0 &&
+             (3*$y_vals[1]+$yp_vals[2]*($x_vals[2]-$x_vals[1]))*$yp_vals[2] < 0 && 
+             (3*$y_vals[3]-$yp_vals[2]*($x_vals[3]-$x_vals[2]))*$yp_vals[2] > 0 && 
+             (3*$y_vals[3]+$yp_vals[4]*($x_vals[4]-$x_vals[3]))*$yp_vals[4] < 0  
+   ); # avoid creating unexpected inflection points
+
+$foo= new Hermite(
+~~@x_vals, # x values
+~~@y_vals, # y values
+~~@yp_vals # y prime values
+);
+
+
+# Minimum and maximum x and y values to graph.
+$xmin = 0;
+$ymin = min(@y_vals)-1;
+$xmax = max(@x_vals);
+$ymax = max(@y_vals)+1;
+
+$xrange = $xmax-$xmin;
+$yrange = $ymax-$ymin;
+
+$xsize = $xrange*25;
+$ysize = $yrange*25;
+
+$graph = init_graph(
+    $xmin, $ymin,
+    $xmax, $ymax,
+    grid => [$xrange,$yrange],
+    axes => [0,0],
+);
+
+$spline_rule = $foo->rf_f;
+$f = new Fun($spline_rule, $graph);
+$f->color('red');
+
+
+
+Context()->texStrings;
+
+BEGIN_TEXT
+\{ textbook_ref_exact("Rogawski ET 2e", "4.4","21") \}
+$PAR
+Abajo se muestra la gráfica de \(f'\), la derivada de una función \( f \). Responde estas preguntas:
+$PAR
+\{ image(insertGraph($graph)) \}
+$PAR
+¿Dónde ocurren los puntos de inflexión de \(f\)? Escribe sus coordenadas \(x\), separadas por comas: \{ans_rule()\} 
+$PAR
+¿En qué intervalo o intervalos \(f\) es cóncava hacia abajo? \{ans_rule()\} 
+END_TEXT
+
+######################## Answer starts here.
+
+Context()->normalStrings;
+
+ANS($inflection_points->cmp);
+ANS($concave_down->cmp);
+
+
+Context()->texStrings;
+
+SOLUTION(EV3(<<'END_SOLUTION'));
+$PAR
+$SOL
+Los puntos de inflexión ocurren cuando \(f''(x)\) cambia de signo. Entonces, estos ocurren cuando \(f'(x)\) cambia de creciente a decreciente o de decreciente a creciente (por lo que \(f''\) es la derivada de \(f'\).  
+En la figura, esto ocurre en \(x = $a\) y en \(x = $b\); 
+así que \(f(x)\) tiene un punto de inflexión en 
+\(x = $a\) y otro en \(x = $b\).
+
+La función \(f(x)\) es cóncava hacia abajo cuando \(f''(x) < 0\) o, equivalentemente, cuando \(f'(x)\) es decreciente.  
+
+Por ende, \(f(x)\) es cóncava hacia abajo en el intervalo \( ( $a , $b ) \).
+END_SOLUTION
+
+
+ENDDOCUMENT();

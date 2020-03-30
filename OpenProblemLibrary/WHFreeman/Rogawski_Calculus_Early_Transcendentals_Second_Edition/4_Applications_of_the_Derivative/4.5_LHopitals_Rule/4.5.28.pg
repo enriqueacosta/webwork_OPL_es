@@ -1,0 +1,73 @@
+DOCUMENT();
+
+loadMacros(
+  "PGstandard.pl",
+  "PGchoicemacros.pl",
+  "PGgraphmacros.pl",
+  "freemanMacros.pl",
+  "PGcourse.pl"
+);
+## Traducción Grupo LEMA www.grupolema.org
+## DBsubject(Calculus - single variable)
+## DBchapter(Applications of differentiation)
+## DBsection(Indeterminate forms and L'Hopital's rule)
+## Institution(W.H.Freeman)
+## Author(JustAsk!)
+## Level(3)
+## TitleText1('Calculus: Early Transcendentals')
+## AuthorText1('Rogawski')
+## EditionText1('2')
+## Section1('4.5')
+## Problem1('28')
+## KEYWORDS('calculus', 'derivatives', 'limits', 'LHopitals rule')
+
+## Show partial correct answers
+$showPartialCorrectAnswers = 0;
+
+TEXT(beginproblem());
+
+$a=random(2,14,1);
+
+BEGIN_TEXT
+\{ textbook_ref_exact("Rogawski ET 2e", "4.5","28") \}$BR
+Usa la regla de l'Hôpital (posiblemente más de una vez) para evaluar el siguiente límite $BR
+$BR
+\( \displaystyle\lim\limits_{x\to 0}\left(\cot($a x)-\frac{1}{$a x}\right)= \) \{ ans_rule() \} $BR
+$BR
+Si la respuesta es igual a \(\infty\) o \(-\infty\), escribe INF o -INF.
+END_TEXT
+
+ANS(num_cmp(0,strings=>["INF","-INF"]));
+
+###################################################################
+
+$a2= 2* $a;
+$a2_2=2* $a**2;
+$a2_3=2* $a**3;
+
+SOLUTION(EV3(<<'END_SOLUTION'));
+$PAR$BBOLD Solución:$EBOLD 
+$PAR
+Nota que
+\[ \lim\limits_{x\to 0}\left(\cot($a x)-\frac{1}{$a x}\right)= \lim\limits_{x\to 0}\left(\frac{$a x {\cot($a x)} - 1}{$a x}\right).\] 
+
+La regla de l'Hôpital se puede usar porque las funciones del numerador y el denominador son diferenciables y el límite es una forma indeterminada de tipo 0/0. Así, podemos reemplazar las funciones por sus derivadas, para obtener:
+
+\[ \lim\limits_{x \to 0} \frac{$a x {\cot($a x)} - 1}{$a x} = \lim\limits_{x \to 0} \frac{$a \cot($a x) - $a^2 x \frac{1}{\sin ^2 ($a x)}}{$a}= \]
+
+\[ \lim\limits_{x \to 0} \frac{ \sin($a x) \cos($a x) - $a x}{\sin^2($a x)} = \]
+\[ \lim\limits_{x \to 0} \frac{\frac{1}{2} \sin ($a2 x) - $a x}{\sin^2($a x)}.\]
+
+Este límite es de nuevo una forma indeterminada de tipo 0/0, entonces podemos usar la regla de l'Hôpital otra vez: $PAR
+
+\[ \lim\limits_{x \to 0} \frac{\frac{1}{2} \sin ($a2 x) - $a x}{\sin^2($a x)}=  \lim\limits_{x \to 0} \frac{$a \cos($a2 x) - $a}{$a \sin($a2 x)} = \lim\limits_{x \to 0} \frac{\cos($a2 x) - 1}{\sin($a2 x)}.\] $PAR
+
+Este límite es de nuevo una forma indeterminada de tipo 0/0, entonces usamos la regla de l'Hôpital otra vez: 
+
+\[\lim\limits_{x \to 0} \frac{\cos($a2 x) - 1}{\sin($a2 x)} =\lim\limits_{x \to 0} \frac{- $a2 \sin($a2 x)}{$a2 \cos($a2 x)}= - \frac{0}{$a2} = 0.\]
+
+END_SOLUTION
+
+###################################################################
+
+ENDDOCUMENT();

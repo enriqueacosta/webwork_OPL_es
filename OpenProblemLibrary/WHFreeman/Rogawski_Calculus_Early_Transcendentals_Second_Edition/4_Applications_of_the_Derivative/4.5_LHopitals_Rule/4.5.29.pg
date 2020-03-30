@@ -1,0 +1,66 @@
+DOCUMENT();
+
+loadMacros(
+  "PGstandard.pl",
+  "PGchoicemacros.pl",
+  "PGgraphmacros.pl",
+  "freemanMacros.pl",
+  "PGcourse.pl"
+);
+
+## Traducción Grupo LEMA www.grupolema.org
+## DBsubject(Calculus - single variable)
+## DBchapter(Applications of differentiation)
+## DBsection(Indeterminate forms and L'Hopital's rule)
+## Institution(W.H.Freeman)
+## Author(JustAsk!)
+## Level(4)
+## TitleText1('Calculus: Early Transcendentals')
+## AuthorText1('Rogawski')
+## EditionText1('2')
+## Section1('4.5')
+## Problem1('29')
+## KEYWORDS('calculus', 'derivatives', 'limits', 'Lhopitals rule')
+
+
+## Show partial correct answers
+$showPartialCorrectAnswers = 0;
+
+TEXT(beginproblem());
+
+$a=random(2,14,1);
+
+BEGIN_TEXT
+\{ textbook_ref_exact("Rogawski ET 2e", "4.5","29") \}$BR
+Usa la regla de l'Hôpital (posiblemente más de una vez) para evaluar el siguiente límite: $BR
+\( \lim\limits_{x\to 0} \frac{\sin($a x)-$a x \cos($a x)}{$a x-\sin($a x)}= \) \{ ans_rule() \} $BR
+Si la respuesta es igual a \(\infty\) o \(-\infty\), escribe INF o -INF respectivamente.
+END_TEXT
+
+ANS(num_cmp(2,strings=>["INF","-INF"]));
+
+
+$aa=$a**2;
+
+SOLUTION(EV3(<<'END_SOLUTION'));
+$PAR$BBOLD SOLUCIÓN:$EBOLD 
+$PAR
+
+Las funciones del numerador y el denominador son diferenciables y el límite es una forma indeterminada de tipo \(\frac{0}{0}\), entonces usamos la regla de l'Hôpital: $PAR
+
+\( \lim\limits_{x \to 0} \frac{\sin($a x)-$a x \cos($a x)}{$a x-\sin($a x)}= \lim\limits_{x \to 0} \frac{$a \cos($a x) - ($a \cos($a x) - $aa x \sin($a x))}{$a - $a \cos($a x)} \) $BR
+
+\(\qquad= \lim\limits_{x \to 0} \frac{$a x \sin($a x)}{1- \cos($a x)}\) $PAR
+
+Si usamos de nuevo la regla de l'Hôpital, obtenemos: $PAR
+
+\(\qquad= \lim\limits_{x \to 0} \frac{$a x \sin($a x)}{1- \cos($a x)}= \lim\limits_{x \to 0} \frac{\sin($a x) + $a x \cos($a x)}{\sin($a x)}\) $PAR
+
+Si usamos de nuevo la regla de l'Hôpital, obtenemos: $PAR
+
+\( \lim\limits_{x \to 0} \frac{\sin($a x) + $a x \cos($a x)}{\sin($a x)}= \lim\limits_{x \to 0} \frac{2 \cos($a x) - $a x \sin($a x)}{\cos($a x)} = \frac{2}{1} = 2\). $PAR
+
+END_SOLUTION
+
+
+ENDDOCUMENT();
