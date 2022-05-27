@@ -1,0 +1,124 @@
+##  DESCRIPTION
+##  Formación en programación de problemas para WeBWorK
+##  Grupo LEMA
+##  www.grupolema.org
+##  ENDDESCRIPTION
+
+##KEYWORDS('','')
+
+## DBsubject('')
+## DBchapter('')
+## DBsection('')
+## Date('6/3/2002')
+## Author('Enrique Acosta')
+## Institution('Grupo LEMA')
+## TitleText1('')
+## EditionText1('')
+## AuthorText1('')
+## Section1('')
+## Problem1('')
+
+########################################################################
+
+DOCUMENT();
+
+############################################################
+# Load Macros
+############################################################
+loadMacros(
+  "PGstandard.pl",
+  "MathObjects.pl",
+  "PGML.pl",
+  "scaffold.pl",
+  "AnswerFormatHelp.pl",
+  "parserRadioButtons.pl",
+  "PGcourse.pl",
+);
+
+############################################################
+# Header
+############################################################
+TEXT(beginproblem());
+COMMENT('This problem is scaffolded with multiple parts');
+
+############################################################
+# PG Setup
+############################################################
+Context('Numeric');
+$ans=List("2");
+$evalforans=$ans->cmp(showLengthHints => 1);
+$MC1= RadioButtons(
+["\(0\lt a\lt 1\)","\(1\lt a\)","\(2\lt a\)"],
+"\(0\lt a\lt 1\)", # correct answer
+);
+
+############################################################
+# Scaffold
+############################################################
+Scaffold::Begin(can_open => "when_previous_correct",);
+
+############################################################
+# Section
+############################################################
+Section::Begin("");
+
+############################################################
+# Body
+############################################################
+
+BEGIN_PGML
+Let [`(\cos at, \sin at)`] be the position  at time [`t`] seconds of a particle moving around a circle, where [`\newcommand{\gt}{>}a\gt 0\text{.}`]
+
+If [`a`] is increased, which of the following are correct?
+1.  The radius of the circle increases.
+1.  The speed of the particle increases.
+1.  The center of the circle changes.
+1.  The path ceases to be a circle.   
+
+List the numbers of all correct choices separated with commas: [_]{$evalforans}{15} [@AnswerFormatHelp('numbers')@]*
+
+END_PGML
+
+############################################################
+# Solution
+############################################################
+
+BEGIN_PGML_SOLUTION
+Choice 2. The speed of the particle increases. As [`a`] increases, it takes less time for the particle to complete one revolution, thus the speed increases.
+END_PGML_SOLUTION
+
+Section::End();
+
+############################################################
+# Section
+############################################################
+Section::Begin("");
+
+############################################################
+# Body
+############################################################
+
+BEGIN_PGML
+Suppose the particle's movement is described by [`(\cos t, \sin t)\text{.}`]  Which values of [`a`] in [`(\cos at, \sin at)`] would represent a decrease in speed for the particle?
+
+[_]{$MC1}{5}
+
+END_PGML
+
+############################################################
+# Solution
+############################################################
+
+BEGIN_PGML_SOLUTION
+As in Part 1, when [`a`] decreases, it takes more time for the particle to complete one revolution, thus the speed decreases with [`\newcommand{\lt}{<}0\lt a\lt 1\text{.}`]
+END_PGML_SOLUTION
+
+Section::End();
+
+Scaffold::End();
+
+############################################################
+# End Problem
+############################################################
+
+ENDDOCUMENT();
