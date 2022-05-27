@@ -4,3 +4,5 @@ Spanish version of the WeBWork Open Problem Library.
 Es decir,  
 
 Versión en español del Open Problem Library de WeBWork.
+
+Iniciativa del Grupo LEMA (www.grupolema.org).
