@@ -1,0 +1,111 @@
+##  DESCRIPTION
+##  Formación en programación de problemas para WeBWorK
+##  Grupo LEMA
+##  www.grupolema.org
+##  ENDDESCRIPTION
+
+##KEYWORDS('','')
+
+## DBsubject('')
+## DBchapter('')
+## DBsection('')
+## Date('6/3/2002')
+## Author('Enrique Acosta')
+## Institution('Grupo LEMA')
+## TitleText1('')
+## EditionText1('')
+## AuthorText1('')
+## Section1('')
+## Problem1('')
+
+########################################################################
+
+DOCUMENT();
+
+############################################################
+# Load Macros
+############################################################
+loadMacros(
+   "PGstandard.pl",
+   "PGML.pl",
+   "AnswerFormatHelp.pl",
+);
+############################################################
+
+
+############################################################
+# Header
+############################################################
+TEXT(beginproblem());
+$ShowPartialCorrectAnswers = 1; # gives students individual feedback on each answer blank 
+############################################################
+
+
+############################################################
+# PG Setup
+############################################################
+# Respuestas, contextos, randomización
+
+Context()->variables->are(theta => "Real");
+Context()->variables->set(theta => { TeX=>'\theta '});
+
+$r=Compute(random(2,9,1));
+$x=Compute(random(-1,1,2))*Compute(random(1,9,1));
+$y=Compute(random(1,9,1));
+
+$ans=Formula("$r*sin(theta)+$y");
+
+############################################################
+
+
+############################################################
+# Statement
+############################################################
+BEGIN_PGML
+
+Encuentra una función [`g(\theta)`] que de la altura de un punto [`P`] por encima del eje [`x`] como función del ángulo [`\theta`] para un círculo de radio [`[$r]`] y centro [`([$x],[$y])`].
+
+Escribe theta para ingresar [`\theta`]
+
+[`g(\theta)=`] [_______]{$ans} [@AnswerFormatHelp('formulas')@]*
+
+
+(la solución es: [`[$ans]`]
+
+END_PGML
+############################################################
+
+
+
+############################################################
+# Hint
+############################################################
+#Set value of $showHint in PGcourse.pl for course-wide attempt threshhold for revealing hints
+BEGIN_PGML_HINT
+
+Hint va acá.
+
+END_PGML_HINT
+############################################################
+
+
+
+
+############################################################
+# Solution
+############################################################
+BEGIN_PGML_SOLUTION
+
+Solución va acá.
+
+END_PGML_SOLUTION
+############################################################
+
+
+
+############################################################
+# End Problem
+############################################################
+
+ENDDOCUMENT();
+
